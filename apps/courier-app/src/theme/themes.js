@@ -1,0 +1,33 @@
+export const lightTheme = {
+  bg: '#F8FAFC', card: '#FFFFFF', fill: '#F1F5F9', fill2: '#E2E8F0', border: '#E2E8F0',
+  text: '#0F172A', sec: '#475569', muted: '#94A3B8',
+  red: '#E11D48', redBg: '#FFF1F2', redDark: '#BE123C',
+  green: '#10B981', greenBg: '#ECFDF5', greenDark: '#059669',
+  amber: '#F59E0B', amberBg: '#FFFBEB',
+  blue: '#3B82F6', blueBg: '#EFF6FF',
+  purple: '#8B5CF6', purpleBg: '#F5F3FF',
+  shadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
+  shadowMd: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+  shadowLg: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+  gradient: '#0F172A',
+  gradientAccent: '#E11D48',
+  gradientSuccess: '#10B981',
+  gradientBlue: '#3B82F6',
+};
+
+export const darkTheme = {
+  bg: '#020617', card: '#0F172A', fill: '#1E293B', fill2: '#334155', border: '#1E293B',
+  text: '#F8FAFC', sec: '#94A3B8', muted: '#64748B',
+  red: '#FB7185', redBg: '#1C0A0F', redDark: '#FDA4AF',
+  green: '#34D399', greenBg: '#0A1C14', greenDark: '#6EE7B7',
+  amber: '#FBBF24', amberBg: '#1C1A0A',
+  blue: '#60A5FA', blueBg: '#0A1426',
+  purple: '#A78BFA', purpleBg: '#141026',
+  shadow: '0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2)',
+  shadowMd: '0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.2)',
+  shadowLg: '0 25px 50px -12px rgba(0,0,0,0.5)',
+  gradient: '#1E293B',
+  gradientAccent: '#FB7185',
+  gradientSuccess: '#34D399',
+  gradientBlue: '#60A5FA',
+};
