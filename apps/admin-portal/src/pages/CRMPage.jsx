@@ -20,6 +20,39 @@ import {
 
 const CHART_COLORS = ['#8B5CF6', '#3B82F6', '#F59E0B', '#F97316', '#10B981', '#EF4444'];
 
+// ============ EXPORT UTILITY ============
+const exportToCSV = (data, filename) => {
+  if (!data || data.length === 0) {
+    alert('No data to export');
+    return;
+  }
+
+  // Get headers from first object
+  const headers = Object.keys(data[0]);
+
+  // Convert data to CSV format
+  const csvContent = [
+    headers.join(','), // Header row
+    ...data.map(row =>
+      headers.map(header => {
+        const value = row[header];
+        // Handle values with commas or quotes
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value || '';
+      }).join(',')
+    )
+  ].join('\n');
+
+  // Create blob and download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+  link.click();
+};
+
 export const CRMPage = ({
   activeSubMenu, currentUser, loading, setShowExport, addToast,
 }) => {
@@ -317,6 +350,27 @@ export const CRMPage = ({
         <button onClick={() => addToast({ type: 'info', message: 'New lead form coming soon' })} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
           <Plus size={16} /> Add Lead
         </button>
+        <button
+          onClick={() => {
+            const exportData = filteredLeads.map(lead => ({
+              Name: lead.name,
+              Company: lead.company,
+              Email: lead.email,
+              Phone: lead.phone,
+              Status: CRM_LEAD_STATUSES[lead.status]?.label || lead.status,
+              Source: CRM_LEAD_SOURCES[lead.source]?.label || lead.source,
+              Value: `$${lead.value?.toLocaleString() || 0}`,
+              'Last Contact': lead.lastContact,
+              Owner: lead.owner
+            }));
+            exportToCSV(exportData, 'crm_leads');
+            addToast({ type: 'success', message: `Exported ${exportData.length} leads to CSV` });
+          }}
+          className={btnOutline}
+          style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+        >
+          <Download size={16} /> Export
+        </button>
       </div>
 
       {loading ? <TableSkeleton rows={5} cols={6} theme={theme} /> : filteredLeads.length === 0 ? (
@@ -539,6 +593,27 @@ export const CRMPage = ({
         <button onClick={() => addToast({ type: 'info', message: 'New contact form coming soon' })} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
           <UserPlus size={16} /> Add Contact
         </button>
+        <button
+          onClick={() => {
+            const exportData = filteredContacts.map(contact => ({
+              Name: contact.name,
+              Email: contact.email,
+              Phone: contact.phone,
+              Company: contact.company,
+              Role: contact.role,
+              Tags: contact.tags.join('; '),
+              'Active Deals': contact.deals,
+              'Total Value': `$${contact.totalValue?.toLocaleString() || 0}`,
+              'Last Activity': contact.lastActivity
+            }));
+            exportToCSV(exportData, 'crm_contacts');
+            addToast({ type: 'success', message: `Exported ${exportData.length} contacts to CSV` });
+          }}
+          className={btnOutline}
+          style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+        >
+          <Download size={16} /> Export
+        </button>
       </div>
 
       {loading ? <TableSkeleton rows={5} cols={6} theme={theme} /> : filteredContacts.length === 0 ? (
@@ -678,6 +753,25 @@ export const CRMPage = ({
           <option value="completed">Completed</option>
           <option value="overdue">Overdue</option>
         </select>
+        <button
+          onClick={() => {
+            const exportData = filteredActivities.map(activity => ({
+              Type: CRM_ACTIVITY_TYPES[activity.type]?.label || activity.type,
+              Subject: activity.subject,
+              'Related To': activity.relatedTo,
+              'Assigned To': activity.assignedTo,
+              Date: activity.date,
+              Status: activity.status.charAt(0).toUpperCase() + activity.status.slice(1),
+              Notes: activity.notes || ''
+            }));
+            exportToCSV(exportData, 'crm_activities');
+            addToast({ type: 'success', message: `Exported ${exportData.length} activities to CSV` });
+          }}
+          className={btnOutline}
+          style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+        >
+          <Download size={16} /> Export
+        </button>
       </div>
 
       {loading ? <TableSkeleton rows={5} cols={6} theme={theme} /> : filteredActivities.length === 0 ? (
