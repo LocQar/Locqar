@@ -694,6 +694,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, activeMenu, setActiveMenu, activ
       label: 'Operations', items: [
         { icon: Package, label: 'Packages', id: 'packages', permission: 'packages.view', subItems: ['All Packages', 'In Locker', 'Pending Pickup', 'Expired'] },
         { icon: Truck, label: 'Dispatch', id: 'dispatch', permission: 'packages.dispatch', subItems: ['Outgoing', 'Route Planning', 'Driver Assignment'] },
+        { icon: Car, label: 'Fleet', id: 'fleet', permission: 'fleet.view', subItems: ['Vehicles', 'Maintenance', 'Fuel Log'] },
+        { icon: Users2, label: 'Couriers', id: 'couriers', permission: 'couriers.view', subItems: ['Active Drivers', 'Performance', 'Payments'] },
         { icon: MessageSquare, label: 'Notifications', id: 'notifications', permission: 'packages.view', subItems: ['Message Center', 'Templates', 'Auto-Rules', 'History', 'Settings'] },
         { icon: AlertOctagon, label: 'SLA Monitor', id: 'sla', permission: 'packages.view', subItems: ['Live Monitor', 'Escalation Rules', 'Compliance', 'Incident Log'] },
       ]
@@ -704,6 +706,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, activeMenu, setActiveMenu, activ
         { icon: Inbox, label: 'Dropboxes', id: 'dropboxes', permission: 'packages.view', subItems: ['Overview', 'Collections', 'Agents', 'Package Flow'] },
         { icon: Building2, label: 'Terminals', id: 'terminals', permission: 'terminals.view' },
         { icon: Users, label: 'Customers', id: 'customers', permission: 'customers.view', subItems: ['All Customers', 'Subscribers', 'B2B Partners', 'Support Tickets'] },
+        { icon: UserCheck, label: 'CRM', id: 'crm', permission: 'customers.view', subItems: ['Leads', 'Pipeline', 'Accounts', 'Reports'] },
+        { icon: Cog, label: 'Workflows', id: 'workflows', permission: 'settings.manage', subItems: ['Automations', 'Triggers', 'Webhooks'] },
         { icon: UserCheck, label: 'Staff', id: 'staff', permission: 'staff.view', subItems: ['Agents', 'Teams', 'Performance'] },
       ]
     },
