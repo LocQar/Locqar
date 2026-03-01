@@ -18,3 +18,4 @@ export * from './PricingEnginePage';
 export * from './FleetPage';
 export * from './CouriersPage';
 export * from './WorkflowsPage';
+export * from './CRMPage';

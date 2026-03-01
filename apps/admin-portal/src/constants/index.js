@@ -1,4 +1,4 @@
-import { Warehouse, Inbox, Home, LayoutDashboard, Package, Users, Users2, Truck, MessageSquare, AlertOctagon, Grid3X3, Building2, UserCheck, Briefcase, Smartphone, DollarSign, Receipt, TrendingUp, History, GitBranch } from 'lucide-react';
+import { Warehouse, Inbox, Home, LayoutDashboard, Package, Users, Users2, Truck, MessageSquare, AlertOctagon, Grid3X3, Building2, UserCheck, Briefcase, Smartphone, DollarSign, Receipt, TrendingUp, History, GitBranch, Handshake } from 'lucide-react';
 
 // Re-export shared constants
 export { DOOR_SIZES, WAYBILL_API_STATUSES, COURIER_STATUSES, PACKAGE_STATUSES, ALL_STATUSES } from '@locqar/shared/constants';
@@ -75,6 +75,7 @@ export const MENU_GROUPS = [
       { icon: Smartphone, label: 'Partner Portal', id: 'selfservice', permission: 'dashboard.view', subItems: ['Portal Home', 'Ship Now', 'Track Packages', 'Locker Map', 'My Billing', 'API Console', 'Help Center'] },
       { icon: DollarSign, label: 'Accounting', id: 'accounting', permission: 'reports.view', subItems: ['Transactions', 'Invoices', 'Reports'] },
       { icon: Receipt, label: 'Pricing Engine', id: 'pricing', permission: 'reports.view', subItems: ['Rate Card', 'Delivery Methods', 'SLA Tiers', 'Surcharges', 'Volume Discounts', 'Partner Overrides'] },
+      { icon: Handshake, label: 'CRM', id: 'crm', permission: 'crm.view', subItems: ['Dashboard', 'Leads', 'Pipeline', 'Contacts', 'Activities', 'Reports'] },
       { icon: TrendingUp, label: 'Analytics', id: 'analytics', permission: 'reports.view' },
       { icon: History, label: 'Audit Log', id: 'audit', permission: 'reports.view' },
     ]

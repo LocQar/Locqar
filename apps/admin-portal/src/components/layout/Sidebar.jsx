@@ -128,7 +128,7 @@ export const Sidebar = ({
           ))}
         </nav>
 
-        <div className="p-3 border-t" style={{ borderColor: theme.border.primary }}>
+        <div className="p-3 border-t space-y-1" style={{ borderColor: theme.border.primary }}>
           <button
             onClick={() => { setActiveMenu('settings'); if (isMobile) onCloseMobile(); }}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl"
