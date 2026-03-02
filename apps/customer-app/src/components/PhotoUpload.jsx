@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { T, ff } from "../theme/themes";
-import { Camera, Upload, X, Check } from "./Icons";
+import { Camera, X, Check } from "./Icons";
 
 export default function PhotoUpload({ photos = [], onPhotosChange, maxPhotos = 3 }) {
   const fileInputRef = useRef(null);
