@@ -193,6 +193,36 @@ export const CRMPage = ({
     setShowNewActivityDrawer(true);
   };
 
+  const handleConvertLeadToDeal = (lead) => {
+    // Create a new deal pre-filled with lead data
+    const newDeal = {
+      title: `${lead.company} Deal`,
+      company: lead.company,
+      contactName: lead.name,
+      value: lead.value || 0,
+      stage: 'prospecting',
+      probability: 10,
+      assignedTo: lead.assignedTo,
+      expectedCloseDate: '',
+      notes: lead.notes || ''
+    };
+
+    // Open deal drawer with pre-filled data
+    setEditingDeal(newDeal);
+    setShowNewDealDrawer(true);
+
+    // Remove the lead from leads list
+    setLeads(leads.filter(l => l.id !== lead.id));
+
+    // Close lead detail panel
+    setSelectedLead(null);
+
+    // Switch to Pipeline view
+    setActiveSubMenu('Pipeline');
+
+    addToast({ type: 'success', message: `Converting "${lead.name}" to deal. Complete the details to save.` });
+  };
+
   const openDeleteConfirm = (type, item) => {
     setDeleteConfirm({ isOpen: true, type, item });
   };
@@ -594,7 +624,7 @@ export const CRMPage = ({
           </div>
           <div><p className="text-sm" style={{ color: theme.text.secondary }}>Notes</p><p className="text-sm" style={{ color: theme.text.secondary }}>{selectedLead.notes}</p></div>
           <div className="flex gap-2">
-            <button onClick={() => addToast({ type: 'success', message: `Converting ${selectedLead.name} to deal` })} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white" style={{ backgroundColor: theme.accent.primary }}>
+            <button onClick={() => handleConvertLeadToDeal(selectedLead)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white" style={{ backgroundColor: theme.accent.primary }}>
               <ArrowRight size={16} /> Convert to Deal
             </button>
           </div>
