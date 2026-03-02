@@ -398,7 +398,7 @@ export const CRMPage = ({
     if (leadStatusFilter !== 'all') result = result.filter(l => l.status === leadStatusFilter);
     if (leadSourceFilter !== 'all') result = result.filter(l => l.source === leadSourceFilter);
     return result;
-  }, [leadSearch, leadStatusFilter, leadSourceFilter]);
+  }, [leads, leadSearch, leadStatusFilter, leadSourceFilter]);
 
   const paginatedLeads = useMemo(() => {
     const start = (leadPage - 1) * itemsPerPage;
@@ -413,7 +413,7 @@ export const CRMPage = ({
     }
     if (contactTagFilter !== 'all') result = result.filter(c => c.tags.includes(contactTagFilter));
     return result;
-  }, [contactSearch, contactTagFilter]);
+  }, [contacts, contactSearch, contactTagFilter]);
 
   const paginatedContacts = useMemo(() => {
     const start = (contactPage - 1) * itemsPerPage;
@@ -429,7 +429,7 @@ export const CRMPage = ({
     if (activityTypeFilter !== 'all') result = result.filter(a => a.type === activityTypeFilter);
     if (activityStatusFilter !== 'all') result = result.filter(a => a.status === activityStatusFilter);
     return result;
-  }, [activitySearch, activityTypeFilter, activityStatusFilter]);
+  }, [activities, activitySearch, activityTypeFilter, activityStatusFilter]);
 
   const paginatedActivities = useMemo(() => {
     const start = (activityPage - 1) * itemsPerPage;
@@ -447,7 +447,7 @@ export const CRMPage = ({
       if (stages[deal.stage]) stages[deal.stage].push(deal);
     });
     return stages;
-  }, [dealSearch]);
+  }, [deals, dealSearch]);
 
   const crmMetrics = useMemo(() => {
     const activeDeals = deals.filter(d => !['closed_won', 'closed_lost'].includes(d.stage));
@@ -460,13 +460,13 @@ export const CRMPage = ({
       wonValue: wonDeals.reduce((sum, d) => sum + d.value, 0),
       conversionRate: totalClosed > 0 ? Math.round((wonDeals.length / totalClosed) * 100) : 0,
     };
-  }, []);
+  }, [leads, deals]);
 
   const allTags = useMemo(() => {
     const tags = new Set();
     contacts.forEach(c => c.tags.forEach(t => tags.add(t)));
     return Array.from(tags).sort();
-  }, []);
+  }, [contacts]);
 
   // ============ SHARED STYLES ============
   const cardStyle = {
