@@ -4,6 +4,7 @@ import StatusBar from "../components/StatusBar";
 import Toast from "../components/Toast";
 import QRCode from "../utils/qrcode";
 import { contacts, initLockers } from "../data/mockData";
+import PhotoUpload from "../components/PhotoUpload";
 import { ArrowLeft, ArrowRight, Check, X, Users, ChevronDown, Shield, Zap, Copy, Clock, Info, Navigation } from "../components/Icons";
 
 export default function Send(props) {
@@ -25,6 +26,7 @@ export default function Send(props) {
   var [schedTime, setSchedTime] = useState(sd.schedTime || '');
   var [reqPayment, setReqPayment] = useState(sd.reqPayment || false);
   var [reqAmount, setReqAmount] = useState(sd.reqAmount || '');
+  var [packagePhotos, setPackagePhotos] = useState(sd.packagePhotos || []);
   var szs = [{ id: 's', e: '\u{1F4C4}', l: 'Small', d: 'Documents, accessories', p: 8 }, { id: 'm', e: '\u{1F4E6}', l: 'Medium', d: 'Shoes, electronics', p: 12 }, { id: 'l', e: '\u{1F4E6}', l: 'Large', d: 'Clothing, bulky items', p: 18 }];
   var lks = initLockers.slice(0, 3).map(function (l) { return { n: l.name, d: l.dist + ' km', a: l.avail, e: l.emoji, t: '~' + Math.round(parseFloat(l.dist) * 4) + ' min' }; });
   var filteredContacts = searchQ ? contacts.filter(function (c) { return c.name.toLowerCase().indexOf(searchQ.toLowerCase()) >= 0 || c.phone.indexOf(searchQ) >= 0; }) : contacts;
@@ -49,7 +51,7 @@ export default function Send(props) {
         backTo: 'send',
         onSuccessNav: 'send',
         onSuccessData: { confirmed: true },
-        sendData: { toPhone: toPhone, toName: toName, sz: sz, lk: lk, scheduleMode: scheduleMode, schedDate: schedDate, schedTime: schedTime, reqPayment: reqPayment, reqAmount: reqAmount }
+        sendData: { toPhone: toPhone, toName: toName, sz: sz, lk: lk, scheduleMode: scheduleMode, schedDate: schedDate, schedTime: schedTime, reqPayment: reqPayment, reqAmount: reqAmount, packagePhotos: packagePhotos }
       });
     }
   };
@@ -138,6 +140,9 @@ export default function Send(props) {
                 </button>
               );
             })}
+
+            {/* Package Photo Upload */}
+            <PhotoUpload photos={packagePhotos} onPhotosChange={setPackagePhotos} maxPhotos={3} />
           </div>
         )}
 

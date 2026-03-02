@@ -2,21 +2,63 @@ import React, { useState, useEffect } from "react";
 import { T, ff, hf, mf } from "../theme/themes";
 import StatusBar from "../components/StatusBar";
 import Toast from "../components/Toast";
+import BiometricSetup from "../components/BiometricSetup";
+import { BiometricAuth } from "../utils/biometric";
 import { ArrowLeft } from "../components/Icons";
 
 export default function OTP(props) {
   var [o, sO] = useState(['', '', '', '', '', '']);
   var [t, sT] = useState(30);
   var [success, setSuccess] = useState(false);
+  var [showBiometricSetup, setShowBiometricSetup] = useState(false);
+
   useEffect(function () { if (t > 0) { var i = setInterval(function () { sT(function (v) { return v - 1; }); }, 1000); return function () { clearInterval(i); }; } }, [t]);
   useEffect(function () { var el = document.getElementById('o-0'); if (el) el.focus(); }, []);
+
   var hC = function (i, v) {
-    if (v.length <= 1 && /^\d*$/.test(v)) { var n = o.slice(); n[i] = v; sO(n); if (v && i < 5) { var el = document.getElementById('o-' + (i + 1)); if (el) el.focus(); } if (n.every(function (d) { return d; })) { setSuccess(true); setTimeout(props.onOk, 500); } }
+    if (v.length <= 1 && /^\d*$/.test(v)) {
+      var n = o.slice();
+      n[i] = v;
+      sO(n);
+      if (v && i < 5) {
+        var el = document.getElementById('o-' + (i + 1));
+        if (el) el.focus();
+      }
+      if (n.every(function (d) { return d; })) {
+        setSuccess(true);
+        // Check if biometric is available and not already set up
+        BiometricAuth.isAvailable().then(function (available) {
+          var hasCredentials = BiometricAuth.hasCredentials();
+          if (available && !hasCredentials) {
+            setTimeout(function () { setShowBiometricSetup(true); }, 600);
+          } else {
+            setTimeout(props.onOk, 500);
+          }
+        });
+      }
+    }
+  };
+
+  var handleBiometricComplete = function () {
+    setShowBiometricSetup(false);
+    props.onOk();
+  };
+
+  var handleBiometricSkip = function () {
+    setShowBiometricSetup(false);
+    props.onOk();
   };
   var hKey = function (i, e) { if (e.key === 'Backspace' && !o[i] && i > 0) { var el = document.getElementById('o-' + (i - 1)); if (el) el.focus(); } };
   return (
     <div className="min-h-screen flex flex-col" style={{ background: T.bg }}><StatusBar />
       <Toast show={success} emoji={'\u{1F389}'} text="Verified!" />
+      {showBiometricSetup && (
+        <BiometricSetup
+          username={props.phone}
+          onClose={handleBiometricSkip}
+          onComplete={handleBiometricComplete}
+        />
+      )}
       <div style={{ padding: '8px 24px' }}><button onClick={props.onBack} className="tap" style={{ width: 40, height: 40, borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.fill, border: '1px solid ' + T.border }}><ArrowLeft style={{ width: 18, height: 18 }} /></button></div>
       <div className="flex-1" style={{ padding: '24px 24px 0' }}>
         <div className="fu">

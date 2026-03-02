@@ -1,20 +1,42 @@
 import React, { useState } from "react";
 import { T, ff, hf } from "../theme/themes";
 import StatusBar from "../components/StatusBar";
+import BiometricButton from "../components/BiometricButton";
+import Toast from "../components/Toast";
 import { Check } from "../components/Icons";
 
 export default function Auth(props) {
   var [p, sP] = useState('');
+  var [bioError, setBioError] = useState('');
   var valid = p.replace(/\s/g, '').length >= 7;
+
+  var handleBiometricSuccess = function (username) {
+    // Auto-login with biometric
+    props.onLogin(username || p);
+  };
+
+  var handleBiometricError = function (error) {
+    setBioError(error);
+    setTimeout(function () { setBioError(''); }, 3000);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: T.bg }}><StatusBar />
+    <div className="min-h-screen flex flex-col" style={{ background: T.bg }}>
+      <StatusBar />
+      <Toast show={!!bioError} emoji={'⚠️'} text={bioError} />
       <div className="flex-1" style={{ padding: '44px 24px 0' }}>
         <div className="fu">
           <div style={{ width: 52, height: 52, borderRadius: 16, background: T.fill, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, marginBottom: 20 }}>{'\u{1F4F1}'}</div>
           <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.03em', fontFamily: hf }}>Welcome back</h1>
           <p style={{ fontSize: 14, lineHeight: '1.65', color: T.sec, marginBottom: 28, fontFamily: ff }}>Enter your phone number to sign in to your LocQar account.</p>
         </div>
-        <div className="fu d1 flex gap-3 items-center">
+
+        {/* Biometric Login Button */}
+        <div className="fu d1">
+          <BiometricButton onSuccess={handleBiometricSuccess} onError={handleBiometricError} />
+        </div>
+
+        <div className="fu d2 flex gap-3 items-center">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, borderRadius: 14, padding: '13px 14px', fontWeight: 600, fontSize: 14, background: T.fill, fontFamily: ff, border: '1.5px solid ' + T.border }}>{'\u{1F1EC}\u{1F1ED}'} +233</div>
           <input type="tel" value={p} onChange={function (e) { sP(e.target.value); }} placeholder="24 000 0000" className="flex-1" style={{ borderRadius: 14, padding: '13px 18px', fontSize: 20, fontWeight: 600, background: T.fill, border: '1.5px solid ' + (valid ? T.ok : 'transparent'), transition: 'border .25s', fontFamily: ff }} />
         </div>
