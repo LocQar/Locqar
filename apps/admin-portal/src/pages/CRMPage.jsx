@@ -318,7 +318,7 @@ export const CRMPage = ({
                   </div>
                   <div className="text-right shrink-0 ml-3">
                     <p className="font-bold text-sm" style={{ color: theme.accent.primary }}>GH₵ {deal.value.toLocaleString()}</p>
-                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: CRM_STAGES[deal.stage].bg, color: CRM_STAGES[deal.stage].color }}>{CRM_STAGES[deal.stage].label}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: `${CRM_STAGES[deal.stage].color}20`, color: CRM_STAGES[deal.stage].color }}>{CRM_STAGES[deal.stage].label}</span>
                   </div>
                 </div>
               ))}
@@ -332,7 +332,7 @@ export const CRMPage = ({
         <div className="space-y-3">
           {activities.slice(0, 6).map(act => (
             <div key={act.id} className="flex gap-3 items-start">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: `${CRM_ACTIVITY_TYPES[act.type].color}20` }}>
                 {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                 {act.type === 'email' && <Mail size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                 {act.type === 'meeting' && <Users size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
@@ -448,7 +448,7 @@ export const CRMPage = ({
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm px-2.5 py-1 rounded-full font-semibold" style={{ backgroundColor: CRM_LEAD_STATUSES[lead.status].bg, color: CRM_LEAD_STATUSES[lead.status].color }}>
+                        <span className="text-sm px-2.5 py-1 rounded-full font-semibold" style={{ backgroundColor: `${CRM_LEAD_STATUSES[lead.status].color}20`, color: CRM_LEAD_STATUSES[lead.status].color }}>
                           {CRM_LEAD_STATUSES[lead.status].label}
                         </span>
                       </td>
@@ -600,7 +600,7 @@ export const CRMPage = ({
                     </td>
                     <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{deal.company}</td>
                     <td className="px-4 py-3">
-                      <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: CRM_STAGES[deal.stage].bg, color: CRM_STAGES[deal.stage].color }}>
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: `${CRM_STAGES[deal.stage].color}20`, color: CRM_STAGES[deal.stage].color }}>
                         {CRM_STAGES[deal.stage].label}
                       </span>
                     </td>
@@ -741,7 +741,7 @@ export const CRMPage = ({
             <div className="space-y-2">
               {activities.filter(a => a.contactName === selectedContact.name).slice(0, 5).map(act => (
                 <div key={act.id} className="flex items-center gap-3 p-2 rounded-lg" style={{ backgroundColor: theme.bg.tertiary }}>
-                  <div className="w-6 h-6 rounded flex items-center justify-center" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
+                  <div className="w-6 h-6 rounded flex items-center justify-center" style={{ backgroundColor: `${CRM_ACTIVITY_TYPES[act.type].color}20` }}>
                     {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                     {act.type === 'email' && <Mail size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                     {act.type === 'meeting' && <Users size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
@@ -845,7 +845,7 @@ export const CRMPage = ({
                       onMouseEnter={e => e.currentTarget.style.backgroundColor = act.status === 'overdue' ? `${theme.status?.error || '#EF4444'}12` : theme.bg.hover}
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = act.status === 'overdue' ? `${theme.status?.error || '#EF4444'}08` : 'transparent'}>
                       <td className="px-4 py-3">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${CRM_ACTIVITY_TYPES[act.type].color}20` }}>
                           {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                           {act.type === 'email' && <Mail size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                           {act.type === 'meeting' && <Users size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
