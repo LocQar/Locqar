@@ -390,11 +390,11 @@ export const CRMPage = ({
         <>
           <div className="rounded-xl border overflow-hidden" style={{ borderColor: theme.border.primary }}>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full">
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
                     {['Name', 'Company', 'Source', 'Status', 'Value', 'Assigned To', 'Last Contact', ''].map(h => (
-                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -404,31 +404,31 @@ export const CRMPage = ({
                       onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                       <td className="px-4 py-3">
-                        <p className="font-medium" style={{ color: theme.text.primary }}>{lead.name}</p>
-                        <p className="text-xs" style={{ color: theme.text.secondary }}>{lead.email}</p>
+                        <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>{lead.name}</p>
+                        <p className="text-sm" style={{ color: theme.text.secondary }}>{lead.email}</p>
                       </td>
-                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{lead.company}</td>
+                      <td className="px-4 py-3 text-sm" style={{ color: theme.text.secondary }}>{lead.company}</td>
                       <td className="px-4 py-3">
-                        <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: `${CRM_LEAD_SOURCES[lead.source]?.color}15`, color: CRM_LEAD_SOURCES[lead.source]?.color }}>
+                        <span className="text-sm px-2.5 py-1 rounded-full font-medium" style={{ backgroundColor: `${CRM_LEAD_SOURCES[lead.source]?.color}20`, color: CRM_LEAD_SOURCES[lead.source]?.color }}>
                           {CRM_LEAD_SOURCES[lead.source]?.label}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: CRM_LEAD_STATUSES[lead.status].bg, color: CRM_LEAD_STATUSES[lead.status].color }}>
+                        <span className="text-sm px-2.5 py-1 rounded-full font-semibold" style={{ backgroundColor: CRM_LEAD_STATUSES[lead.status].bg, color: CRM_LEAD_STATUSES[lead.status].color }}>
                           {CRM_LEAD_STATUSES[lead.status].label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-medium" style={{ color: theme.text.primary }}>
+                      <td className="px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>
                         {lead.value > 0 ? `GH₵ ${lead.value.toLocaleString()}` : '—'}
                       </td>
-                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{lead.assignedTo}</td>
-                      <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{lead.lastContactedAt || 'Not yet'}</td>
+                      <td className="px-4 py-3 text-sm" style={{ color: theme.text.secondary }}>{lead.assignedTo}</td>
+                      <td className="px-4 py-3 text-sm" style={{ color: theme.text.secondary }}>{lead.lastContactedAt || 'Not yet'}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
-                          <button onClick={() => setSelectedLead(selectedLead?.id === lead.id ? null : lead)} className="p-1.5 rounded-lg" style={{ color: theme.text.secondary }}
+                          <button onClick={() => setSelectedLead(selectedLead?.id === lead.id ? null : lead)} className="p-2 rounded-lg transition-colors" style={{ color: theme.text.secondary }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                            <Eye size={14} />
+                            <Eye size={16} />
                           </button>
                         </div>
                       </td>
@@ -540,11 +540,11 @@ export const CRMPage = ({
         /* List view */
         <div className="rounded-xl border overflow-hidden" style={{ borderColor: theme.border.primary }}>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full">
               <thead>
                 <tr style={{ backgroundColor: theme.bg.tertiary }}>
                   {['Deal', 'Company', 'Stage', 'Value', 'Probability', 'Assigned To', 'Close Date'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -633,11 +633,11 @@ export const CRMPage = ({
         <>
           <div className="rounded-xl border overflow-hidden" style={{ borderColor: theme.border.primary }}>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full">
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
                     {['Name', 'Company', 'Role', 'Tags', 'Deals', 'Total Value', 'Last Activity', ''].map(h => (
-                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -791,11 +791,11 @@ export const CRMPage = ({
         <>
           <div className="rounded-xl border overflow-hidden" style={{ borderColor: theme.border.primary }}>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full">
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
                     {['Type', 'Subject', 'Contact', 'Deal', 'Assigned To', 'Due Date', 'Status'].map(h => (
-                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -946,11 +946,11 @@ export const CRMPage = ({
         <div className="p-5 rounded-2xl border" style={cardStyle}>
           <h3 className="font-semibold mb-4" style={{ color: theme.text.primary }}>Sales Team Performance</h3>
           <div className="rounded-xl border overflow-hidden" style={{ borderColor: theme.border.primary }}>
-            <table className="w-full text-sm">
+            <table className="w-full">
               <thead>
                 <tr style={{ backgroundColor: theme.bg.tertiary }}>
                   {['Team Member', 'Leads', 'Active Deals', 'Pipeline Value', 'Won Value', 'Activities'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                   ))}
                 </tr>
               </thead>
