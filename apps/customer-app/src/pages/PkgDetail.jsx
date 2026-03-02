@@ -4,20 +4,12 @@ import StatusBar from "../components/StatusBar";
 import Toast from "../components/Toast";
 import PageHeader from "../components/PageHeader";
 import QRCode from "../utils/qrcode";
+import ShareButton from "../components/ShareButton";
 import { Shield, Copy, Check, Zap, ChevronDown, Navigation, Star, ExternalLink } from "../components/Icons";
 
 export default function PkgDetail(props) {
   var pkg = props.pkg; var [showCopied, setShowCopied] = useState(false); var [showCodeQR, setShowCodeQR] = useState(false); var code = 'LQ-847291';
-  var [showShare, setShowShare] = useState(false);
-  var [shareCopied, setShareCopied] = useState(false);
   var hCp = function () { if (navigator.clipboard) navigator.clipboard.writeText(code); setShowCopied(true); setTimeout(function () { setShowCopied(false); }, 2000); };
-  var trackMsg = 'Track my LocQar package "' + pkg.name + '"\nStatus: ' + pkg.status + '\nLocation: ' + pkg.location + '\nCode: ' + code + '\nTrack at: locqar.com/track/' + code;
-  var shareVia = function (method) {
-    var encoded = encodeURIComponent(trackMsg);
-    if (method === 'whatsapp') window.open('https://wa.me/?text=' + encoded);
-    else if (method === 'sms') window.open('sms:?body=' + encoded);
-    else if (method === 'copy') { if (navigator.clipboard) navigator.clipboard.writeText(trackMsg); setShareCopied(true); setTimeout(function () { setShareCopied(false); setShowShare(false); }, 1500); }
-  };
   var tl = [
     { e: '\u{1F4E6}', t: 'Order placed', tm: 'Feb 3, 10:30 AM', d: true },
     { e: '\u{2705}', t: 'Confirmed', tm: 'Feb 3, 10:32 AM', d: true },
@@ -81,28 +73,11 @@ export default function PkgDetail(props) {
 
         {/* Share tracking */}
         <div className="fu d4">
-          <button onClick={function () { setShowShare(!showShare); }} className="tap" style={{ width: '100%', padding: 14, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: T.blueBg, border: '1.5px solid ' + T.blue + '22', fontWeight: 700, fontSize: 13, color: T.blue, fontFamily: ff }}>
-            <ExternalLink style={{ width: 15, height: 15 }} />Share Tracking
-          </button>
-          {showShare && (
-            <div style={{ marginTop: 8, borderRadius: 16, padding: 14, border: '1.5px solid ' + T.border, boxShadow: T.shadow, animation: 'fadeUp .2s cubic-bezier(.2,.9,.3,1)' }}>
-              <p style={{ fontSize: 10, fontWeight: 700, color: T.muted, letterSpacing: '0.08em', marginBottom: 10, fontFamily: ff }}>SHARE VIA</p>
-              <div className="flex gap-3">
-                <button onClick={function () { shareVia('whatsapp'); }} className="tap flex-1" style={{ padding: '12px 0', borderRadius: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#E7F5EA', border: '1px solid #25D36622' }}>
-                  <span style={{ fontSize: 22 }}>{'\u{1F4AC}'}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#25D366', fontFamily: ff }}>WhatsApp</span>
-                </button>
-                <button onClick={function () { shareVia('sms'); }} className="tap flex-1" style={{ padding: '12px 0', borderRadius: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: T.blueBg, border: '1px solid ' + T.blue + '22' }}>
-                  <span style={{ fontSize: 22 }}>{'\u{1F4F1}'}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: T.blue, fontFamily: ff }}>SMS</span>
-                </button>
-                <button onClick={function () { shareVia('copy'); }} className="tap flex-1" style={{ padding: '12px 0', borderRadius: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: shareCopied ? T.okBg : T.fill, border: '1px solid ' + (shareCopied ? T.ok + '22' : T.border) }}>
-                  <span style={{ fontSize: 22 }}>{shareCopied ? '\u{2705}' : '\u{1F4CB}'}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: shareCopied ? T.okDark : T.sec, fontFamily: ff }}>{shareCopied ? 'Copied!' : 'Copy'}</span>
-                </button>
-              </div>
-            </div>
-          )}
+          <ShareButton packageData={pkg}>
+            <button className="tap" style={{ width: '100%', padding: 14, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: T.blueBg, border: '1.5px solid ' + T.blue + '22', fontWeight: 700, fontSize: 13, color: T.blue, fontFamily: ff }}>
+              <ExternalLink style={{ width: 15, height: 15 }} />Share Tracking
+            </button>
+          </ShareButton>
         </div>
       </div>
       {pkg.status === 'Ready' && (

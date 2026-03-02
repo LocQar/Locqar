@@ -8,6 +8,8 @@ import SectionHeader from "../components/SectionHeader";
 import { usePullRefresh, PullIndicator } from "../components/PullRefresh";
 import { SkeletonList } from "../components/Skeleton";
 import QRCode from "../utils/qrcode";
+import NotificationPrompt from "../components/NotificationPrompt";
+import { NotificationManager } from "../utils/notifications";
 import { ArrowRight, Bell, MapPin, ChevronDown, Search, X, Check, Copy, Zap, ChevronRight } from "../components/Icons";
 
 export default function Home(props) {
@@ -35,7 +37,21 @@ export default function Home(props) {
   var activePkgs = props.pkgs.filter(function (p) { return p.status !== 'Delivered'; });
   var nav = props.onNav;
   var [homeLoading, setHomeLoading] = useState(true);
+  var [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+
   useEffect(function () { var t = setTimeout(function () { setHomeLoading(false); }, 450); return function () { clearTimeout(t); }; }, []);
+
+  // Show notification prompt after initial load
+  useEffect(function () {
+    var t = setTimeout(function () {
+      if (NotificationManager.isSupported() &&
+          !NotificationManager.isEnabled() &&
+          !NotificationManager.hasUserDismissedPrompt()) {
+        setShowNotificationPrompt(true);
+      }
+    }, 2000); // Delay 2 seconds after page load
+    return function () { clearTimeout(t); };
+  }, []);
 
   var handleScroll = useCallback(function (e) { setScrollY(e.target.scrollTop); }, []);
 
@@ -44,6 +60,12 @@ export default function Home(props) {
       <StatusBar />
       <PullIndicator pullY={ptr.pullY} refreshing={ptr.refreshing} />
       <Toast show={copiedAddr} emoji={'\u{1F4CB}'} text="Address copied!" />
+      {showNotificationPrompt && (
+        <NotificationPrompt
+          onClose={function () { setShowNotificationPrompt(false); }}
+          onComplete={function () { setShowNotificationPrompt(false); }}
+        />
+      )}
 
       <div className="fu" style={{ padding: '8px 20px 20px', transform: 'translateY(' + Math.min(scrollY * -0.15, 0) + 'px)', opacity: Math.max(1 - scrollY / 200, 0.7), transition: 'opacity .1s' }}>
         <div className="flex items-center justify-between">

@@ -3,6 +3,7 @@ import { T, ff } from "../theme/themes";
 import StatusBar from "../components/StatusBar";
 import Toast from "../components/Toast";
 import PageHeader from "../components/PageHeader";
+import NotificationSettings from "../components/NotificationSettings";
 
 export default function NotifPrefsPage(props) {
   var [prefs, setPrefs] = useState({
@@ -45,6 +46,12 @@ export default function NotifPrefsPage(props) {
     <div className="min-h-screen pb-24" style={{ background: T.bg }}><StatusBar />
       <Toast show={saved} emoji={'\u{2705}'} text="Preferences saved!" />
       <PageHeader title="Notifications" onBack={props.onBack} subtitle="Manage updates and alerts" />
+
+      {/* Push Notification Settings */}
+      <div style={{ marginBottom: 20, marginTop: 4 }}>
+        <NotificationSettings />
+      </div>
+
       <div style={{ padding: '0 20px' }}>
         <Section title="Delivery Updates" delay="0.06s">
           <Row e={'\u{2705}'} l="Package ready" d="When it arrives at your locker" k="pkgReady" />
