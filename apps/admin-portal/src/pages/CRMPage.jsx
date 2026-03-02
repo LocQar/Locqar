@@ -62,6 +62,7 @@ export const CRMPage = ({
 
   // File input refs for CSV import
   const leadFileInputRef = React.useRef(null);
+  const dealFileInputRef = React.useRef(null);
   const contactFileInputRef = React.useRef(null);
   const activityFileInputRef = React.useRef(null);
 
@@ -392,6 +393,38 @@ export const CRMPage = ({
 
         setLeads([...newLeads, ...leads]);
         addToast({ type: 'success', message: `Imported ${newLeads.length} leads successfully` });
+      } catch (error) {
+        addToast({ type: 'error', message: 'Failed to import CSV. Please check the file format.' });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
+  const handleImportDeals = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csvData = parseCSV(e.target?.result);
+        const newDeals = csvData.map((row, index) => ({
+          id: `D${Date.now()}-${index}`,
+          title: row.Title || row.title || '',
+          company: row.Company || row.company || '',
+          contactName: row['Contact Name'] || row.contactName || '',
+          value: parseInt(row.Value || row.value || '0'),
+          stage: row.Stage?.toLowerCase().replace(/\s+/g, '_') || 'prospecting',
+          probability: parseInt(row.Probability || row.probability || '10'),
+          assignedTo: row['Assigned To'] || row.assignedTo || 'Ama Owusu',
+          expectedCloseDate: row['Expected Close Date'] || row.expectedCloseDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          createdAt: new Date().toISOString().split('T')[0],
+          notes: row.Notes || row.notes || ''
+        }));
+
+        setDeals([...newDeals, ...deals]);
+        addToast({ type: 'success', message: `Imported ${newDeals.length} deals successfully` });
       } catch (error) {
         addToast({ type: 'error', message: 'Failed to import CSV. Please check the file format.' });
       }
@@ -952,6 +985,30 @@ export const CRMPage = ({
           <button onClick={() => setShowNewDealDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
             <Plus size={16} /> Add Deal
           </button>
+          <button onClick={() => dealFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+            <Upload size={16} /> Import
+          </button>
+          <button
+            onClick={() => {
+              const exportData = deals.map(deal => ({
+                Title: deal.title,
+                Company: deal.company,
+                'Contact Name': deal.contactName,
+                Value: deal.value,
+                Stage: CRM_STAGES[deal.stage]?.label || deal.stage,
+                Probability: deal.probability,
+                'Assigned To': deal.assignedTo,
+                'Expected Close Date': deal.expectedCloseDate,
+                Notes: deal.notes || ''
+              }));
+              exportToCSV(exportData, 'crm_deals');
+              addToast({ type: 'success', message: `Exported ${exportData.length} deals to CSV` });
+            }}
+            className={btnOutline}
+            style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+          >
+            <Download size={16} /> Export
+          </button>
           <button onClick={() => setDealView('kanban')} className={`px-3 py-1.5 rounded-lg text-sm ${dealView === 'kanban' ? 'font-medium' : ''}`}
             style={{ backgroundColor: dealView === 'kanban' ? theme.accent.light : 'transparent', color: dealView === 'kanban' ? theme.accent.primary : theme.text.secondary }}>
             Board
@@ -961,6 +1018,9 @@ export const CRMPage = ({
             List
           </button>
         </div>
+
+        {/* Hidden file input for deal import */}
+        <input type="file" ref={dealFileInputRef} accept=".csv" onChange={handleImportDeals} style={{ display: 'none' }} />
       </div>
 
       {dealView === 'kanban' ? (
