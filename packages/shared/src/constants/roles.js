@@ -1,3 +1,16 @@
+/**
+ * CRM Permission Structure:
+ * -------------------------
+ * crm.view              - View CRM dashboard and reports
+ * crm.leads.manage      - Create, edit, delete leads
+ * crm.deals.manage      - Create, edit, delete deals
+ * crm.contacts.manage   - Create, edit, delete contacts
+ * crm.activities.manage - Create, edit, delete activities
+ * crm.import            - Import data via CSV
+ * crm.export            - Export data to CSV
+ * crm.*                 - Full CRM access (all of the above)
+ */
+
 export const ROLES = {
   SUPER_ADMIN: {
     id: 'super_admin',
@@ -11,14 +24,22 @@ export const ROLES = {
     name: 'Administrator',
     level: 80,
     color: '#D4AA5A',
-    permissions: ['dashboard.*', 'packages.*', 'lockers.*', 'dropbox.*', 'terminals.*', 'customers.*', 'staff.*', 'reports.*', 'dispatch.*', 'accounting.*']
+    permissions: [
+      'dashboard.*', 'packages.*', 'lockers.*', 'dropbox.*', 'terminals.*',
+      'customers.*', 'staff.*', 'reports.*', 'dispatch.*', 'accounting.*',
+      'crm.*'  // Full CRM access: view, manage leads/deals/contacts/activities, import/export
+    ]
   },
   MANAGER: {
     id: 'manager',
     name: 'Branch Manager',
     level: 60,
     color: '#81C995',
-    permissions: ['dashboard.view', 'packages.*', 'dropbox.*', 'lockers.*', 'terminals.view', 'customers.*', 'staff.view', 'reports.view', 'dispatch.*']
+    permissions: [
+      'dashboard.view', 'packages.*', 'dropbox.*', 'lockers.*', 'terminals.view',
+      'customers.*', 'staff.view', 'reports.view', 'dispatch.*',
+      'crm.*'  // Full CRM access
+    ]
   },
   AGENT: {
     id: 'agent',
@@ -32,7 +53,13 @@ export const ROLES = {
     name: 'Support',
     level: 30,
     color: '#D48E8A',
-    permissions: ['dashboard.view', 'packages.view', 'packages.track', 'customers.*', 'tickets.*']
+    permissions: [
+      'dashboard.view', 'packages.view', 'packages.track', 'customers.*', 'tickets.*',
+      'crm.view',           // View CRM data
+      'crm.contacts.*',     // Manage contacts
+      'crm.activities.*',   // Manage activities (calls, emails, notes)
+      'crm.export'          // Export data for reporting
+    ]
   },
   VIEWER: {
     id: 'viewer',

@@ -13,6 +13,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { MetricCard, StatusBadge, TableSkeleton, Pagination, EmptyState, ConfirmDialog } from '../components/ui';
 import { NewLeadDrawer, NewContactDrawer, NewDealDrawer, NewActivityDrawer } from '../components/drawers';
+import { hasPermission } from '../constants';
 import {
   crmLeads, crmDeals, crmContacts, crmActivities,
   CRM_LEAD_STATUSES, CRM_STAGES, CRM_ACTIVITY_TYPES, CRM_LEAD_SOURCES,
@@ -823,33 +824,39 @@ export const CRMPage = ({
           <option value="all">All Sources</option>
           {Object.entries(CRM_LEAD_SOURCES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
-        <button onClick={() => setShowNewLeadDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
-          <Plus size={16} /> Add Lead
-        </button>
-        <button onClick={() => leadFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
-          <Upload size={16} /> Import
-        </button>
-        <button
-          onClick={() => {
-            const exportData = filteredLeads.map(lead => ({
-              Name: lead.name,
-              Company: lead.company,
-              Email: lead.email,
-              Phone: lead.phone,
-              Status: CRM_LEAD_STATUSES[lead.status]?.label || lead.status,
-              Source: CRM_LEAD_SOURCES[lead.source]?.label || lead.source,
-              Value: `$${lead.value?.toLocaleString() || 0}`,
-              'Last Contact': lead.lastContact,
-              Owner: lead.owner
-            }));
-            exportToCSV(exportData, 'crm_leads');
-            addToast({ type: 'success', message: `Exported ${exportData.length} leads to CSV` });
-          }}
-          className={btnOutline}
-          style={{ borderColor: theme.border.primary, color: theme.text.primary }}
-        >
-          <Download size={16} /> Export
-        </button>
+        {hasPermission(currentUser?.role, 'crm.leads.manage') && (
+          <button onClick={() => setShowNewLeadDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+            <Plus size={16} /> Add Lead
+          </button>
+        )}
+        {hasPermission(currentUser?.role, 'crm.import') && (
+          <button onClick={() => leadFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+            <Upload size={16} /> Import
+          </button>
+        )}
+        {hasPermission(currentUser?.role, 'crm.export') && (
+          <button
+            onClick={() => {
+              const exportData = filteredLeads.map(lead => ({
+                Name: lead.name,
+                Company: lead.company,
+                Email: lead.email,
+                Phone: lead.phone,
+                Status: CRM_LEAD_STATUSES[lead.status]?.label || lead.status,
+                Source: CRM_LEAD_SOURCES[lead.source]?.label || lead.source,
+                Value: `$${lead.value?.toLocaleString() || 0}`,
+                'Last Contact': lead.lastContact,
+                Owner: lead.owner
+              }));
+              exportToCSV(exportData, 'crm_leads');
+              addToast({ type: 'success', message: `Exported ${exportData.length} leads to CSV` });
+            }}
+            className={btnOutline}
+            style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+          >
+            <Download size={16} /> Export
+          </button>
+        )}
       </div>
 
       {/* Hidden file input for lead import */}
@@ -982,33 +989,39 @@ export const CRMPage = ({
             className="w-full pl-10 pr-4 py-2 rounded-lg border text-sm" style={inputStyle} />
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowNewDealDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
-            <Plus size={16} /> Add Deal
-          </button>
-          <button onClick={() => dealFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
-            <Upload size={16} /> Import
-          </button>
-          <button
-            onClick={() => {
-              const exportData = deals.map(deal => ({
-                Title: deal.title,
-                Company: deal.company,
-                'Contact Name': deal.contactName,
-                Value: deal.value,
-                Stage: CRM_STAGES[deal.stage]?.label || deal.stage,
-                Probability: deal.probability,
-                'Assigned To': deal.assignedTo,
-                'Expected Close Date': deal.expectedCloseDate,
-                Notes: deal.notes || ''
-              }));
-              exportToCSV(exportData, 'crm_deals');
-              addToast({ type: 'success', message: `Exported ${exportData.length} deals to CSV` });
-            }}
-            className={btnOutline}
-            style={{ borderColor: theme.border.primary, color: theme.text.primary }}
-          >
-            <Download size={16} /> Export
-          </button>
+          {hasPermission(currentUser?.role, 'crm.deals.manage') && (
+            <button onClick={() => setShowNewDealDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+              <Plus size={16} /> Add Deal
+            </button>
+          )}
+          {hasPermission(currentUser?.role, 'crm.import') && (
+            <button onClick={() => dealFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+              <Upload size={16} /> Import
+            </button>
+          )}
+          {hasPermission(currentUser?.role, 'crm.export') && (
+            <button
+              onClick={() => {
+                const exportData = deals.map(deal => ({
+                  Title: deal.title,
+                  Company: deal.company,
+                  'Contact Name': deal.contactName,
+                  Value: deal.value,
+                  Stage: CRM_STAGES[deal.stage]?.label || deal.stage,
+                  Probability: deal.probability,
+                  'Assigned To': deal.assignedTo,
+                  'Expected Close Date': deal.expectedCloseDate,
+                  Notes: deal.notes || ''
+                }));
+                exportToCSV(exportData, 'crm_deals');
+                addToast({ type: 'success', message: `Exported ${exportData.length} deals to CSV` });
+              }}
+              className={btnOutline}
+              style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+            >
+              <Download size={16} /> Export
+            </button>
+          )}
           <button onClick={() => setDealView('kanban')} className={`px-3 py-1.5 rounded-lg text-sm ${dealView === 'kanban' ? 'font-medium' : ''}`}
             style={{ backgroundColor: dealView === 'kanban' ? theme.accent.light : 'transparent', color: dealView === 'kanban' ? theme.accent.primary : theme.text.secondary }}>
             Board
@@ -1178,33 +1191,39 @@ export const CRMPage = ({
           <option value="all">All Tags</option>
           {allTags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
         </select>
-        <button onClick={() => setShowNewContactDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
-          <UserPlus size={16} /> Add Contact
-        </button>
-        <button onClick={() => contactFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
-          <Upload size={16} /> Import
-        </button>
-        <button
-          onClick={() => {
-            const exportData = filteredContacts.map(contact => ({
-              Name: contact.name,
-              Email: contact.email,
-              Phone: contact.phone,
-              Company: contact.company,
-              Role: contact.role,
-              Tags: contact.tags.join('; '),
-              'Active Deals': contact.deals,
-              'Total Value': `$${contact.totalValue?.toLocaleString() || 0}`,
-              'Last Activity': contact.lastActivity
-            }));
-            exportToCSV(exportData, 'crm_contacts');
-            addToast({ type: 'success', message: `Exported ${exportData.length} contacts to CSV` });
-          }}
-          className={btnOutline}
-          style={{ borderColor: theme.border.primary, color: theme.text.primary }}
-        >
-          <Download size={16} /> Export
-        </button>
+        {hasPermission(currentUser?.role, 'crm.contacts.manage') && (
+          <button onClick={() => setShowNewContactDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+            <UserPlus size={16} /> Add Contact
+          </button>
+        )}
+        {hasPermission(currentUser?.role, 'crm.import') && (
+          <button onClick={() => contactFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+            <Upload size={16} /> Import
+          </button>
+        )}
+        {hasPermission(currentUser?.role, 'crm.export') && (
+          <button
+            onClick={() => {
+              const exportData = filteredContacts.map(contact => ({
+                Name: contact.name,
+                Email: contact.email,
+                Phone: contact.phone,
+                Company: contact.company,
+                Role: contact.role,
+                Tags: contact.tags.join('; '),
+                'Active Deals': contact.deals,
+                'Total Value': `$${contact.totalValue?.toLocaleString() || 0}`,
+                'Last Activity': contact.lastActivity
+              }));
+              exportToCSV(exportData, 'crm_contacts');
+              addToast({ type: 'success', message: `Exported ${exportData.length} contacts to CSV` });
+            }}
+            className={btnOutline}
+            style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+          >
+            <Download size={16} /> Export
+          </button>
+        )}
       </div>
 
       {/* Hidden file input for contact import */}
@@ -1379,31 +1398,37 @@ export const CRMPage = ({
           <option value="completed">Completed</option>
           <option value="overdue">Overdue</option>
         </select>
-        <button onClick={() => setShowNewActivityDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
-          <Plus size={16} /> Add Activity
-        </button>
-        <button onClick={() => activityFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
-          <Upload size={16} /> Import
-        </button>
-        <button
-          onClick={() => {
-            const exportData = filteredActivities.map(activity => ({
-              Type: CRM_ACTIVITY_TYPES[activity.type]?.label || activity.type,
-              Subject: activity.subject,
-              'Related To': activity.relatedTo,
-              'Assigned To': activity.assignedTo,
-              Date: activity.date,
-              Status: activity.status.charAt(0).toUpperCase() + activity.status.slice(1),
-              Notes: activity.notes || ''
-            }));
-            exportToCSV(exportData, 'crm_activities');
-            addToast({ type: 'success', message: `Exported ${exportData.length} activities to CSV` });
-          }}
-          className={btnOutline}
-          style={{ borderColor: theme.border.primary, color: theme.text.primary }}
-        >
-          <Download size={16} /> Export
-        </button>
+        {hasPermission(currentUser?.role, 'crm.activities.manage') && (
+          <button onClick={() => setShowNewActivityDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+            <Plus size={16} /> Add Activity
+          </button>
+        )}
+        {hasPermission(currentUser?.role, 'crm.import') && (
+          <button onClick={() => activityFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+            <Upload size={16} /> Import
+          </button>
+        )}
+        {hasPermission(currentUser?.role, 'crm.export') && (
+          <button
+            onClick={() => {
+              const exportData = filteredActivities.map(activity => ({
+                Type: CRM_ACTIVITY_TYPES[activity.type]?.label || activity.type,
+                Subject: activity.subject,
+                'Related To': activity.relatedTo,
+                'Assigned To': activity.assignedTo,
+                Date: activity.date,
+                Status: activity.status.charAt(0).toUpperCase() + activity.status.slice(1),
+                Notes: activity.notes || ''
+              }));
+              exportToCSV(exportData, 'crm_activities');
+              addToast({ type: 'success', message: `Exported ${exportData.length} activities to CSV` });
+            }}
+            className={btnOutline}
+            style={{ borderColor: theme.border.primary, color: theme.text.primary }}
+          >
+            <Download size={16} /> Export
+          </button>
+        )}
 
         {/* Hidden file input for activity import */}
         <input type="file" ref={activityFileInputRef} accept=".csv" onChange={handleImportActivities} style={{ display: 'none' }} />
