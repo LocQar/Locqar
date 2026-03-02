@@ -299,11 +299,11 @@ export const CRMPage = ({
           {crmActivities.slice(0, 6).map(act => (
             <div key={act.id} className="flex gap-3 items-start">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
-                {act.type === 'call' && <Phone size={14} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                {act.type === 'email' && <Mail size={14} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                {act.type === 'meeting' && <Users size={14} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                {act.type === 'task' && <CheckCircle size={14} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                {act.type === 'note' && <FileText size={14} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                {act.type === 'email' && <Mail size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                {act.type === 'meeting' && <Users size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                {act.type === 'task' && <CheckCircle size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                {act.type === 'note' && <FileText size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate" style={{ color: theme.text.primary }}>{act.subject}</p>
@@ -463,7 +463,7 @@ export const CRMPage = ({
           <div><p className="text-sm" style={{ color: theme.text.secondary }}>Notes</p><p className="text-sm" style={{ color: theme.text.secondary }}>{selectedLead.notes}</p></div>
           <div className="flex gap-2">
             <button onClick={() => addToast({ type: 'success', message: `Converting ${selectedLead.name} to deal` })} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white" style={{ backgroundColor: theme.accent.primary }}>
-              <ArrowRight size={14} /> Convert to Deal
+              <ArrowRight size={16} /> Convert to Deal
             </button>
           </div>
         </div>
@@ -668,7 +668,7 @@ export const CRMPage = ({
                         <button onClick={() => setSelectedContact(selectedContact?.id === contact.id ? null : contact)} className="p-1.5 rounded-lg" style={{ color: theme.text.secondary }}
                           onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
                           onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                          <Eye size={14} />
+                          <Eye size={16} />
                         </button>
                       </td>
                     </tr>
@@ -705,11 +705,11 @@ export const CRMPage = ({
               {crmActivities.filter(a => a.contactName === selectedContact.name).slice(0, 5).map(act => (
                 <div key={act.id} className="flex items-center gap-3 p-2 rounded-lg" style={{ backgroundColor: theme.bg.tertiary }}>
                   <div className="w-6 h-6 rounded flex items-center justify-center" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
-                    {act.type === 'call' && <Phone size={12} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                    {act.type === 'email' && <Mail size={12} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                    {act.type === 'meeting' && <Users size={12} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                    {act.type === 'task' && <CheckCircle size={12} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                    {act.type === 'note' && <FileText size={12} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                    {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                    {act.type === 'email' && <Mail size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                    {act.type === 'meeting' && <Users size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                    {act.type === 'task' && <CheckCircle size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                    {act.type === 'note' && <FileText size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate" style={{ color: theme.text.primary }}>{act.subject}</p>
@@ -806,11 +806,11 @@ export const CRMPage = ({
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = act.status === 'overdue' ? `${theme.status?.error || '#EF4444'}08` : 'transparent'}>
                       <td className="px-4 py-3">
                         <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
-                          {act.type === 'call' && <Phone size={13} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                          {act.type === 'email' && <Mail size={13} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                          {act.type === 'meeting' && <Users size={13} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                          {act.type === 'task' && <CheckCircle size={13} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
-                          {act.type === 'note' && <FileText size={13} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                          {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                          {act.type === 'email' && <Mail size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                          {act.type === 'meeting' && <Users size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                          {act.type === 'task' && <CheckCircle size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
+                          {act.type === 'note' && <FileText size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -821,7 +821,7 @@ export const CRMPage = ({
                       <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{act.dealTitle || '—'}</td>
                       <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{act.assignedTo}</td>
                       <td className="px-4 py-3 text-xs" style={{ color: act.status === 'overdue' ? '#EF4444' : theme.text.secondary }}>
-                        {act.status === 'overdue' && <AlertTriangle size={12} className="inline mr-1" />}
+                        {act.status === 'overdue' && <AlertTriangle size={16} className="inline mr-1" />}
                         {act.dueDate}
                       </td>
                       <td className="px-4 py-3">
