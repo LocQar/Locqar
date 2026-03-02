@@ -1414,18 +1414,18 @@ export const CRMPage = ({
               </thead>
               <tbody>
                 {['Ama Owusu', 'Daniel Boateng', 'Kwame Asante'].map(name => {
-                  const leads = leads.filter(l => l.assignedTo === name).length;
-                  const deals = deals.filter(d => d.assignedTo === name && !['closed_won', 'closed_lost'].includes(d.stage));
-                  const won = deals.filter(d => d.assignedTo === name && d.stage === 'closed_won');
-                  const acts = activities.filter(a => a.assignedTo === name).length;
+                  const memberLeads = leads.filter(l => l.assignedTo === name).length;
+                  const memberDeals = deals.filter(d => d.assignedTo === name && !['closed_won', 'closed_lost'].includes(d.stage));
+                  const memberWon = deals.filter(d => d.assignedTo === name && d.stage === 'closed_won');
+                  const memberActivities = activities.filter(a => a.assignedTo === name).length;
                   return (
                     <tr key={name} className="border-t" style={{ borderColor: theme.border.primary }}>
                       <td className="px-4 py-3 font-medium" style={{ color: theme.text.primary }}>{name}</td>
-                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{leads}</td>
-                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{deals.length}</td>
-                      <td className="px-4 py-3 font-medium" style={{ color: theme.text.primary }}>GH₵ {deals.reduce((s, d) => s + d.value, 0).toLocaleString()}</td>
-                      <td className="px-4 py-3 font-medium" style={{ color: '#10B981' }}>GH₵ {won.reduce((s, d) => s + d.value, 0).toLocaleString()}</td>
-                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{acts}</td>
+                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{memberLeads}</td>
+                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{memberDeals.length}</td>
+                      <td className="px-4 py-3 font-medium" style={{ color: theme.text.primary }}>GH₵ {memberDeals.reduce((s, d) => s + d.value, 0).toLocaleString()}</td>
+                      <td className="px-4 py-3 font-medium" style={{ color: '#10B981' }}>GH₵ {memberWon.reduce((s, d) => s + d.value, 0).toLocaleString()}</td>
+                      <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{memberActivities}</td>
                     </tr>
                   );
                 })}
