@@ -344,7 +344,7 @@ export const CRMPage = ({
                 <p className="text-xs" style={{ color: theme.text.secondary }}>{act.contactName ? `${act.contactName} · ` : ''}{act.dueDate}</p>
               </div>
               <span className="text-xs px-2 py-0.5 rounded-full shrink-0" style={{
-                backgroundColor: act.status === 'completed' ? '#ECFDF5' : act.status === 'overdue' ? '#FEF2F2' : '#EFF6FF',
+                backgroundColor: act.status === 'completed' ? 'rgba(16, 185, 129, 0.15)' : act.status === 'overdue' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
                 color: act.status === 'completed' ? '#10B981' : act.status === 'overdue' ? '#EF4444' : '#3B82F6',
               }}>
                 {act.status}
@@ -769,12 +769,12 @@ export const CRMPage = ({
     <div className="space-y-6">
       <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
         {[
-          { label: 'Scheduled', count: activities.filter(a => a.status === 'scheduled').length, color: '#3B82F6', bg: '#EFF6FF' },
-          { label: 'Completed', count: activities.filter(a => a.status === 'completed').length, color: '#10B981', bg: '#ECFDF5' },
-          { label: 'Overdue', count: activities.filter(a => a.status === 'overdue').length, color: '#EF4444', bg: '#FEF2F2' },
+          { label: 'Scheduled', count: activities.filter(a => a.status === 'scheduled').length, color: '#3B82F6' },
+          { label: 'Completed', count: activities.filter(a => a.status === 'completed').length, color: '#10B981' },
+          { label: 'Overdue', count: activities.filter(a => a.status === 'overdue').length, color: '#EF4444' },
         ].map(item => (
           <div key={item.label} className="p-4 rounded-xl border flex items-center gap-3" style={cardStyle}>
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: item.bg }}>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${item.color}15` }}>
               <span className="text-lg font-bold" style={{ color: item.color }}>{item.count}</span>
             </div>
             <div>
@@ -866,7 +866,7 @@ export const CRMPage = ({
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{
-                          backgroundColor: act.status === 'completed' ? '#ECFDF5' : act.status === 'overdue' ? '#FEF2F2' : '#EFF6FF',
+                          backgroundColor: act.status === 'completed' ? 'rgba(16, 185, 129, 0.15)' : act.status === 'overdue' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
                           color: act.status === 'completed' ? '#10B981' : act.status === 'overdue' ? '#EF4444' : '#3B82F6',
                         }}>
                           {act.status}
