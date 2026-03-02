@@ -662,7 +662,18 @@ export const CRMPage = ({
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         <span className="text-xs" style={{ color: theme.text.secondary }}>{deal.assignedTo}</span>
-                        <span className="text-xs" style={{ color: theme.text.secondary }}>{deal.expectedCloseDate}</span>
+                        <div className="flex gap-1">
+                          <button onClick={(e) => { e.stopPropagation(); handleEditDeal(deal); }} className="p-1 rounded transition-colors" style={{ color: theme.text.secondary }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Edit size={14} />
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); openDeleteConfirm('deal', deal); }} className="p-1 rounded transition-colors" style={{ color: theme.status.error }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -678,7 +689,7 @@ export const CRMPage = ({
             <table className="w-full">
               <thead>
                 <tr style={{ backgroundColor: theme.bg.tertiary }}>
-                  {['Deal', 'Company', 'Stage', 'Value', 'Probability', 'Assigned To', 'Close Date'].map(h => (
+                  {['Deal', 'Company', 'Stage', 'Value', 'Probability', 'Assigned To', 'Close Date', ''].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                   ))}
                 </tr>
@@ -713,6 +724,20 @@ export const CRMPage = ({
                     </td>
                     <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{deal.assignedTo}</td>
                     <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{deal.expectedCloseDate}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEditDeal(deal)} className="p-2 rounded-lg transition-colors" style={{ color: theme.text.secondary }}
+                          onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => openDeleteConfirm('deal', deal)} className="p-2 rounded-lg transition-colors" style={{ color: theme.status.error }}
+                          onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
