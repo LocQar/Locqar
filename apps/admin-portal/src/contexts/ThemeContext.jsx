@@ -19,7 +19,7 @@ export const themes = {
     },
     text: {
       primary: '#F0EBE5',
-      secondary: '#A89F99',
+      secondary: '#C4BDB8', // Brightened from #A89F99 for better contrast
       muted: '#6E6560'
     },
     accent: {
