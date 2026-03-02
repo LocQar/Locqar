@@ -96,6 +96,10 @@ export const CRMPage = ({
   const [editingActivity, setEditingActivity] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, type: null, item: null });
 
+  // ============ DRAG-AND-DROP STATE ============
+  const [draggedDeal, setDraggedDeal] = useState(null);
+  const [dragOverStage, setDragOverStage] = useState(null);
+
   // ============ DATA STATE ============
   // Load from localStorage or use mock data as fallback
   const [leads, setLeads] = useState(() => {
@@ -273,6 +277,52 @@ export const CRMPage = ({
     else if (type === 'deal') handleDeleteDeal(item);
     else if (type === 'activity') handleDeleteActivity(item);
     setDeleteConfirm({ isOpen: false, type: null, item: null });
+  };
+
+  // ============ DRAG-AND-DROP HANDLERS ============
+  const handleDragStart = (deal) => {
+    setDraggedDeal(deal);
+  };
+
+  const handleDragOver = (e, stageKey) => {
+    e.preventDefault();
+    setDragOverStage(stageKey);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverStage(null);
+  };
+
+  const handleDrop = (e, newStage) => {
+    e.preventDefault();
+
+    if (!draggedDeal || draggedDeal.stage === newStage) {
+      setDraggedDeal(null);
+      setDragOverStage(null);
+      return;
+    }
+
+    // Update deal stage and probability
+    const probabilities = {
+      prospecting: 10,
+      qualification: 25,
+      proposal: 50,
+      negotiation: 75,
+      closed_won: 100,
+      closed_lost: 0
+    };
+
+    const updatedDeal = {
+      ...draggedDeal,
+      stage: newStage,
+      probability: probabilities[newStage] || 50
+    };
+
+    setDeals(deals.map(d => d.id === draggedDeal.id ? updatedDeal : d));
+    addToast({ type: 'success', message: `"${draggedDeal.title}" moved to ${CRM_STAGES[newStage].label}` });
+
+    setDraggedDeal(null);
+    setDragOverStage(null);
   };
 
   // ============ COMPUTED DATA ============
@@ -717,11 +767,32 @@ export const CRMPage = ({
                   </div>
                   <span className="text-xs font-medium" style={{ color: theme.text.secondary }}>GH₵ {(stageValue / 1000).toFixed(0)}K</span>
                 </div>
-                <div className="flex-1 space-y-2 p-2 rounded-xl" style={{ backgroundColor: 'transparent' }}>
+                <div
+                  className="flex-1 space-y-2 p-2 rounded-xl transition-all"
+                  style={{
+                    backgroundColor: dragOverStage === stageKey ? `${stage.color}10` : 'transparent',
+                    border: dragOverStage === stageKey ? `2px dashed ${stage.color}` : '2px solid transparent'
+                  }}
+                  onDragOver={(e) => handleDragOver(e, stageKey)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, stageKey)}
+                >
                   {deals.length === 0 ? (
-                    <p className="text-xs text-center py-8" style={{ color: theme.text.secondary }}>No deals</p>
+                    <p className="text-xs text-center py-8" style={{ color: theme.text.secondary }}>
+                      {dragOverStage === stageKey ? 'Drop here' : 'No deals'}
+                    </p>
                   ) : deals.map(deal => (
-                    <div key={deal.id} className="p-3 rounded-xl border cursor-pointer transition-all duration-150" style={{ backgroundColor: 'transparent', borderColor: theme.border.primary }}
+                    <div
+                      key={deal.id}
+                      draggable
+                      onDragStart={() => handleDragStart(deal)}
+                      onDragEnd={() => setDraggedDeal(null)}
+                      className="p-3 rounded-xl border cursor-move transition-all duration-150"
+                      style={{
+                        backgroundColor: 'transparent',
+                        borderColor: theme.border.primary,
+                        opacity: draggedDeal?.id === deal.id ? 0.5 : 1
+                      }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = stage.color; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = theme.border.primary; e.currentTarget.style.transform = 'translateY(0)'; }}>
                       <p className="font-medium text-sm mb-1 truncate" style={{ color: theme.text.primary }}>{deal.title}</p>
