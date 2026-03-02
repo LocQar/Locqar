@@ -2,27 +2,91 @@ import React, { useState } from 'react';
 import {
     Truck, Wrench, Fuel, AlertTriangle, Search, Filter,
     MoreVertical, Calendar, CheckCircle2, AlertCircle,
-    ChevronRight, MapPin, Gauge
+    ChevronRight, MapPin, Gauge, Upload, Download
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { MetricCard, StatusBadge } from '../components/ui';
 import { NewVehicleDrawer } from '../components/drawers';
-import { vehiclesData, maintenanceLogsData, fuelLogsData } from '../constants/mockData';
+import { vehicles, maintenanceLogsData, fuelLogsData } from '../constants/mockData';
 
-export const FleetPage = () => {
+export const FleetPage = ({ addToast }) => {
     const { theme } = useTheme();
     const [activeTab, setActiveTab] = useState('overview');
     const [searchTerm, setSearchTerm] = useState('');
     const [showNewVehicle, setShowNewVehicle] = useState(false);
+    const [vehicles, setVehicles] = useState(vehiclesData);
+    const fileInputRef = React.useRef(null);
 
-    const metrics = {
-        total: vehiclesData.length,
-        active: vehiclesData.filter(v => v.status === 'active').length,
-        maintenance: vehiclesData.filter(v => v.status === 'maintenance').length,
-        critical: vehiclesData.filter(v => v.health < 80).length
+    // CSV Export
+    const exportToCSV = (data, filename) => {
+        if (!data || data.length === 0) return;
+        const headers = Object.keys(data[0]);
+        const csvContent = [
+            headers.join(','),
+            ...data.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
+        ].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
     };
 
-    const filteredVehicles = vehiclesData.filter(v =>
+    // CSV Import
+    const parseCSV = (csvText) => {
+        const lines = csvText.trim().split('\n');
+        if (lines.length < 2) return [];
+        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+            const row = {};
+            headers.forEach((header, index) => {
+                row[header] = values[index] || '';
+            });
+            data.push(row);
+        }
+        return data;
+    };
+
+    const handleImport = (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const csvData = parseCSV(e.target?.result);
+                const newVehicles = csvData.map((row, index) => ({
+                    id: `V${Date.now()}-${index}`,
+                    plate: row.Plate || row.plate || '',
+                    type: row.Type || row.type || 'van',
+                    driver: row.Driver || row.driver || '',
+                    status: row.Status || row.status || 'active',
+                    health: parseInt(row.Health || row.health || '100'),
+                    lastMaintenance: row['Last Maintenance'] || row.lastMaintenance || new Date().toISOString().split('T')[0],
+                    nextService: row['Next Service'] || row.nextService || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    location: row.Location || row.location || 'Unknown'
+                }));
+                setVehicles([...vehicles, ...newVehicles]);
+                addToast?.({ type: 'success', message: `Imported ${newVehicles.length} vehicles successfully` });
+            } catch (error) {
+                addToast?.({ type: 'error', message: 'Failed to import CSV. Please check the file format.' });
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    };
+
+    const metrics = {
+        total: vehicles.length,
+        active: vehicles.filter(v => v.status === 'active').length,
+        maintenance: vehicles.filter(v => v.status === 'maintenance').length,
+        critical: vehicles.filter(v => v.health < 80).length
+    };
+
+    const filteredVehicles = vehicles.filter(v =>
         v.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.driver.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -36,6 +100,29 @@ export const FleetPage = () => {
                     <p style={{ color: theme.text.muted }}>Monitor vehicle health, maintenance, and fuel costs</p>
                 </div>
                 <div className="flex gap-2">
+                    <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm transition-colors" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                        <Upload size={16} /> Import
+                    </button>
+                    <button onClick={() => {
+                        const exportData = filteredVehicles.map(v => ({
+                            Plate: v.plate,
+                            Type: v.type,
+                            Driver: v.driver,
+                            Status: v.status,
+                            Health: v.health,
+                            'Last Maintenance': v.lastMaintenance,
+                            'Next Service': v.nextService,
+                            Location: v.location || ''
+                        }));
+                        exportToCSV(exportData, 'fleet_vehicles');
+                        addToast?.({ type: 'success', message: `Exported ${exportData.length} vehicles to CSV` });
+                    }} className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm transition-colors" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                        <Download size={16} /> Export
+                    </button>
                     <button
                         onClick={() => setShowNewVehicle(true)}
                         className="px-4 py-2 rounded-xl font-medium hover:opacity-90 transition-opacity"
@@ -45,6 +132,9 @@ export const FleetPage = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Hidden file input for import */}
+            <input type="file" ref={fileInputRef} accept=".csv" onChange={handleImport} style={{ display: 'none' }} />
 
             {/* Metrics Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -234,7 +324,7 @@ export const FleetPage = () => {
                                 </thead>
                                 <tbody>
                                     {fuelLogsData.map(log => {
-                                        const vehicle = vehiclesData.find(v => v.id === log.vehicleId);
+                                        const vehicle = vehicles.find(v => v.id === log.vehicleId);
                                         return (
                                             <tr key={log.id} style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
                                                 <td className="p-3">
@@ -265,11 +355,11 @@ export const FleetPage = () => {
                             <div className="mt-4 pt-4 border-t" style={{ borderColor: theme.border.primary }}>
                                 <h4 className="text-sm font-semibold mb-3" style={{ color: theme.text.muted }}>Fuel Cost by Vehicle</h4>
                                 <div className="space-y-2">
-                                    {vehiclesData.filter(v => v.type !== 'Bike').map(vehicle => {
+                                    {vehicles.filter(v => v.type !== 'Bike').map(vehicle => {
                                         const vehicleFuel = fuelLogsData.filter(f => f.vehicleId === vehicle.id);
                                         const totalCost = vehicleFuel.reduce((s, f) => s + f.cost, 0);
                                         const totalGallons = vehicleFuel.reduce((s, f) => s + f.gallons, 0);
-                                        const maxCost = Math.max(...vehiclesData.map(v => fuelLogsData.filter(f => f.vehicleId === v.id).reduce((s, f) => s + f.cost, 0)));
+                                        const maxCost = Math.max(...vehicles.map(v => fuelLogsData.filter(f => f.vehicleId === v.id).reduce((s, f) => s + f.cost, 0)));
                                         return (
                                             <div key={vehicle.id} className="flex items-center gap-3">
                                                 <span className="text-sm w-28 shrink-0 truncate" style={{ color: theme.text.primary }}>{vehicle.plate}</span>

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Users2, UserCheck, UserX, QrCode, CreditCard, Phone, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Search, Users2, UserCheck, UserX, QrCode, CreditCard, Phone, ToggleLeft, ToggleRight, Upload, Download } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { COURIER_STATUSES } from '../constants';
 import { couriersData } from '../constants/mockData';
@@ -9,6 +9,7 @@ export const CouriersPage = ({ addToast }) => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [couriers, setCouriers] = useState(couriersData);
+  const fileInputRef = React.useRef(null);
 
   const filteredCouriers = useMemo(() => {
     return couriers.filter(c => {
@@ -33,6 +34,65 @@ export const CouriersPage = ({ addToast }) => {
     }));
   };
 
+  // CSV Export
+  const exportToCSV = (data, filename) => {
+    if (!data || data.length === 0) return;
+    const headers = Object.keys(data[0]);
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
+    ].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // CSV Import
+  const parseCSV = (csvText) => {
+    const lines = csvText.trim().split('\n');
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const data = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+      const row = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      data.push(row);
+    }
+    return data;
+  };
+
+  const handleImport = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csvData = parseCSV(e.target?.result);
+        const newCouriers = csvData.map((row, index) => ({
+          id: couriers.length + index + 1,
+          name: row.Name || row.name || '',
+          phone: row.Phone || row.phone || '',
+          cardNo: row['Card No'] || row.cardNo || '',
+          qrCode: row['QR Code'] || row.qrCode || `QR${Date.now()}-${index}`,
+          status: parseInt(row.Status || row.status || '1')
+        }));
+        setCouriers([...couriers, ...newCouriers]);
+        addToast?.({ type: 'success', message: `Imported ${newCouriers.length} couriers successfully` });
+      } catch (error) {
+        addToast?.({ type: 'error', message: 'Failed to import CSV. Please check the file format.' });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-6">
@@ -40,7 +100,32 @@ export const CouriersPage = ({ addToast }) => {
           <h1 className="text-xl md:text-2xl font-bold" style={{ color: theme.text.primary }}>Couriers</h1>
           <p style={{ color: theme.text.muted }}>Manage courier accounts for terminal access</p>
         </div>
+        <div className="flex gap-2">
+          <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm transition-colors" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+            <Upload size={16} /> Import
+          </button>
+          <button onClick={() => {
+            const exportData = filteredCouriers.map(c => ({
+              Name: c.name,
+              Phone: c.phone,
+              'Card No': c.cardNo,
+              'QR Code': c.qrCode,
+              Status: c.status
+            }));
+            exportToCSV(exportData, 'couriers');
+            addToast?.({ type: 'success', message: `Exported ${exportData.length} couriers to CSV` });
+          }} className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm transition-colors" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+            <Download size={16} /> Export
+          </button>
+        </div>
       </div>
+
+      {/* Hidden file input for import */}
+      <input type="file" ref={fileInputRef} accept=".csv" onChange={handleImport} style={{ display: 'none' }} />
 
       {/* Stat Cards */}
       <div className="grid grid-cols-3 gap-4 mb-6">
