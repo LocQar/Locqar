@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search, Plus, Download, Filter, Eye, Edit, Trash2, Phone, Mail, MapPin,
   DollarSign, TrendingUp, Users, Target, Calendar, Clock, CheckCircle,
@@ -97,10 +97,49 @@ export const CRMPage = ({
   const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, type: null, item: null });
 
   // ============ DATA STATE ============
-  const [leads, setLeads] = useState(crmLeads);
-  const [deals, setDeals] = useState(crmDeals);
-  const [contacts, setContacts] = useState(crmContacts);
-  const [activities, setActivities] = useState(crmActivities);
+  // Load from localStorage or use mock data as fallback
+  const [leads, setLeads] = useState(() => {
+    const saved = localStorage.getItem('crm_leads');
+    return saved ? JSON.parse(saved) : crmLeads;
+  });
+  const [deals, setDeals] = useState(() => {
+    const saved = localStorage.getItem('crm_deals');
+    return saved ? JSON.parse(saved) : crmDeals;
+  });
+  const [contacts, setContacts] = useState(() => {
+    const saved = localStorage.getItem('crm_contacts');
+    return saved ? JSON.parse(saved) : crmContacts;
+  });
+  const [activities, setActivities] = useState(() => {
+    const saved = localStorage.getItem('crm_activities');
+    return saved ? JSON.parse(saved) : crmActivities;
+  });
+
+  // Persist to localStorage whenever data changes
+  useEffect(() => {
+    localStorage.setItem('crm_leads', JSON.stringify(leads));
+  }, [leads]);
+
+  useEffect(() => {
+    localStorage.setItem('crm_deals', JSON.stringify(deals));
+  }, [deals]);
+
+  useEffect(() => {
+    localStorage.setItem('crm_contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  useEffect(() => {
+    localStorage.setItem('crm_activities', JSON.stringify(activities));
+  }, [activities]);
+
+  // Reset to demo data
+  const resetToDemo = () => {
+    setLeads(crmLeads);
+    setDeals(crmDeals);
+    setContacts(crmContacts);
+    setActivities(crmActivities);
+    addToast({ type: 'success', message: 'CRM data reset to demo data' });
+  };
 
   const itemsPerPage = 10;
 
@@ -342,6 +381,12 @@ export const CRMPage = ({
   // ============ DASHBOARD VIEW ============
   const renderDashboard = () => (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <button onClick={resetToDemo} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>
+          <RefreshCw size={16} /> Reset to Demo Data
+        </button>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <MetricCard title="Total Leads" value={crmMetrics.totalLeads} change="24%" changeType="up" icon={Target} loading={loading} />
         <MetricCard title="Active Deals" value={crmMetrics.activeDeals} change="8%" changeType="up" icon={Briefcase} loading={loading} />
