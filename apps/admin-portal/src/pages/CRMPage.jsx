@@ -4,7 +4,7 @@ import {
   DollarSign, TrendingUp, Users, Target, Calendar, Clock, CheckCircle,
   AlertTriangle, MessageSquare, FileText, ArrowRight, Building2, Tag,
   BarChart3, X, ChevronDown, ChevronUp, Briefcase, Star, ExternalLink,
-  UserPlus, RefreshCw
+  UserPlus, RefreshCw, Upload
 } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -59,6 +59,11 @@ export const CRMPage = ({
 }) => {
   const { theme } = useTheme();
   const currentView = activeSubMenu || 'Dashboard';
+
+  // File input refs for CSV import
+  const leadFileInputRef = React.useRef(null);
+  const contactFileInputRef = React.useRef(null);
+  const activityFileInputRef = React.useRef(null);
 
   // ============ LEADS STATE ============
   const [leadSearch, setLeadSearch] = useState('');
@@ -340,6 +345,123 @@ export const CRMPage = ({
       setSelectedActivities([]);
     }
     addToast({ type: 'success', message: `Deleted ${count} ${type}${count > 1 ? 's' : ''}` });
+  };
+
+  // ============ CSV IMPORT HANDLERS ============
+  const parseCSV = (csvText) => {
+    const lines = csvText.trim().split('\n');
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+      const row = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      data.push(row);
+    }
+
+    return data;
+  };
+
+  const handleImportLeads = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csvData = parseCSV(e.target?.result);
+        const newLeads = csvData.map((row, index) => ({
+          id: `L${Date.now()}-${index}`,
+          name: row.Name || row.name || '',
+          email: row.Email || row.email || '',
+          phone: row.Phone || row.phone || '',
+          company: row.Company || row.company || '',
+          source: row.Source?.toLowerCase() || 'website',
+          status: row.Status?.toLowerCase() || 'new',
+          value: parseInt(row.Value || row.value || '0'),
+          assignedTo: row['Assigned To'] || row.assignedTo || 'Ama Owusu',
+          notes: row.Notes || row.notes || '',
+          createdAt: new Date().toISOString().split('T')[0],
+          lastContactedAt: null
+        }));
+
+        setLeads([...newLeads, ...leads]);
+        addToast({ type: 'success', message: `Imported ${newLeads.length} leads successfully` });
+      } catch (error) {
+        addToast({ type: 'error', message: 'Failed to import CSV. Please check the file format.' });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
+  const handleImportContacts = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csvData = parseCSV(e.target?.result);
+        const newContacts = csvData.map((row, index) => ({
+          id: `C${Date.now()}-${index}`,
+          name: row.Name || row.name || '',
+          email: row.Email || row.email || '',
+          phone: row.Phone || row.phone || '',
+          company: row.Company || row.company || '',
+          role: row.Role || row.role || '',
+          tags: (row.Tags || row.tags || '').split(';').map(t => t.trim()).filter(Boolean),
+          createdAt: new Date().toISOString().split('T')[0],
+          lastActivity: 'Never',
+          totalDeals: 0,
+          totalValue: 0
+        }));
+
+        setContacts([...newContacts, ...contacts]);
+        addToast({ type: 'success', message: `Imported ${newContacts.length} contacts successfully` });
+      } catch (error) {
+        addToast({ type: 'error', message: 'Failed to import CSV. Please check the file format.' });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
+  const handleImportActivities = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csvData = parseCSV(e.target?.result);
+        const newActivities = csvData.map((row, index) => ({
+          id: `A${Date.now()}-${index}`,
+          type: row.Type?.toLowerCase() || 'call',
+          subject: row.Subject || row.subject || '',
+          description: row.Description || row.description || '',
+          contactName: row.Contact || row.contactName || '',
+          dealTitle: row.Deal || row.dealTitle || '',
+          assignedTo: row['Assigned To'] || row.assignedTo || 'Ama Owusu',
+          status: row.Status?.toLowerCase() || 'scheduled',
+          dueDate: row.Date || row.dueDate || '',
+          dueTime: '',
+          createdAt: new Date().toISOString().split('T')[0]
+        }));
+
+        setActivities([...newActivities, ...activities]);
+        addToast({ type: 'success', message: `Imported ${newActivities.length} activities successfully` });
+      } catch (error) {
+        addToast({ type: 'error', message: 'Failed to import CSV. Please check the file format.' });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
   };
 
   // ============ DRAG-AND-DROP HANDLERS ============
@@ -671,6 +793,9 @@ export const CRMPage = ({
         <button onClick={() => setShowNewLeadDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
           <Plus size={16} /> Add Lead
         </button>
+        <button onClick={() => leadFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+          <Upload size={16} /> Import
+        </button>
         <button
           onClick={() => {
             const exportData = filteredLeads.map(lead => ({
@@ -693,6 +818,9 @@ export const CRMPage = ({
           <Download size={16} /> Export
         </button>
       </div>
+
+      {/* Hidden file input for lead import */}
+      <input type="file" ref={leadFileInputRef} accept=".csv" onChange={handleImportLeads} style={{ display: 'none' }} />
 
       {selectedLeads.length > 0 && (
         <div className="flex items-center gap-3 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.accent.primary }}>
@@ -993,6 +1121,9 @@ export const CRMPage = ({
         <button onClick={() => setShowNewContactDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
           <UserPlus size={16} /> Add Contact
         </button>
+        <button onClick={() => contactFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+          <Upload size={16} /> Import
+        </button>
         <button
           onClick={() => {
             const exportData = filteredContacts.map(contact => ({
@@ -1015,6 +1146,9 @@ export const CRMPage = ({
           <Download size={16} /> Export
         </button>
       </div>
+
+      {/* Hidden file input for contact import */}
+      <input type="file" ref={contactFileInputRef} accept=".csv" onChange={handleImportContacts} style={{ display: 'none' }} />
 
       {selectedContacts.length > 0 && (
         <div className="flex items-center gap-3 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.accent.primary }}>
@@ -1188,6 +1322,9 @@ export const CRMPage = ({
         <button onClick={() => setShowNewActivityDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
           <Plus size={16} /> Add Activity
         </button>
+        <button onClick={() => activityFileInputRef.current?.click()} className={btnOutline} style={{ borderColor: theme.border.primary, color: theme.text.primary }}>
+          <Upload size={16} /> Import
+        </button>
         <button
           onClick={() => {
             const exportData = filteredActivities.map(activity => ({
@@ -1207,6 +1344,9 @@ export const CRMPage = ({
         >
           <Download size={16} /> Export
         </button>
+
+        {/* Hidden file input for activity import */}
+        <input type="file" ref={activityFileInputRef} accept=".csv" onChange={handleImportActivities} style={{ display: 'none' }} />
       </div>
 
       {selectedActivities.length > 0 && (
