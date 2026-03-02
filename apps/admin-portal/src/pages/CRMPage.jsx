@@ -90,10 +90,10 @@ export const CRMPage = ({
   const [showNewActivityDrawer, setShowNewActivityDrawer] = useState(false);
 
   // ============ DATA STATE ============
-  const [leads, setLeads] = useState(leads);
-  const [deals, setDeals] = useState(deals);
-  const [contacts, setContacts] = useState(contacts);
-  const [activities, setActivities] = useState(activities);
+  const [leads, setLeads] = useState(crmLeads);
+  const [deals, setDeals] = useState(crmDeals);
+  const [contacts, setContacts] = useState(crmContacts);
+  const [activities, setActivities] = useState(crmActivities);
 
   const itemsPerPage = 10;
 
