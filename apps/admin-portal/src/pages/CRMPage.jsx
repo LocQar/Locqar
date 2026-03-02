@@ -100,6 +100,12 @@ export const CRMPage = ({
   const [draggedDeal, setDraggedDeal] = useState(null);
   const [dragOverStage, setDragOverStage] = useState(null);
 
+  // ============ BULK SELECTION STATE ============
+  const [selectedLeads, setSelectedLeads] = useState([]);
+  const [selectedContacts, setSelectedContacts] = useState([]);
+  const [selectedDeals, setSelectedDeals] = useState([]);
+  const [selectedActivities, setSelectedActivities] = useState([]);
+
   // ============ DATA STATE ============
   // Load from localStorage or use mock data as fallback
   const [leads, setLeads] = useState(() => {
@@ -277,6 +283,63 @@ export const CRMPage = ({
     else if (type === 'deal') handleDeleteDeal(item);
     else if (type === 'activity') handleDeleteActivity(item);
     setDeleteConfirm({ isOpen: false, type: null, item: null });
+  };
+
+  // ============ BULK SELECTION HANDLERS ============
+  const toggleSelectAll = (type) => {
+    if (type === 'lead') {
+      if (selectedLeads.length === filteredLeads.length) {
+        setSelectedLeads([]);
+      } else {
+        setSelectedLeads(filteredLeads.map(l => l.id));
+      }
+    } else if (type === 'contact') {
+      if (selectedContacts.length === filteredContacts.length) {
+        setSelectedContacts([]);
+      } else {
+        setSelectedContacts(filteredContacts.map(c => c.id));
+      }
+    } else if (type === 'activity') {
+      if (selectedActivities.length === filteredActivities.length) {
+        setSelectedActivities([]);
+      } else {
+        setSelectedActivities(filteredActivities.map(a => a.id));
+      }
+    }
+  };
+
+  const toggleSelect = (type, id) => {
+    if (type === 'lead') {
+      setSelectedLeads(prev =>
+        prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      );
+    } else if (type === 'contact') {
+      setSelectedContacts(prev =>
+        prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      );
+    } else if (type === 'activity') {
+      setSelectedActivities(prev =>
+        prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      );
+    }
+  };
+
+  const handleBulkDelete = (type) => {
+    let count = 0;
+    if (type === 'lead') {
+      count = selectedLeads.length;
+      setLeads(leads.filter(l => !selectedLeads.includes(l.id)));
+      setSelectedLeads([]);
+    } else if (type === 'contact') {
+      count = selectedContacts.length;
+      setContacts(contacts.filter(c => !selectedContacts.includes(c.id)));
+      setSelectedContacts([]);
+    } else if (type === 'activity') {
+      count = selectedActivities.length;
+      setActivities(activities.filter(a => !selectedActivities.includes(a.id)));
+      setSelectedActivities([]);
+    }
+    addToast({ type: 'success', message: `Deleted ${count} ${type}${count > 1 ? 's' : ''}` });
   };
 
   // ============ DRAG-AND-DROP HANDLERS ============
@@ -631,6 +694,20 @@ export const CRMPage = ({
         </button>
       </div>
 
+      {selectedLeads.length > 0 && (
+        <div className="flex items-center gap-3 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.accent.primary }}>
+          <span className="text-sm font-medium" style={{ color: theme.text.primary }}>
+            {selectedLeads.length} lead{selectedLeads.length > 1 ? 's' : ''} selected
+          </span>
+          <button onClick={() => handleBulkDelete('lead')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors" style={{ backgroundColor: theme.status.error, color: 'white' }}>
+            <Trash2 size={14} /> Delete Selected
+          </button>
+          <button onClick={() => setSelectedLeads([])} className="text-sm" style={{ color: theme.text.secondary }}>
+            Clear Selection
+          </button>
+        </div>
+      )}
+
       {loading ? <TableSkeleton rows={5} cols={6} theme={theme} /> : filteredLeads.length === 0 ? (
         <EmptyState icon={Target} title="No leads found" description="Try adjusting your filters" theme={theme} />
       ) : (
@@ -640,6 +717,9 @@ export const CRMPage = ({
               <table className="w-full">
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
+                    <th className="px-4 py-3">
+                      <input type="checkbox" checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0} onChange={() => toggleSelectAll('lead')} className="cursor-pointer" />
+                    </th>
                     {['Name', 'Company', 'Source', 'Status', 'Value', 'Assigned To', 'Last Contact', ''].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                     ))}
@@ -650,6 +730,9 @@ export const CRMPage = ({
                     <tr key={lead.id} className="border-t" style={{ borderColor: theme.border.primary }}
                       onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                      <td className="px-4 py-3">
+                        <input type="checkbox" checked={selectedLeads.includes(lead.id)} onChange={() => toggleSelect('lead', lead.id)} className="cursor-pointer" />
+                      </td>
                       <td className="px-4 py-3">
                         <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>{lead.name}</p>
                         <p className="text-sm" style={{ color: theme.text.secondary }}>{lead.email}</p>
@@ -933,6 +1016,20 @@ export const CRMPage = ({
         </button>
       </div>
 
+      {selectedContacts.length > 0 && (
+        <div className="flex items-center gap-3 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.accent.primary }}>
+          <span className="text-sm font-medium" style={{ color: theme.text.primary }}>
+            {selectedContacts.length} contact{selectedContacts.length > 1 ? 's' : ''} selected
+          </span>
+          <button onClick={() => handleBulkDelete('contact')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors" style={{ backgroundColor: theme.status.error, color: 'white' }}>
+            <Trash2 size={14} /> Delete Selected
+          </button>
+          <button onClick={() => setSelectedContacts([])} className="text-sm" style={{ color: theme.text.secondary }}>
+            Clear Selection
+          </button>
+        </div>
+      )}
+
       {loading ? <TableSkeleton rows={5} cols={6} theme={theme} /> : filteredContacts.length === 0 ? (
         <EmptyState icon={Users} title="No contacts found" description="Try adjusting your search or filters" theme={theme} />
       ) : (
@@ -942,6 +1039,9 @@ export const CRMPage = ({
               <table className="w-full">
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
+                    <th className="px-4 py-3">
+                      <input type="checkbox" checked={selectedContacts.length === filteredContacts.length && filteredContacts.length > 0} onChange={() => toggleSelectAll('contact')} className="cursor-pointer" />
+                    </th>
                     {['Name', 'Company', 'Role', 'Tags', 'Deals', 'Total Value', 'Last Activity', ''].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                     ))}
@@ -952,6 +1052,9 @@ export const CRMPage = ({
                     <tr key={contact.id} className="border-t" style={{ borderColor: theme.border.primary }}
                       onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                      <td className="px-4 py-3">
+                        <input type="checkbox" checked={selectedContacts.includes(contact.id)} onChange={() => toggleSelect('contact', contact.id)} className="cursor-pointer" />
+                      </td>
                       <td className="px-4 py-3">
                         <p className="font-medium" style={{ color: theme.text.primary }}>{contact.name}</p>
                         <p className="text-xs" style={{ color: theme.text.secondary }}>{contact.email}</p>
@@ -1106,6 +1209,20 @@ export const CRMPage = ({
         </button>
       </div>
 
+      {selectedActivities.length > 0 && (
+        <div className="flex items-center gap-3 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.accent.primary }}>
+          <span className="text-sm font-medium" style={{ color: theme.text.primary }}>
+            {selectedActivities.length} activit{selectedActivities.length > 1 ? 'ies' : 'y'} selected
+          </span>
+          <button onClick={() => handleBulkDelete('activity')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors" style={{ backgroundColor: theme.status.error, color: 'white' }}>
+            <Trash2 size={14} /> Delete Selected
+          </button>
+          <button onClick={() => setSelectedActivities([])} className="text-sm" style={{ color: theme.text.secondary }}>
+            Clear Selection
+          </button>
+        </div>
+      )}
+
       {loading ? <TableSkeleton rows={5} cols={6} theme={theme} /> : filteredActivities.length === 0 ? (
         <EmptyState icon={Calendar} title="No activities found" description="Try adjusting your filters" theme={theme} />
       ) : (
@@ -1115,6 +1232,9 @@ export const CRMPage = ({
               <table className="w-full">
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
+                    <th className="px-4 py-3">
+                      <input type="checkbox" checked={selectedActivities.length === filteredActivities.length && filteredActivities.length > 0} onChange={() => toggleSelectAll('activity')} className="cursor-pointer" />
+                    </th>
                     {['Type', 'Subject', 'Contact', 'Deal', 'Assigned To', 'Due Date', 'Status', ''].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                     ))}
@@ -1125,6 +1245,9 @@ export const CRMPage = ({
                     <tr key={act.id} className={`border-t ${act.status === 'overdue' ? '' : ''}`} style={{ borderColor: theme.border.primary, backgroundColor: act.status === 'overdue' ? `${theme.status?.error || '#EF4444'}08` : 'transparent' }}
                       onMouseEnter={e => e.currentTarget.style.backgroundColor = act.status === 'overdue' ? `${theme.status?.error || '#EF4444'}12` : theme.bg.hover}
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = act.status === 'overdue' ? `${theme.status?.error || '#EF4444'}08` : 'transparent'}>
+                      <td className="px-4 py-3">
+                        <input type="checkbox" checked={selectedActivities.includes(act.id)} onChange={() => toggleSelect('activity', act.id)} className="cursor-pointer" />
+                      </td>
                       <td className="px-4 py-3">
                         <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${CRM_ACTIVITY_TYPES[act.type].color}20` }}>
                           {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
