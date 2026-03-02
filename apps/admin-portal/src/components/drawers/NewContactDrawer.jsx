@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, User, Building2, Phone, Mail, Briefcase, Tag } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
-export const NewContactDrawer = ({ isOpen, onClose, onSave }) => {
+export const NewContactDrawer = ({ isOpen, onClose, onSave, contact = null }) => {
   const { theme } = useTheme();
+  const isEditMode = !!contact;
+
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -14,22 +16,45 @@ export const NewContactDrawer = ({ isOpen, onClose, onSave }) => {
   });
   const [tagInput, setTagInput] = useState('');
 
+  useEffect(() => {
+    if (contact) {
+      setForm({
+        name: contact.name || '',
+        email: contact.email || '',
+        phone: contact.phone || '',
+        company: contact.company || '',
+        role: contact.role || '',
+        tags: contact.tags || []
+      });
+    } else {
+      setForm({
+        name: '', email: '', phone: '', company: '', role: '', tags: []
+      });
+    }
+    setTagInput('');
+  }, [contact, isOpen]);
+
   const handleSubmit = () => {
     if (!form.name || !form.email || !form.company) {
       alert('Please fill in all required fields');
       return;
     }
 
-    const newContact = {
-      ...form,
-      id: `C${Date.now()}`,
-      createdAt: new Date().toISOString().split('T')[0],
-      lastActivity: 'Never',
-      totalDeals: 0,
-      totalValue: 0
-    };
+    if (isEditMode) {
+      // Update existing contact
+      onSave?.({ ...contact, ...form });
+    } else {
+      // Create new contact
+      onSave?.({
+        ...form,
+        id: `C${Date.now()}`,
+        createdAt: new Date().toISOString().split('T')[0],
+        lastActivity: 'Never',
+        totalDeals: 0,
+        totalValue: 0
+      });
+    }
 
-    onSave?.(newContact);
     setForm({
       name: '', email: '', phone: '', company: '', role: '', tags: []
     });
@@ -62,7 +87,9 @@ export const NewContactDrawer = ({ isOpen, onClose, onSave }) => {
       <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: theme.border.primary }}>
         <div>
           <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>CRM</p>
-          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>Add New Contact</h2>
+          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>
+            {isEditMode ? 'Edit Contact' : 'Add New Contact'}
+          </h2>
         </div>
         <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.icon.primary }}>
           <X size={20} />

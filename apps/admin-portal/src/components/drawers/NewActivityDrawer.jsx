@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, Calendar, Clock, User, FileText, Phone, Mail, Users, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { CRM_ACTIVITY_TYPES } from '../../constants/mockDataCRM';
 
-export const NewActivityDrawer = ({ isOpen, onClose, onSave }) => {
+export const NewActivityDrawer = ({ isOpen, onClose, onSave, activity = null }) => {
   const { theme } = useTheme();
+  const isEditMode = !!activity;
+
   const [form, setForm] = useState({
     type: 'call',
     subject: '',
@@ -17,20 +19,51 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave }) => {
     dueTime: ''
   });
 
+  useEffect(() => {
+    if (activity) {
+      setForm({
+        type: activity.type || 'call',
+        subject: activity.subject || '',
+        description: activity.description || '',
+        contactName: activity.contactName || '',
+        dealTitle: activity.dealTitle || '',
+        assignedTo: activity.assignedTo || 'Ama Owusu',
+        status: activity.status || 'scheduled',
+        dueDate: activity.dueDate || '',
+        dueTime: activity.dueTime || ''
+      });
+    } else {
+      setForm({
+        type: 'call', subject: '', description: '', contactName: '',
+        dealTitle: '', assignedTo: 'Ama Owusu', status: 'scheduled',
+        dueDate: '', dueTime: ''
+      });
+    }
+  }, [activity, isOpen]);
+
   const handleSubmit = () => {
     if (!form.subject || !form.dueDate) {
       alert('Please fill in subject and due date');
       return;
     }
 
-    const newActivity = {
+    const activityData = {
       ...form,
-      id: `A${Date.now()}`,
-      createdAt: new Date().toISOString().split('T')[0],
       completedAt: form.status === 'completed' ? new Date().toISOString().split('T')[0] : null
     };
 
-    onSave?.(newActivity);
+    if (isEditMode) {
+      // Update existing activity
+      onSave?.({ ...activity, ...activityData });
+    } else {
+      // Create new activity
+      onSave?.({
+        ...activityData,
+        id: `A${Date.now()}`,
+        createdAt: new Date().toISOString().split('T')[0]
+      });
+    }
+
     setForm({
       type: 'call', subject: '', description: '', contactName: '',
       dealTitle: '', assignedTo: 'Ama Owusu', status: 'scheduled',
@@ -63,7 +96,9 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave }) => {
       <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: theme.border.primary }}>
         <div>
           <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>CRM</p>
-          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>Schedule Activity</h2>
+          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>
+            {isEditMode ? 'Edit Activity' : 'Schedule Activity'}
+          </h2>
         </div>
         <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.icon.primary }}>
           <X size={20} />

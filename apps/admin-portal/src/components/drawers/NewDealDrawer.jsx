@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, DollarSign, Building2, User, Calendar, FileText, Percent } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { CRM_STAGES } from '../../constants/mockDataCRM';
 
-export const NewDealDrawer = ({ isOpen, onClose, onSave }) => {
+export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
   const { theme } = useTheme();
+  const isEditMode = !!deal;
+
   const [form, setForm] = useState({
     title: '',
     company: '',
@@ -17,21 +19,52 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave }) => {
     notes: ''
   });
 
+  useEffect(() => {
+    if (deal) {
+      setForm({
+        title: deal.title || '',
+        company: deal.company || '',
+        contactName: deal.contactName || '',
+        value: deal.value?.toString() || '',
+        stage: deal.stage || 'prospecting',
+        probability: deal.probability || 20,
+        assignedTo: deal.assignedTo || 'Ama Owusu',
+        expectedCloseDate: deal.expectedCloseDate || '',
+        notes: deal.notes || ''
+      });
+    } else {
+      setForm({
+        title: '', company: '', contactName: '', value: '',
+        stage: 'prospecting', probability: 20, assignedTo: 'Ama Owusu',
+        expectedCloseDate: '', notes: ''
+      });
+    }
+  }, [deal, isOpen]);
+
   const handleSubmit = () => {
     if (!form.title || !form.company || !form.value) {
       alert('Please fill in all required fields');
       return;
     }
 
-    const newDeal = {
+    const dealData = {
       ...form,
-      id: `D${Date.now()}`,
       value: parseInt(form.value) || 0,
       probability: parseInt(form.probability) || 0,
-      createdAt: new Date().toISOString().split('T')[0]
     };
 
-    onSave?.(newDeal);
+    if (isEditMode) {
+      // Update existing deal
+      onSave?.({ ...deal, ...dealData });
+    } else {
+      // Create new deal
+      onSave?.({
+        ...dealData,
+        id: `D${Date.now()}`,
+        createdAt: new Date().toISOString().split('T')[0]
+      });
+    }
+
     setForm({
       title: '', company: '', contactName: '', value: '',
       stage: 'prospecting', probability: 20, assignedTo: 'Ama Owusu',
@@ -67,7 +100,9 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave }) => {
       <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: theme.border.primary }}>
         <div>
           <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>CRM</p>
-          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>Add New Deal</h2>
+          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>
+            {isEditMode ? 'Edit Deal' : 'Add New Deal'}
+          </h2>
         </div>
         <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.icon.primary }}>
           <X size={20} />

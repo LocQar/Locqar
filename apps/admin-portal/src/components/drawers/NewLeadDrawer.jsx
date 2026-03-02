@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, User, Building2, Phone, Mail, DollarSign, FileText } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { CRM_LEAD_STATUSES, CRM_LEAD_SOURCES } from '../../constants/mockDataCRM';
 
-export const NewLeadDrawer = ({ isOpen, onClose, onSave }) => {
+export const NewLeadDrawer = ({ isOpen, onClose, onSave, lead = null }) => {
   const { theme } = useTheme();
+  const isEditMode = !!lead;
+
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -17,21 +19,52 @@ export const NewLeadDrawer = ({ isOpen, onClose, onSave }) => {
     notes: ''
   });
 
+  useEffect(() => {
+    if (lead) {
+      setForm({
+        name: lead.name || '',
+        email: lead.email || '',
+        phone: lead.phone || '',
+        company: lead.company || '',
+        source: lead.source || 'website',
+        status: lead.status || 'new',
+        value: lead.value?.toString() || '',
+        assignedTo: lead.assignedTo || 'Ama Owusu',
+        notes: lead.notes || ''
+      });
+    } else {
+      setForm({
+        name: '', email: '', phone: '', company: '',
+        source: 'website', status: 'new', value: '',
+        assignedTo: 'Ama Owusu', notes: ''
+      });
+    }
+  }, [lead, isOpen]);
+
   const handleSubmit = () => {
     if (!form.name || !form.email || !form.company) {
       alert('Please fill in all required fields');
       return;
     }
 
-    const newLead = {
+    const leadData = {
       ...form,
-      id: `L${Date.now()}`,
       value: parseInt(form.value) || 0,
-      createdAt: new Date().toISOString().split('T')[0],
-      lastContactedAt: null
     };
 
-    onSave?.(newLead);
+    if (isEditMode) {
+      // Update existing lead
+      onSave?.({ ...lead, ...leadData });
+    } else {
+      // Create new lead
+      onSave?.({
+        ...leadData,
+        id: `L${Date.now()}`,
+        createdAt: new Date().toISOString().split('T')[0],
+        lastContactedAt: null
+      });
+    }
+
     setForm({
       name: '', email: '', phone: '', company: '',
       source: 'website', status: 'new', value: '',
@@ -54,7 +87,9 @@ export const NewLeadDrawer = ({ isOpen, onClose, onSave }) => {
       <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: theme.border.primary }}>
         <div>
           <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>CRM</p>
-          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>Add New Lead</h2>
+          <h2 className="text-lg font-bold" style={{ color: theme.text.primary }}>
+            {isEditMode ? 'Edit Lead' : 'Add New Lead'}
+          </h2>
         </div>
         <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.icon.primary }}>
           <X size={20} />
