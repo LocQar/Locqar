@@ -11,7 +11,7 @@ import {
   AreaChart, Area, PieChart, Pie, Cell
 } from 'recharts';
 import { useTheme } from '../contexts/ThemeContext';
-import { MetricCard, StatusBadge, TableSkeleton, Pagination, EmptyState } from '../components/ui';
+import { MetricCard, StatusBadge, TableSkeleton, Pagination, EmptyState, ConfirmDialog } from '../components/ui';
 import { NewLeadDrawer, NewContactDrawer, NewDealDrawer, NewActivityDrawer } from '../components/drawers';
 import {
   crmLeads, crmDeals, crmContacts, crmActivities,
@@ -89,6 +89,13 @@ export const CRMPage = ({
   const [showNewDealDrawer, setShowNewDealDrawer] = useState(false);
   const [showNewActivityDrawer, setShowNewActivityDrawer] = useState(false);
 
+  // ============ EDIT/DELETE STATE ============
+  const [editingLead, setEditingLead] = useState(null);
+  const [editingContact, setEditingContact] = useState(null);
+  const [editingDeal, setEditingDeal] = useState(null);
+  const [editingActivity, setEditingActivity] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, type: null, item: null });
+
   // ============ DATA STATE ============
   const [leads, setLeads] = useState(crmLeads);
   const [deals, setDeals] = useState(crmDeals);
@@ -98,24 +105,105 @@ export const CRMPage = ({
   const itemsPerPage = 10;
 
   // ============ HANDLERS ============
-  const handleSaveLead = (newLead) => {
-    setLeads([newLead, ...leads]);
-    addToast({ type: 'success', message: `Lead "${newLead.name}" added successfully` });
+  const handleSaveLead = (leadData) => {
+    if (leadData.id && leads.find(l => l.id === leadData.id)) {
+      // Update existing lead
+      setLeads(leads.map(l => l.id === leadData.id ? leadData : l));
+      addToast({ type: 'success', message: `Lead "${leadData.name}" updated successfully` });
+    } else {
+      // Add new lead
+      setLeads([leadData, ...leads]);
+      addToast({ type: 'success', message: `Lead "${leadData.name}" added successfully` });
+    }
   };
 
-  const handleSaveContact = (newContact) => {
-    setContacts([newContact, ...contacts]);
-    addToast({ type: 'success', message: `Contact "${newContact.name}" added successfully` });
+  const handleSaveContact = (contactData) => {
+    if (contactData.id && contacts.find(c => c.id === contactData.id)) {
+      // Update existing contact
+      setContacts(contacts.map(c => c.id === contactData.id ? contactData : c));
+      addToast({ type: 'success', message: `Contact "${contactData.name}" updated successfully` });
+    } else {
+      // Add new contact
+      setContacts([contactData, ...contacts]);
+      addToast({ type: 'success', message: `Contact "${contactData.name}" added successfully` });
+    }
   };
 
-  const handleSaveDeal = (newDeal) => {
-    setDeals([newDeal, ...deals]);
-    addToast({ type: 'success', message: `Deal "${newDeal.title}" added successfully` });
+  const handleSaveDeal = (dealData) => {
+    if (dealData.id && deals.find(d => d.id === dealData.id)) {
+      // Update existing deal
+      setDeals(deals.map(d => d.id === dealData.id ? dealData : d));
+      addToast({ type: 'success', message: `Deal "${dealData.title}" updated successfully` });
+    } else {
+      // Add new deal
+      setDeals([dealData, ...deals]);
+      addToast({ type: 'success', message: `Deal "${dealData.title}" added successfully` });
+    }
   };
 
-  const handleSaveActivity = (newActivity) => {
-    setActivities([newActivity, ...activities]);
-    addToast({ type: 'success', message: `Activity "${newActivity.subject}" scheduled` });
+  const handleSaveActivity = (activityData) => {
+    if (activityData.id && activities.find(a => a.id === activityData.id)) {
+      // Update existing activity
+      setActivities(activities.map(a => a.id === activityData.id ? activityData : a));
+      addToast({ type: 'success', message: `Activity "${activityData.subject}" updated successfully` });
+    } else {
+      // Add new activity
+      setActivities([activityData, ...activities]);
+      addToast({ type: 'success', message: `Activity "${activityData.subject}" scheduled` });
+    }
+  };
+
+  const handleDeleteLead = (lead) => {
+    setLeads(leads.filter(l => l.id !== lead.id));
+    addToast({ type: 'success', message: `Lead "${lead.name}" deleted` });
+  };
+
+  const handleDeleteContact = (contact) => {
+    setContacts(contacts.filter(c => c.id !== contact.id));
+    addToast({ type: 'success', message: `Contact "${contact.name}" deleted` });
+  };
+
+  const handleDeleteDeal = (deal) => {
+    setDeals(deals.filter(d => d.id !== deal.id));
+    addToast({ type: 'success', message: `Deal "${deal.title}" deleted` });
+  };
+
+  const handleDeleteActivity = (activity) => {
+    setActivities(activities.filter(a => a.id !== activity.id));
+    addToast({ type: 'success', message: `Activity deleted` });
+  };
+
+  const handleEditLead = (lead) => {
+    setEditingLead(lead);
+    setShowNewLeadDrawer(true);
+  };
+
+  const handleEditContact = (contact) => {
+    setEditingContact(contact);
+    setShowNewContactDrawer(true);
+  };
+
+  const handleEditDeal = (deal) => {
+    setEditingDeal(deal);
+    setShowNewDealDrawer(true);
+  };
+
+  const handleEditActivity = (activity) => {
+    setEditingActivity(activity);
+    setShowNewActivityDrawer(true);
+  };
+
+  const openDeleteConfirm = (type, item) => {
+    setDeleteConfirm({ isOpen: true, type, item });
+  };
+
+  const handleConfirmDelete = () => {
+    const { type, item } = deleteConfirm;
+    if (type === 'lead') handleDeleteLead(item);
+    else if (type === 'contact') handleDeleteContact(item);
+    else if (type === 'deal') handleDeleteDeal(item);
+    else if (type === 'activity') handleDeleteActivity(item);
+    setDeleteConfirm({ isOpen: false, type: null, item: null });
   };
 
   // ============ COMPUTED DATA ============
@@ -464,6 +552,16 @@ export const CRMPage = ({
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                             <Eye size={16} />
                           </button>
+                          <button onClick={() => handleEditLead(lead)} className="p-2 rounded-lg transition-colors" style={{ color: theme.text.secondary }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Edit size={16} />
+                          </button>
+                          <button onClick={() => openDeleteConfirm('lead', lead)} className="p-2 rounded-lg transition-colors" style={{ color: theme.status.error }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -702,11 +800,23 @@ export const CRMPage = ({
                       </td>
                       <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{contact.lastActivity}</td>
                       <td className="px-4 py-3">
-                        <button onClick={() => setSelectedContact(selectedContact?.id === contact.id ? null : contact)} className="p-1.5 rounded-lg" style={{ color: theme.text.secondary }}
-                          onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
-                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                          <Eye size={16} />
-                        </button>
+                        <div className="flex gap-1">
+                          <button onClick={() => setSelectedContact(selectedContact?.id === contact.id ? null : contact)} className="p-2 rounded-lg transition-colors" style={{ color: theme.text.secondary }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Eye size={16} />
+                          </button>
+                          <button onClick={() => handleEditContact(contact)} className="p-2 rounded-lg transition-colors" style={{ color: theme.text.secondary }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Edit size={16} />
+                          </button>
+                          <button onClick={() => openDeleteConfirm('contact', contact)} className="p-2 rounded-lg transition-colors" style={{ color: theme.status.error }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -834,7 +944,7 @@ export const CRMPage = ({
               <table className="w-full">
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
-                    {['Type', 'Subject', 'Contact', 'Deal', 'Assigned To', 'Due Date', 'Status'].map(h => (
+                    {['Type', 'Subject', 'Contact', 'Deal', 'Assigned To', 'Due Date', 'Status', ''].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-sm font-semibold" style={{ color: theme.text.primary }}>{h}</th>
                     ))}
                   </tr>
@@ -871,6 +981,20 @@ export const CRMPage = ({
                         }}>
                           {act.status}
                         </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1">
+                          <button onClick={() => handleEditActivity(act)} className="p-2 rounded-lg transition-colors" style={{ color: theme.text.secondary }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Edit size={16} />
+                          </button>
+                          <button onClick={() => openDeleteConfirm('activity', act)} className="p-2 rounded-lg transition-colors" style={{ color: theme.status.error }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1058,23 +1182,38 @@ export const CRMPage = ({
       {/* Drawers */}
       <NewLeadDrawer
         isOpen={showNewLeadDrawer}
-        onClose={() => setShowNewLeadDrawer(false)}
+        onClose={() => { setShowNewLeadDrawer(false); setEditingLead(null); }}
         onSave={handleSaveLead}
+        lead={editingLead}
       />
       <NewContactDrawer
         isOpen={showNewContactDrawer}
-        onClose={() => setShowNewContactDrawer(false)}
+        onClose={() => { setShowNewContactDrawer(false); setEditingContact(null); }}
         onSave={handleSaveContact}
+        contact={editingContact}
       />
       <NewDealDrawer
         isOpen={showNewDealDrawer}
-        onClose={() => setShowNewDealDrawer(false)}
+        onClose={() => { setShowNewDealDrawer(false); setEditingDeal(null); }}
         onSave={handleSaveDeal}
+        deal={editingDeal}
       />
       <NewActivityDrawer
         isOpen={showNewActivityDrawer}
-        onClose={() => setShowNewActivityDrawer(false)}
+        onClose={() => { setShowNewActivityDrawer(false); setEditingActivity(null); }}
         onSave={handleSaveActivity}
+        activity={editingActivity}
+      />
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, type: null, item: null })}
+        onConfirm={handleConfirmDelete}
+        title="Delete Confirmation"
+        message={`Are you sure you want to delete this ${deleteConfirm.type}? This action cannot be undone.`}
+        variant="danger"
+        confirmLabel="Delete"
       />
     </div>
   );
