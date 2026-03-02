@@ -165,11 +165,22 @@ export const CRMPage = ({
   }, []);
 
   // ============ SHARED STYLES ============
-  const cardStyle = { backgroundColor: theme.bg.card, borderColor: theme.border.primary };
-  const inputStyle = { backgroundColor: theme.bg.input, borderColor: theme.border.primary, color: theme.text.primary };
+  const cardStyle = {
+    backgroundColor: theme.bg.card,
+    borderColor: theme.border.primary
+  };
+  const inputStyle = {
+    backgroundColor: theme.bg.input,
+    borderColor: theme.border.primary,
+    color: theme.text.primary
+  };
+  const textPrimaryStyle = { color: theme.text.primary };
+  const textSecondaryStyle = { color: theme.text.secondary };
+  const textMutedStyle = { color: theme.text.secondary }; // Changed from theme.text.secondary for better contrast
 
-  const selectClasses = "px-3 py-2 rounded-lg border text-sm";
-  const btnOutline = "flex items-center gap-2 px-4 py-2 rounded-xl border text-sm";
+  const selectClasses = "px-3 py-2 rounded-lg border text-sm font-medium";
+  const btnOutline = "flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors";
+  const btnPrimary = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors";
 
   // ============ RENDER HELPERS ============
   const renderStatusDot = (color) => (
@@ -195,8 +206,8 @@ export const CRMPage = ({
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={pipelineChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={theme.border.primary} vertical={false} />
-                <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 11 }} tickFormatter={v => `${v / 1000}K`} />
+                <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 11 }} tickFormatter={v => `${v / 1000}K`} />
                 <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12 }} formatter={(v) => [`GH₵ ${v.toLocaleString()}`, 'Value']} />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {pipelineChartData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
@@ -248,8 +259,8 @@ export const CRMPage = ({
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={theme.border.primary} vertical={false} />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 12 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 12 }} />
               <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12 }} />
               <Area type="monotone" dataKey="won" stroke="#10B981" fill="url(#gradWon)" strokeWidth={2} name="Won" />
               <Area type="monotone" dataKey="lost" stroke="#EF4444" fill="transparent" strokeWidth={2} name="Lost" />
@@ -269,7 +280,7 @@ export const CRMPage = ({
                 <div key={deal.id} className="flex items-center justify-between p-3 rounded-xl border" style={{ borderColor: theme.border.primary }}>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm truncate" style={{ color: theme.text.primary }}>{deal.title}</p>
-                    <p className="text-xs" style={{ color: theme.text.muted }}>{deal.company}</p>
+                    <p className="text-xs" style={{ color: theme.text.secondary }}>{deal.company}</p>
                   </div>
                   <div className="text-right shrink-0 ml-3">
                     <p className="font-bold text-sm" style={{ color: theme.accent.primary }}>GH₵ {deal.value.toLocaleString()}</p>
@@ -296,7 +307,7 @@ export const CRMPage = ({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate" style={{ color: theme.text.primary }}>{act.subject}</p>
-                <p className="text-xs" style={{ color: theme.text.muted }}>{act.contactName ? `${act.contactName} · ` : ''}{act.dueDate}</p>
+                <p className="text-xs" style={{ color: theme.text.secondary }}>{act.contactName ? `${act.contactName} · ` : ''}{act.dueDate}</p>
               </div>
               <span className="text-xs px-2 py-0.5 rounded-full shrink-0" style={{
                 backgroundColor: act.status === 'completed' ? '#ECFDF5' : act.status === 'overdue' ? '#FEF2F2' : '#EFF6FF',
@@ -324,7 +335,7 @@ export const CRMPage = ({
               </div>
               <div>
                 <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{s.label}</p>
-                <p className="text-xs" style={{ color: theme.text.muted }}>leads</p>
+                <p className="text-xs" style={{ color: theme.text.secondary }}>leads</p>
               </div>
             </div>
           );
@@ -333,7 +344,7 @@ export const CRMPage = ({
 
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.muted }} />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.secondary }} />
           <input
             type="text" placeholder="Search leads..." value={leadSearch} onChange={e => { setLeadSearch(e.target.value); setLeadPage(1); }}
             className="w-full pl-10 pr-4 py-2 rounded-lg border text-sm" style={inputStyle}
@@ -383,7 +394,7 @@ export const CRMPage = ({
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
                     {['Name', 'Company', 'Source', 'Status', 'Value', 'Assigned To', 'Last Contact', ''].map(h => (
-                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.muted }}>{h}</th>
+                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -394,7 +405,7 @@ export const CRMPage = ({
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                       <td className="px-4 py-3">
                         <p className="font-medium" style={{ color: theme.text.primary }}>{lead.name}</p>
-                        <p className="text-xs" style={{ color: theme.text.muted }}>{lead.email}</p>
+                        <p className="text-xs" style={{ color: theme.text.secondary }}>{lead.email}</p>
                       </td>
                       <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{lead.company}</td>
                       <td className="px-4 py-3">
@@ -411,10 +422,10 @@ export const CRMPage = ({
                         {lead.value > 0 ? `GH₵ ${lead.value.toLocaleString()}` : '—'}
                       </td>
                       <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{lead.assignedTo}</td>
-                      <td className="px-4 py-3 text-xs" style={{ color: theme.text.muted }}>{lead.lastContactedAt || 'Not yet'}</td>
+                      <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{lead.lastContactedAt || 'Not yet'}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
-                          <button onClick={() => setSelectedLead(selectedLead?.id === lead.id ? null : lead)} className="p-1.5 rounded-lg" style={{ color: theme.text.muted }}
+                          <button onClick={() => setSelectedLead(selectedLead?.id === lead.id ? null : lead)} className="p-1.5 rounded-lg" style={{ color: theme.text.secondary }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                             <Eye size={14} />
@@ -437,19 +448,19 @@ export const CRMPage = ({
           <div className="flex items-start justify-between">
             <div>
               <h3 className="font-semibold text-lg" style={{ color: theme.text.primary }}>{selectedLead.name}</h3>
-              <p className="text-sm" style={{ color: theme.text.muted }}>{selectedLead.company} · {selectedLead.id}</p>
+              <p className="text-sm" style={{ color: theme.text.secondary }}>{selectedLead.company} · {selectedLead.id}</p>
             </div>
-            <button onClick={() => setSelectedLead(null)} className="p-1.5 rounded-lg" style={{ color: theme.text.muted }}>
+            <button onClick={() => setSelectedLead(null)} className="p-1.5 rounded-lg" style={{ color: theme.text.secondary }}>
               <X size={16} />
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div><p style={{ color: theme.text.muted }}>Email</p><p style={{ color: theme.text.primary }}>{selectedLead.email}</p></div>
-            <div><p style={{ color: theme.text.muted }}>Phone</p><p style={{ color: theme.text.primary }}>{selectedLead.phone}</p></div>
-            <div><p style={{ color: theme.text.muted }}>Source</p><p style={{ color: theme.text.primary }}>{CRM_LEAD_SOURCES[selectedLead.source]?.label}</p></div>
-            <div><p style={{ color: theme.text.muted }}>Value</p><p className="font-semibold" style={{ color: theme.accent.primary }}>{selectedLead.value > 0 ? `GH₵ ${selectedLead.value.toLocaleString()}` : '—'}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Email</p><p style={{ color: theme.text.primary }}>{selectedLead.email}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Phone</p><p style={{ color: theme.text.primary }}>{selectedLead.phone}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Source</p><p style={{ color: theme.text.primary }}>{CRM_LEAD_SOURCES[selectedLead.source]?.label}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Value</p><p className="font-semibold" style={{ color: theme.accent.primary }}>{selectedLead.value > 0 ? `GH₵ ${selectedLead.value.toLocaleString()}` : '—'}</p></div>
           </div>
-          <div><p className="text-sm" style={{ color: theme.text.muted }}>Notes</p><p className="text-sm" style={{ color: theme.text.secondary }}>{selectedLead.notes}</p></div>
+          <div><p className="text-sm" style={{ color: theme.text.secondary }}>Notes</p><p className="text-sm" style={{ color: theme.text.secondary }}>{selectedLead.notes}</p></div>
           <div className="flex gap-2">
             <button onClick={() => addToast({ type: 'success', message: `Converting ${selectedLead.name} to deal` })} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white" style={{ backgroundColor: theme.accent.primary }}>
               <ArrowRight size={14} /> Convert to Deal
@@ -465,17 +476,17 @@ export const CRMPage = ({
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
         <div className="relative flex-1 max-w-sm">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.muted }} />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.secondary }} />
           <input type="text" placeholder="Search deals..." value={dealSearch} onChange={e => setDealSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-lg border text-sm" style={inputStyle} />
         </div>
         <div className="flex gap-2">
           <button onClick={() => setDealView('kanban')} className={`px-3 py-1.5 rounded-lg text-sm ${dealView === 'kanban' ? 'font-medium' : ''}`}
-            style={{ backgroundColor: dealView === 'kanban' ? theme.accent.light : 'transparent', color: dealView === 'kanban' ? theme.accent.primary : theme.text.muted }}>
+            style={{ backgroundColor: dealView === 'kanban' ? theme.accent.light : 'transparent', color: dealView === 'kanban' ? theme.accent.primary : theme.text.secondary }}>
             Board
           </button>
           <button onClick={() => setDealView('list')} className={`px-3 py-1.5 rounded-lg text-sm ${dealView === 'list' ? 'font-medium' : ''}`}
-            style={{ backgroundColor: dealView === 'list' ? theme.accent.light : 'transparent', color: dealView === 'list' ? theme.accent.primary : theme.text.muted }}>
+            style={{ backgroundColor: dealView === 'list' ? theme.accent.light : 'transparent', color: dealView === 'list' ? theme.accent.primary : theme.text.secondary }}>
             List
           </button>
         </div>
@@ -492,22 +503,22 @@ export const CRMPage = ({
                   <div className="flex items-center gap-2">
                     {renderStatusDot(stage.color)}
                     <span className="text-sm font-semibold" style={{ color: theme.text.primary }}>{stage.label}</span>
-                    <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: theme.bg.tertiary, color: theme.text.muted }}>{deals.length}</span>
+                    <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: theme.bg.tertiary, color: theme.text.secondary }}>{deals.length}</span>
                   </div>
-                  <span className="text-xs font-medium" style={{ color: theme.text.muted }}>GH₵ {(stageValue / 1000).toFixed(0)}K</span>
+                  <span className="text-xs font-medium" style={{ color: theme.text.secondary }}>GH₵ {(stageValue / 1000).toFixed(0)}K</span>
                 </div>
                 <div className="flex-1 space-y-2 p-2 rounded-xl" style={{ backgroundColor: theme.bg.secondary }}>
                   {deals.length === 0 ? (
-                    <p className="text-xs text-center py-8" style={{ color: theme.text.muted }}>No deals</p>
+                    <p className="text-xs text-center py-8" style={{ color: theme.text.secondary }}>No deals</p>
                   ) : deals.map(deal => (
                     <div key={deal.id} className="p-3 rounded-xl border cursor-pointer transition-all duration-150" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = stage.color; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = theme.border.primary; e.currentTarget.style.transform = 'translateY(0)'; }}>
                       <p className="font-medium text-sm mb-1 truncate" style={{ color: theme.text.primary }}>{deal.title}</p>
-                      <p className="text-xs mb-2" style={{ color: theme.text.muted }}>{deal.company}</p>
+                      <p className="text-xs mb-2" style={{ color: theme.text.secondary }}>{deal.company}</p>
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-sm" style={{ color: stage.color }}>GH₵ {deal.value.toLocaleString()}</span>
-                        <span className="text-xs" style={{ color: theme.text.muted }}>{deal.probability}%</span>
+                        <span className="text-xs" style={{ color: theme.text.secondary }}>{deal.probability}%</span>
                       </div>
                       <div className="flex items-center gap-1 mt-2">
                         <div className="w-full bg-gray-200 rounded-full h-1.5" style={{ backgroundColor: theme.bg.tertiary }}>
@@ -515,8 +526,8 @@ export const CRMPage = ({
                         </div>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs" style={{ color: theme.text.muted }}>{deal.assignedTo}</span>
-                        <span className="text-xs" style={{ color: theme.text.muted }}>{deal.expectedCloseDate}</span>
+                        <span className="text-xs" style={{ color: theme.text.secondary }}>{deal.assignedTo}</span>
+                        <span className="text-xs" style={{ color: theme.text.secondary }}>{deal.expectedCloseDate}</span>
                       </div>
                     </div>
                   ))}
@@ -533,7 +544,7 @@ export const CRMPage = ({
               <thead>
                 <tr style={{ backgroundColor: theme.bg.tertiary }}>
                   {['Deal', 'Company', 'Stage', 'Value', 'Probability', 'Assigned To', 'Close Date'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.muted }}>{h}</th>
+                    <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -548,7 +559,7 @@ export const CRMPage = ({
                     onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                     <td className="px-4 py-3">
                       <p className="font-medium" style={{ color: theme.text.primary }}>{deal.title}</p>
-                      <p className="text-xs" style={{ color: theme.text.muted }}>{deal.contactName}</p>
+                      <p className="text-xs" style={{ color: theme.text.secondary }}>{deal.contactName}</p>
                     </td>
                     <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{deal.company}</td>
                     <td className="px-4 py-3">
@@ -562,11 +573,11 @@ export const CRMPage = ({
                         <div className="w-16 h-1.5 rounded-full" style={{ backgroundColor: theme.bg.tertiary }}>
                           <div className="h-1.5 rounded-full" style={{ width: `${deal.probability}%`, backgroundColor: CRM_STAGES[deal.stage].color }} />
                         </div>
-                        <span className="text-xs" style={{ color: theme.text.muted }}>{deal.probability}%</span>
+                        <span className="text-xs" style={{ color: theme.text.secondary }}>{deal.probability}%</span>
                       </div>
                     </td>
                     <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{deal.assignedTo}</td>
-                    <td className="px-4 py-3 text-xs" style={{ color: theme.text.muted }}>{deal.expectedCloseDate}</td>
+                    <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{deal.expectedCloseDate}</td>
                   </tr>
                 ))}
               </tbody>
@@ -582,7 +593,7 @@ export const CRMPage = ({
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.muted }} />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.secondary }} />
           <input type="text" placeholder="Search contacts..." value={contactSearch} onChange={e => { setContactSearch(e.target.value); setContactPage(1); }}
             className="w-full pl-10 pr-4 py-2 rounded-lg border text-sm" style={inputStyle} />
         </div>
@@ -626,7 +637,7 @@ export const CRMPage = ({
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
                     {['Name', 'Company', 'Role', 'Tags', 'Deals', 'Total Value', 'Last Activity', ''].map(h => (
-                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.muted }}>{h}</th>
+                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -637,14 +648,14 @@ export const CRMPage = ({
                       onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                       <td className="px-4 py-3">
                         <p className="font-medium" style={{ color: theme.text.primary }}>{contact.name}</p>
-                        <p className="text-xs" style={{ color: theme.text.muted }}>{contact.email}</p>
+                        <p className="text-xs" style={{ color: theme.text.secondary }}>{contact.email}</p>
                       </td>
                       <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{contact.company}</td>
                       <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{contact.role}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1 flex-wrap">
                           {contact.tags.map(tag => (
-                            <span key={tag} className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: theme.bg.tertiary, color: theme.text.muted }}>{tag}</span>
+                            <span key={tag} className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: theme.bg.tertiary, color: theme.text.secondary }}>{tag}</span>
                           ))}
                         </div>
                       </td>
@@ -652,9 +663,9 @@ export const CRMPage = ({
                       <td className="px-4 py-3 font-medium" style={{ color: theme.text.primary }}>
                         {contact.totalValue > 0 ? `GH₵ ${contact.totalValue.toLocaleString()}` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-xs" style={{ color: theme.text.muted }}>{contact.lastActivity}</td>
+                      <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{contact.lastActivity}</td>
                       <td className="px-4 py-3">
-                        <button onClick={() => setSelectedContact(selectedContact?.id === contact.id ? null : contact)} className="p-1.5 rounded-lg" style={{ color: theme.text.muted }}
+                        <button onClick={() => setSelectedContact(selectedContact?.id === contact.id ? null : contact)} className="p-1.5 rounded-lg" style={{ color: theme.text.secondary }}
                           onMouseEnter={e => e.currentTarget.style.backgroundColor = theme.bg.hover}
                           onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                           <Eye size={14} />
@@ -676,17 +687,17 @@ export const CRMPage = ({
           <div className="flex items-start justify-between">
             <div>
               <h3 className="font-semibold text-lg" style={{ color: theme.text.primary }}>{selectedContact.name}</h3>
-              <p className="text-sm" style={{ color: theme.text.muted }}>{selectedContact.role} at {selectedContact.company}</p>
+              <p className="text-sm" style={{ color: theme.text.secondary }}>{selectedContact.role} at {selectedContact.company}</p>
             </div>
-            <button onClick={() => setSelectedContact(null)} className="p-1.5 rounded-lg" style={{ color: theme.text.muted }}>
+            <button onClick={() => setSelectedContact(null)} className="p-1.5 rounded-lg" style={{ color: theme.text.secondary }}>
               <X size={16} />
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div><p style={{ color: theme.text.muted }}>Email</p><p style={{ color: theme.text.primary }}>{selectedContact.email}</p></div>
-            <div><p style={{ color: theme.text.muted }}>Phone</p><p style={{ color: theme.text.primary }}>{selectedContact.phone}</p></div>
-            <div><p style={{ color: theme.text.muted }}>Total Deals</p><p className="font-semibold" style={{ color: theme.text.primary }}>{selectedContact.totalDeals}</p></div>
-            <div><p style={{ color: theme.text.muted }}>Total Value</p><p className="font-semibold" style={{ color: theme.accent.primary }}>GH₵ {selectedContact.totalValue.toLocaleString()}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Email</p><p style={{ color: theme.text.primary }}>{selectedContact.email}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Phone</p><p style={{ color: theme.text.primary }}>{selectedContact.phone}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Total Deals</p><p className="font-semibold" style={{ color: theme.text.primary }}>{selectedContact.totalDeals}</p></div>
+            <div><p style={{ color: theme.text.secondary }}>Total Value</p><p className="font-semibold" style={{ color: theme.accent.primary }}>GH₵ {selectedContact.totalValue.toLocaleString()}</p></div>
           </div>
           <div>
             <p className="text-sm font-medium mb-2" style={{ color: theme.text.primary }}>Activity Timeline</p>
@@ -702,12 +713,12 @@ export const CRMPage = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate" style={{ color: theme.text.primary }}>{act.subject}</p>
-                    <p className="text-xs" style={{ color: theme.text.muted }}>{act.dueDate}</p>
+                    <p className="text-xs" style={{ color: theme.text.secondary }}>{act.dueDate}</p>
                   </div>
                 </div>
               ))}
               {crmActivities.filter(a => a.contactName === selectedContact.name).length === 0 && (
-                <p className="text-xs py-2" style={{ color: theme.text.muted }}>No activities recorded</p>
+                <p className="text-xs py-2" style={{ color: theme.text.secondary }}>No activities recorded</p>
               )}
             </div>
           </div>
@@ -731,7 +742,7 @@ export const CRMPage = ({
             </div>
             <div>
               <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{item.label}</p>
-              <p className="text-xs" style={{ color: theme.text.muted }}>activities</p>
+              <p className="text-xs" style={{ color: theme.text.secondary }}>activities</p>
             </div>
           </div>
         ))}
@@ -739,7 +750,7 @@ export const CRMPage = ({
 
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.muted }} />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text.secondary }} />
           <input type="text" placeholder="Search activities..." value={activitySearch} onChange={e => { setActivitySearch(e.target.value); setActivityPage(1); }}
             className="w-full pl-10 pr-4 py-2 rounded-lg border text-sm" style={inputStyle} />
         </div>
@@ -784,7 +795,7 @@ export const CRMPage = ({
                 <thead>
                   <tr style={{ backgroundColor: theme.bg.tertiary }}>
                     {['Type', 'Subject', 'Contact', 'Deal', 'Assigned To', 'Due Date', 'Status'].map(h => (
-                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.muted }}>{h}</th>
+                      <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -804,12 +815,12 @@ export const CRMPage = ({
                       </td>
                       <td className="px-4 py-3">
                         <p className="font-medium" style={{ color: theme.text.primary }}>{act.subject}</p>
-                        <p className="text-xs truncate max-w-xs" style={{ color: theme.text.muted }}>{act.description}</p>
+                        <p className="text-xs truncate max-w-xs" style={{ color: theme.text.secondary }}>{act.description}</p>
                       </td>
                       <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{act.contactName || '—'}</td>
                       <td className="px-4 py-3 text-xs" style={{ color: theme.text.secondary }}>{act.dealTitle || '—'}</td>
                       <td className="px-4 py-3" style={{ color: theme.text.secondary }}>{act.assignedTo}</td>
-                      <td className="px-4 py-3 text-xs" style={{ color: act.status === 'overdue' ? '#EF4444' : theme.text.muted }}>
+                      <td className="px-4 py-3 text-xs" style={{ color: act.status === 'overdue' ? '#EF4444' : theme.text.secondary }}>
                         {act.status === 'overdue' && <AlertTriangle size={12} className="inline mr-1" />}
                         {act.dueDate}
                       </td>
@@ -881,8 +892,8 @@ export const CRMPage = ({
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={pipelineChartData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke={theme.border.primary} horizontal={false} />
-                <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 11 }} tickFormatter={v => `${v / 1000}K`} />
-                <YAxis type="category" dataKey="stage" axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 11 }} width={85} />
+                <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 11 }} tickFormatter={v => `${v / 1000}K`} />
+                <YAxis type="category" dataKey="stage" axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 11 }} width={85} />
                 <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12 }} formatter={(v) => [`GH₵ ${v.toLocaleString()}`, 'Value']} />
                 <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                   {pipelineChartData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
@@ -905,8 +916,8 @@ export const CRMPage = ({
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={theme.border.primary} vertical={false} />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 12 }} />
                 <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12 }} />
                 <Area type="monotone" dataKey="won" stroke="#10B981" fill="url(#gradWonR)" strokeWidth={2} name="Won" />
                 <Area type="monotone" dataKey="lost" stroke="#EF4444" fill="transparent" strokeWidth={2} name="Lost" />
@@ -920,8 +931,8 @@ export const CRMPage = ({
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={activityBreakdownData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={theme.border.primary} vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.secondary, fontSize: 12 }} />
                 <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12 }} />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {activityBreakdownData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
@@ -939,7 +950,7 @@ export const CRMPage = ({
               <thead>
                 <tr style={{ backgroundColor: theme.bg.tertiary }}>
                   {['Team Member', 'Leads', 'Active Deals', 'Pipeline Value', 'Won Value', 'Activities'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.muted }}>{h}</th>
+                    <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: theme.text.secondary }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -977,7 +988,7 @@ export const CRMPage = ({
           <h1 className="text-xl md:text-2xl font-bold" style={{ color: theme.text.primary }}>
             CRM {currentView !== 'Dashboard' ? `· ${currentView}` : ''}
           </h1>
-          <p style={{ color: theme.text.muted }}>
+          <p style={{ color: theme.text.secondary }}>
             {currentView === 'Dashboard' && 'Sales pipeline overview and key metrics'}
             {currentView === 'Leads' && `${filteredLeads.length} leads · Manage your sales pipeline`}
             {currentView === 'Pipeline' && `${crmDeals.length} deals across ${Object.keys(CRM_STAGES).length} stages`}
