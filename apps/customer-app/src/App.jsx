@@ -3,6 +3,7 @@ import { T, ff } from "./theme/themes";
 import GS from "./utils/GS";
 import BNav from "./components/BNav";
 import ScreenWrap from "./components/ScreenWrap";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import { initLockers } from "./data/mockData";
 
 // Pages
@@ -158,6 +159,7 @@ export default function App() {
       {scr === 'qr-scan' && <ScreenWrap screenKey="qr-scan" transition={tr}><QRScannerPage onBack={function () { goBack('home'); }} /></ScreenWrap>}
       {scr === 'billing-history' && <ScreenWrap screenKey="billing-history" transition={tr}><BillingHistoryPage onBack={function () { goBack('account'); }} /></ScreenWrap>}
       {showNav && <BNav active={scr} onNav={nav} />}
+      <PWAInstallPrompt />
     </div>
   );
 }
