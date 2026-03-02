@@ -14,7 +14,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { MetricCard, StatusBadge, TableSkeleton, Pagination, EmptyState } from '../components/ui';
 import { NewLeadDrawer, NewContactDrawer, NewDealDrawer, NewActivityDrawer } from '../components/drawers';
 import {
-  leads, deals, contacts, activities,
+  crmLeads, crmDeals, crmContacts, crmActivities,
   CRM_LEAD_STATUSES, CRM_STAGES, CRM_ACTIVITY_TYPES, CRM_LEAD_SOURCES,
   pipelineChartData, crmMonthlyData, activityBreakdownData
 } from '../constants/mockDataCRM';
