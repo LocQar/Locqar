@@ -12,8 +12,9 @@ import {
 } from 'recharts';
 import { useTheme } from '../contexts/ThemeContext';
 import { MetricCard, StatusBadge, TableSkeleton, Pagination, EmptyState } from '../components/ui';
+import { NewLeadDrawer, NewContactDrawer, NewDealDrawer, NewActivityDrawer } from '../components/drawers';
 import {
-  crmLeads, crmDeals, crmContacts, crmActivities,
+  leads, deals, contacts, activities,
   CRM_LEAD_STATUSES, CRM_STAGES, CRM_ACTIVITY_TYPES, CRM_LEAD_SOURCES,
   pipelineChartData, crmMonthlyData, activityBreakdownData
 } from '../constants/mockDataCRM';
@@ -82,11 +83,44 @@ export const CRMPage = ({
   const [activityStatusFilter, setActivityStatusFilter] = useState('all');
   const [activityPage, setActivityPage] = useState(1);
 
+  // ============ DRAWER STATE ============
+  const [showNewLeadDrawer, setShowNewLeadDrawer] = useState(false);
+  const [showNewContactDrawer, setShowNewContactDrawer] = useState(false);
+  const [showNewDealDrawer, setShowNewDealDrawer] = useState(false);
+  const [showNewActivityDrawer, setShowNewActivityDrawer] = useState(false);
+
+  // ============ DATA STATE ============
+  const [leads, setLeads] = useState(leads);
+  const [deals, setDeals] = useState(deals);
+  const [contacts, setContacts] = useState(contacts);
+  const [activities, setActivities] = useState(activities);
+
   const itemsPerPage = 10;
+
+  // ============ HANDLERS ============
+  const handleSaveLead = (newLead) => {
+    setLeads([newLead, ...leads]);
+    addToast({ type: 'success', message: `Lead "${newLead.name}" added successfully` });
+  };
+
+  const handleSaveContact = (newContact) => {
+    setContacts([newContact, ...contacts]);
+    addToast({ type: 'success', message: `Contact "${newContact.name}" added successfully` });
+  };
+
+  const handleSaveDeal = (newDeal) => {
+    setDeals([newDeal, ...deals]);
+    addToast({ type: 'success', message: `Deal "${newDeal.title}" added successfully` });
+  };
+
+  const handleSaveActivity = (newActivity) => {
+    setActivities([newActivity, ...activities]);
+    addToast({ type: 'success', message: `Activity "${newActivity.subject}" scheduled` });
+  };
 
   // ============ COMPUTED DATA ============
   const filteredLeads = useMemo(() => {
-    let result = [...crmLeads];
+    let result = [...leads];
     if (leadSearch) {
       const q = leadSearch.toLowerCase();
       result = result.filter(l => l.name.toLowerCase().includes(q) || l.company.toLowerCase().includes(q) || l.email.toLowerCase().includes(q));
@@ -102,7 +136,7 @@ export const CRMPage = ({
   }, [filteredLeads, leadPage]);
 
   const filteredContacts = useMemo(() => {
-    let result = [...crmContacts];
+    let result = [...contacts];
     if (contactSearch) {
       const q = contactSearch.toLowerCase();
       result = result.filter(c => c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q) || c.email.toLowerCase().includes(q));
@@ -117,7 +151,7 @@ export const CRMPage = ({
   }, [filteredContacts, contactPage]);
 
   const filteredActivities = useMemo(() => {
-    let result = [...crmActivities];
+    let result = [...activities];
     if (activitySearch) {
       const q = activitySearch.toLowerCase();
       result = result.filter(a => a.subject.toLowerCase().includes(q) || (a.contactName || '').toLowerCase().includes(q));
@@ -135,7 +169,7 @@ export const CRMPage = ({
   const dealsByStage = useMemo(() => {
     const stages = {};
     Object.keys(CRM_STAGES).forEach(key => { stages[key] = []; });
-    crmDeals.forEach(deal => {
+    deals.forEach(deal => {
       if (dealSearch) {
         const q = dealSearch.toLowerCase();
         if (!deal.title.toLowerCase().includes(q) && !deal.company.toLowerCase().includes(q)) return;
@@ -146,11 +180,11 @@ export const CRMPage = ({
   }, [dealSearch]);
 
   const crmMetrics = useMemo(() => {
-    const activeDeals = crmDeals.filter(d => !['closed_won', 'closed_lost'].includes(d.stage));
-    const wonDeals = crmDeals.filter(d => d.stage === 'closed_won');
-    const totalClosed = crmDeals.filter(d => d.stage === 'closed_won' || d.stage === 'closed_lost').length;
+    const activeDeals = deals.filter(d => !['closed_won', 'closed_lost'].includes(d.stage));
+    const wonDeals = deals.filter(d => d.stage === 'closed_won');
+    const totalClosed = deals.filter(d => d.stage === 'closed_won' || d.stage === 'closed_lost').length;
     return {
-      totalLeads: crmLeads.length,
+      totalLeads: leads.length,
       activeDeals: activeDeals.length,
       pipelineValue: activeDeals.reduce((sum, d) => sum + d.value, 0),
       wonValue: wonDeals.reduce((sum, d) => sum + d.value, 0),
@@ -160,7 +194,7 @@ export const CRMPage = ({
 
   const allTags = useMemo(() => {
     const tags = new Set();
-    crmContacts.forEach(c => c.tags.forEach(t => tags.add(t)));
+    contacts.forEach(c => c.tags.forEach(t => tags.add(t)));
     return Array.from(tags).sort();
   }, []);
 
@@ -272,7 +306,7 @@ export const CRMPage = ({
         <div className="p-5 rounded-2xl border" style={cardStyle}>
           <h3 className="font-semibold mb-4" style={{ color: theme.text.primary }}>Top Deals</h3>
           <div className="space-y-3">
-            {crmDeals
+            {deals
               .filter(d => !['closed_won', 'closed_lost'].includes(d.stage))
               .sort((a, b) => b.value - a.value)
               .slice(0, 5)
@@ -296,7 +330,7 @@ export const CRMPage = ({
       <div className="p-5 rounded-2xl border" style={cardStyle}>
         <h3 className="font-semibold mb-4" style={{ color: theme.text.primary }}>Recent Activities</h3>
         <div className="space-y-3">
-          {crmActivities.slice(0, 6).map(act => (
+          {activities.slice(0, 6).map(act => (
             <div key={act.id} className="flex gap-3 items-start">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
                 {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
@@ -327,7 +361,7 @@ export const CRMPage = ({
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Object.entries(CRM_LEAD_STATUSES).map(([key, s]) => {
-          const count = crmLeads.filter(l => l.status === key).length;
+          const count = leads.filter(l => l.status === key).length;
           return (
             <div key={key} className="p-4 rounded-xl border flex items-center gap-3" style={cardStyle}>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${s.color}15` }}>
@@ -358,7 +392,7 @@ export const CRMPage = ({
           <option value="all">All Sources</option>
           {Object.entries(CRM_LEAD_SOURCES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
-        <button onClick={() => addToast({ type: 'info', message: 'New lead form coming soon' })} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+        <button onClick={() => setShowNewLeadDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
           <Plus size={16} /> Add Lead
         </button>
         <button
@@ -481,6 +515,9 @@ export const CRMPage = ({
             className="w-full pl-10 pr-4 py-2 rounded-lg border text-sm" style={inputStyle} />
         </div>
         <div className="flex gap-2">
+          <button onClick={() => setShowNewDealDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+            <Plus size={16} /> Add Deal
+          </button>
           <button onClick={() => setDealView('kanban')} className={`px-3 py-1.5 rounded-lg text-sm ${dealView === 'kanban' ? 'font-medium' : ''}`}
             style={{ backgroundColor: dealView === 'kanban' ? theme.accent.light : 'transparent', color: dealView === 'kanban' ? theme.accent.primary : theme.text.secondary }}>
             Board
@@ -549,7 +586,7 @@ export const CRMPage = ({
                 </tr>
               </thead>
               <tbody>
-                {crmDeals.filter(d => {
+                {deals.filter(d => {
                   if (!dealSearch) return true;
                   const q = dealSearch.toLowerCase();
                   return d.title.toLowerCase().includes(q) || d.company.toLowerCase().includes(q);
@@ -601,7 +638,7 @@ export const CRMPage = ({
           <option value="all">All Tags</option>
           {allTags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
         </select>
-        <button onClick={() => addToast({ type: 'info', message: 'New contact form coming soon' })} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+        <button onClick={() => setShowNewContactDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
           <UserPlus size={16} /> Add Contact
         </button>
         <button
@@ -702,7 +739,7 @@ export const CRMPage = ({
           <div>
             <p className="text-sm font-medium mb-2" style={{ color: theme.text.primary }}>Activity Timeline</p>
             <div className="space-y-2">
-              {crmActivities.filter(a => a.contactName === selectedContact.name).slice(0, 5).map(act => (
+              {activities.filter(a => a.contactName === selectedContact.name).slice(0, 5).map(act => (
                 <div key={act.id} className="flex items-center gap-3 p-2 rounded-lg" style={{ backgroundColor: theme.bg.tertiary }}>
                   <div className="w-6 h-6 rounded flex items-center justify-center" style={{ backgroundColor: CRM_ACTIVITY_TYPES[act.type].bg }}>
                     {act.type === 'call' && <Phone size={16} style={{ color: CRM_ACTIVITY_TYPES[act.type].color }} />}
@@ -717,7 +754,7 @@ export const CRMPage = ({
                   </div>
                 </div>
               ))}
-              {crmActivities.filter(a => a.contactName === selectedContact.name).length === 0 && (
+              {activities.filter(a => a.contactName === selectedContact.name).length === 0 && (
                 <p className="text-xs py-2" style={{ color: theme.text.secondary }}>No activities recorded</p>
               )}
             </div>
@@ -732,9 +769,9 @@ export const CRMPage = ({
     <div className="space-y-6">
       <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
         {[
-          { label: 'Scheduled', count: crmActivities.filter(a => a.status === 'scheduled').length, color: '#3B82F6', bg: '#EFF6FF' },
-          { label: 'Completed', count: crmActivities.filter(a => a.status === 'completed').length, color: '#10B981', bg: '#ECFDF5' },
-          { label: 'Overdue', count: crmActivities.filter(a => a.status === 'overdue').length, color: '#EF4444', bg: '#FEF2F2' },
+          { label: 'Scheduled', count: activities.filter(a => a.status === 'scheduled').length, color: '#3B82F6', bg: '#EFF6FF' },
+          { label: 'Completed', count: activities.filter(a => a.status === 'completed').length, color: '#10B981', bg: '#ECFDF5' },
+          { label: 'Overdue', count: activities.filter(a => a.status === 'overdue').length, color: '#EF4444', bg: '#FEF2F2' },
         ].map(item => (
           <div key={item.label} className="p-4 rounded-xl border flex items-center gap-3" style={cardStyle}>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: item.bg }}>
@@ -764,6 +801,9 @@ export const CRMPage = ({
           <option value="completed">Completed</option>
           <option value="overdue">Overdue</option>
         </select>
+        <button onClick={() => setShowNewActivityDrawer(true)} className={btnOutline} style={{ borderColor: theme.accent.primary, color: theme.accent.primary }}>
+          <Plus size={16} /> Add Activity
+        </button>
         <button
           onClick={() => {
             const exportData = filteredActivities.map(activity => ({
@@ -847,11 +887,11 @@ export const CRMPage = ({
   // ============ REPORTS VIEW ============
   const renderReports = () => {
     const conversionFunnel = [
-      { stage: 'Leads', count: crmLeads.length, color: '#3B82F6' },
-      { stage: 'Qualified', count: crmLeads.filter(l => l.status === 'qualified').length, color: '#8B5CF6' },
-      { stage: 'Deals Created', count: crmDeals.length, color: '#F59E0B' },
-      { stage: 'Proposals', count: crmDeals.filter(d => ['proposal', 'negotiation', 'closed_won'].includes(d.stage)).length, color: '#F97316' },
-      { stage: 'Won', count: crmDeals.filter(d => d.stage === 'closed_won').length, color: '#10B981' },
+      { stage: 'Leads', count: leads.length, color: '#3B82F6' },
+      { stage: 'Qualified', count: leads.filter(l => l.status === 'qualified').length, color: '#8B5CF6' },
+      { stage: 'Deals Created', count: deals.length, color: '#F59E0B' },
+      { stage: 'Proposals', count: deals.filter(d => ['proposal', 'negotiation', 'closed_won'].includes(d.stage)).length, color: '#F97316' },
+      { stage: 'Won', count: deals.filter(d => d.stage === 'closed_won').length, color: '#10B981' },
     ];
     const maxCount = Math.max(...conversionFunnel.map(s => s.count));
 
@@ -859,9 +899,9 @@ export const CRMPage = ({
       <div className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <MetricCard title="Total Pipeline" value={`GH₵ ${(crmMetrics.pipelineValue / 1000).toFixed(0)}K`} icon={DollarSign} loading={loading} />
-          <MetricCard title="Avg Deal Size" value={`GH₵ ${Math.round(crmDeals.reduce((s, d) => s + d.value, 0) / crmDeals.length / 1000)}K`} icon={BarChart3} loading={loading} />
+          <MetricCard title="Avg Deal Size" value={`GH₵ ${Math.round(deals.reduce((s, d) => s + d.value, 0) / deals.length / 1000)}K`} icon={BarChart3} loading={loading} />
           <MetricCard title="Win Rate" value={`${crmMetrics.conversionRate}%`} icon={TrendingUp} loading={loading} />
-          <MetricCard title="Active Leads" value={crmLeads.filter(l => l.status !== 'unqualified').length} icon={Target} loading={loading} />
+          <MetricCard title="Active Leads" value={leads.filter(l => l.status !== 'unqualified').length} icon={Target} loading={loading} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -878,7 +918,7 @@ export const CRMPage = ({
                   <div className="w-full h-6 rounded-lg overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
                     <div className="h-full rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
                       style={{ width: `${Math.max((item.count / maxCount) * 100, 8)}%`, backgroundColor: item.color }}>
-                      <span className="text-xs text-white font-medium">{Math.round((item.count / crmLeads.length) * 100)}%</span>
+                      <span className="text-xs text-white font-medium">{Math.round((item.count / leads.length) * 100)}%</span>
                     </div>
                   </div>
                 </div>
@@ -956,10 +996,10 @@ export const CRMPage = ({
               </thead>
               <tbody>
                 {['Ama Owusu', 'Daniel Boateng', 'Kwame Asante'].map(name => {
-                  const leads = crmLeads.filter(l => l.assignedTo === name).length;
-                  const deals = crmDeals.filter(d => d.assignedTo === name && !['closed_won', 'closed_lost'].includes(d.stage));
-                  const won = crmDeals.filter(d => d.assignedTo === name && d.stage === 'closed_won');
-                  const acts = crmActivities.filter(a => a.assignedTo === name).length;
+                  const leads = leads.filter(l => l.assignedTo === name).length;
+                  const deals = deals.filter(d => d.assignedTo === name && !['closed_won', 'closed_lost'].includes(d.stage));
+                  const won = deals.filter(d => d.assignedTo === name && d.stage === 'closed_won');
+                  const acts = activities.filter(a => a.assignedTo === name).length;
                   return (
                     <tr key={name} className="border-t" style={{ borderColor: theme.border.primary }}>
                       <td className="px-4 py-3 font-medium" style={{ color: theme.text.primary }}>{name}</td>
@@ -991,7 +1031,7 @@ export const CRMPage = ({
           <p style={{ color: theme.text.secondary }}>
             {currentView === 'Dashboard' && 'Sales pipeline overview and key metrics'}
             {currentView === 'Leads' && `${filteredLeads.length} leads · Manage your sales pipeline`}
-            {currentView === 'Pipeline' && `${crmDeals.length} deals across ${Object.keys(CRM_STAGES).length} stages`}
+            {currentView === 'Pipeline' && `${deals.length} deals across ${Object.keys(CRM_STAGES).length} stages`}
             {currentView === 'Contacts' && `${filteredContacts.length} contacts in your network`}
             {currentView === 'Activities' && `${filteredActivities.length} activities · Track your team's work`}
             {currentView === 'Reports' && 'Analytics and performance metrics'}
@@ -1014,6 +1054,28 @@ export const CRMPage = ({
       {currentView === 'Contacts' && renderContacts()}
       {currentView === 'Activities' && renderActivities()}
       {currentView === 'Reports' && renderReports()}
+
+      {/* Drawers */}
+      <NewLeadDrawer
+        isOpen={showNewLeadDrawer}
+        onClose={() => setShowNewLeadDrawer(false)}
+        onSave={handleSaveLead}
+      />
+      <NewContactDrawer
+        isOpen={showNewContactDrawer}
+        onClose={() => setShowNewContactDrawer(false)}
+        onSave={handleSaveContact}
+      />
+      <NewDealDrawer
+        isOpen={showNewDealDrawer}
+        onClose={() => setShowNewDealDrawer(false)}
+        onSave={handleSaveDeal}
+      />
+      <NewActivityDrawer
+        isOpen={showNewActivityDrawer}
+        onClose={() => setShowNewActivityDrawer(false)}
+        onSave={handleSaveActivity}
+      />
     </div>
   );
 };
