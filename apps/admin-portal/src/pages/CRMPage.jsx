@@ -200,7 +200,7 @@ export const CRMPage = ({
 
   // ============ SHARED STYLES ============
   const cardStyle = {
-    backgroundColor: theme.bg.card,
+    backgroundColor: 'transparent',
     borderColor: theme.border.primary
   };
   const inputStyle = {
@@ -544,11 +544,11 @@ export const CRMPage = ({
                   </div>
                   <span className="text-xs font-medium" style={{ color: theme.text.secondary }}>GH₵ {(stageValue / 1000).toFixed(0)}K</span>
                 </div>
-                <div className="flex-1 space-y-2 p-2 rounded-xl" style={{ backgroundColor: theme.bg.secondary }}>
+                <div className="flex-1 space-y-2 p-2 rounded-xl" style={{ backgroundColor: 'transparent' }}>
                   {deals.length === 0 ? (
                     <p className="text-xs text-center py-8" style={{ color: theme.text.secondary }}>No deals</p>
                   ) : deals.map(deal => (
-                    <div key={deal.id} className="p-3 rounded-xl border cursor-pointer transition-all duration-150" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}
+                    <div key={deal.id} className="p-3 rounded-xl border cursor-pointer transition-all duration-150" style={{ backgroundColor: 'transparent', borderColor: theme.border.primary }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = stage.color; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = theme.border.primary; e.currentTarget.style.transform = 'translateY(0)'; }}>
                       <p className="font-medium text-sm mb-1 truncate" style={{ color: theme.text.primary }}>{deal.title}</p>
