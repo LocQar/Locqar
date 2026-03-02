@@ -19,6 +19,8 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave, activity = null }) 
     dueTime: ''
   });
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (activity) {
       setForm({
@@ -39,11 +41,26 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave, activity = null }) 
         dueDate: '', dueTime: ''
       });
     }
+    setErrors({});
   }, [activity, isOpen]);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!form.subject.trim()) {
+      newErrors.subject = 'Subject is required';
+    }
+
+    if (!form.dueDate) {
+      newErrors.dueDate = 'Due date is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = () => {
-    if (!form.subject || !form.dueDate) {
-      alert('Please fill in subject and due date');
+    if (!validateForm()) {
       return;
     }
 
@@ -154,8 +171,9 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave, activity = null }) 
                 'e.g. Meeting notes'
               }
               className="w-full px-3 py-2.5 rounded-xl border text-sm"
-              style={inputStyle}
+              style={{ ...inputStyle, borderColor: errors.subject ? '#EF4444' : theme.border.primary }}
             />
+            {errors.subject && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.subject}</p>}
           </div>
 
           <div>
@@ -217,8 +235,9 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave, activity = null }) 
                 value={form.dueDate}
                 onChange={e => setForm({ ...form, dueDate: e.target.value })}
                 className="w-full px-3 py-2.5 rounded-xl border text-sm"
-                style={inputStyle}
+                style={{ ...inputStyle, borderColor: errors.dueDate ? '#EF4444' : theme.border.primary }}
               />
+              {errors.dueDate && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.dueDate}</p>}
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block" style={{ color: theme.text.secondary }}>

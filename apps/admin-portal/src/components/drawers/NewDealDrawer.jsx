@@ -19,6 +19,8 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
     notes: ''
   });
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (deal) {
       setForm({
@@ -39,11 +41,30 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
         expectedCloseDate: '', notes: ''
       });
     }
+    setErrors({});
   }, [deal, isOpen]);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!form.title.trim()) {
+      newErrors.title = 'Deal title is required';
+    }
+
+    if (!form.company.trim()) {
+      newErrors.company = 'Company is required';
+    }
+
+    if (!form.value || parseInt(form.value) <= 0) {
+      newErrors.value = 'Deal value must be greater than 0';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = () => {
-    if (!form.title || !form.company || !form.value) {
-      alert('Please fill in all required fields');
+    if (!validateForm()) {
       return;
     }
 
@@ -124,8 +145,9 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
               onChange={e => setForm({ ...form, title: e.target.value })}
               placeholder="e.g. Enterprise Logistics Solution"
               className="w-full px-3 py-2.5 rounded-xl border text-sm"
-              style={inputStyle}
+              style={{ ...inputStyle, borderColor: errors.title ? '#EF4444' : theme.border.primary }}
             />
+            {errors.title && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.title}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -139,8 +161,9 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
                 onChange={e => setForm({ ...form, company: e.target.value })}
                 placeholder="e.g. Tema Port Ltd"
                 className="w-full px-3 py-2.5 rounded-xl border text-sm"
-                style={inputStyle}
+                style={{ ...inputStyle, borderColor: errors.company ? '#EF4444' : theme.border.primary }}
               />
+              {errors.company && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.company}</p>}
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block" style={{ color: theme.text.secondary }}>
@@ -169,8 +192,9 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
                 onChange={e => setForm({ ...form, value: e.target.value })}
                 placeholder="0"
                 className="w-full px-3 py-2.5 rounded-xl border text-sm"
-                style={inputStyle}
+                style={{ ...inputStyle, borderColor: errors.value ? '#EF4444' : theme.border.primary }}
               />
+              {errors.value && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.value}</p>}
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block" style={{ color: theme.text.secondary }}>
