@@ -1,3 +1,8 @@
+// Font families
+export const ff = "'Inter', system-ui, -apple-system, sans-serif";
+export const hf = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+export const mf = "'JetBrains Mono', 'SF Mono', 'Fira Code', monospace";
+
 export const lightTheme = {
   bg: '#F8FAFC', card: '#FFFFFF', fill: '#F1F5F9', fill2: '#E2E8F0', border: '#E2E8F0',
   text: '#0F172A', sec: '#475569', muted: '#94A3B8',
@@ -31,3 +36,6 @@ export const darkTheme = {
   gradientSuccess: '#34D399',
   gradientBlue: '#60A5FA',
 };
+
+// Default theme (light)
+export const T = Object.assign({}, lightTheme);
