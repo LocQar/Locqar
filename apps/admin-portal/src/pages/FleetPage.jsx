@@ -7,7 +7,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { MetricCard, StatusBadge } from '../components/ui';
 import { NewVehicleDrawer } from '../components/drawers';
-import { vehicles, maintenanceLogsData, fuelLogsData } from '../constants/mockData';
+import { vehiclesData, maintenanceLogsData, fuelLogsData } from '../constants/mockData';
 
 export const FleetPage = ({ addToast }) => {
     const { theme } = useTheme();

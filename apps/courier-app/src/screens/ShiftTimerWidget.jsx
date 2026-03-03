@@ -18,7 +18,7 @@ const ShiftTimer = ({ shiftState, onClockIn, onClockOut, onBreak, onResume, T })
   if (!shiftState?.isActive) return <button onClick={onClockIn} className="press" style={{ width: '100%', borderRadius: 16, height: 52, background: T.green, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: '#fff', fontWeight: 800, fontSize: 15, boxShadow: `0 8px 16px ${T.green}30`, letterSpacing: '-0.01em' }}>
     <Clock size={18} />Clock In
   </button>;
-  return <div style={{ borderRadius: 12, padding: 16, background: T.card, border: `1px solid ${T.border}`, marginBottom: 12 }}>
+  return <div style={{ borderRadius: 16, padding: 16, background: T.card, border: `1.5px solid ${T.border}`, boxShadow: T.shadow }}>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{ width: 8, height: 8, borderRadius: 4, background: shiftState.currentBreakStart ? T.amber : T.green }} />

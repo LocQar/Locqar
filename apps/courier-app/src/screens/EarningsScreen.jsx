@@ -48,10 +48,10 @@ const EarningsScreen = ({ onBack, T }) => {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
         {[
-          { l: 'Today', v: `\u20B5${driver.todayEarn}`, accent: T.green, bg: T.greenBg },
-          { l: 'This Month', v: `\u20B5${driver.monthEarn}`, accent: T.blue, bg: T.blueBg },
-          { l: 'Deliveries', v: driver.deliveries, accent: T.purple, bg: T.purpleBg },
-          { l: 'On-Time Rate', v: `${driver.onTime}%`, accent: T.amber, bg: T.amberBg },
+          { l: 'Today', v: `\u20B5${driver.todayEarn.toFixed(2)}`, accent: T.green, bg: T.greenBg },
+          { l: 'This Month', v: `\u20B5${driver.monthEarn.toFixed(2)}`, accent: T.accent, bg: T.accentBg },
+          { l: 'Deliveries', v: driver.deliveries, accent: T.sec, bg: T.fill },
+          { l: 'On-Time Rate', v: `${driver.onTime}%`, accent: T.sec, bg: T.fill },
         ].map((s, i) =>
           <div key={i} className="fu" style={{ borderRadius: 16, padding: 16, background: T.card, boxShadow: T.shadow, animationDelay: `${i * 0.08}s`, borderLeft: `3px solid ${s.accent}` }}>
             <div style={{ width: 32, height: 32, borderRadius: 8, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>

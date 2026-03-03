@@ -1,50 +1,116 @@
 import React, { useState, useEffect, useRef } from 'react';
 import StatusBar from '../components/StatusBar';
-import { ArrowLeft, Shield, RefreshCw } from '../components/Icons';
+import { ArrowLeft } from '../components/Icons';
+
+const ff = "'Inter', system-ui, -apple-system, sans-serif";
+const hf = "'Space Grotesk', 'DM Sans', system-ui, -apple-system, sans-serif";
+const mf = "'JetBrains Mono', 'SF Mono', 'Fira Code', monospace";
 
 const OtpScreen = ({ phone, onVerify, onBack, T }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [ld, setLd] = useState(false);
-  const [resent, setResent] = useState(false);
   const [timer, setTimer] = useState(30);
+  const [success, setSuccess] = useState(false);
   const refs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
 
   useEffect(() => { refs[0].current?.focus() }, []);
-  useEffect(() => { if (timer > 0) { const i = setInterval(() => setTimer(t => t - 1), 1000); return () => clearInterval(i) } }, [timer]);
+  useEffect(() => {
+    if (timer > 0) {
+      const i = setInterval(() => setTimer(t => t - 1), 1000);
+      return () => clearInterval(i);
+    }
+  }, [timer]);
 
-  const handleChange = (val, idx) => {
-    if (!/^\d*$/.test(val)) return;
-    const next = [...otp]; next[idx] = val.slice(-1); setOtp(next);
-    if (val && idx < 5) refs[idx + 1].current?.focus();
-    if (next.every(d => d)) { setLd(true); setTimeout(onVerify, 1200) }
+  const handleChange = (i, v) => {
+    if (!/^\d*$/.test(v) || v.length > 1) return;
+    const next = [...otp]; next[i] = v; setOtp(next);
+    if (v && i < 5) refs[i + 1].current?.focus();
+    if (next.every(d => d)) {
+      setSuccess(true);
+      setTimeout(onVerify, 600);
+    }
   };
-  const handleKey = (e, idx) => { if (e.key === 'Backspace' && !otp[idx] && idx > 0) refs[idx - 1].current?.focus() };
-  const resendOtp = () => { setResent(true); setTimer(30); setTimeout(() => setResent(false), 2000) };
 
-  return <div style={{ minHeight: '100vh', background: T.bg, display: 'flex', flexDirection: 'column' }}><StatusBar />
-    <div style={{ padding: '8px 20px' }}><button onClick={onBack} className="tap" style={{ width: 40, height: 40, borderRadius: 20, background: T.fill, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ArrowLeft size={20} /></button></div>
-    <div style={{ flex: 1, padding: '32px 24px 0' }}>
-      <div className="fu" style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{ width: 64, height: 64, borderRadius: 16, background: T.blueBg, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}><Shield size={28} style={{ color: T.blue }} /></div>
-        <h1 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 6px' }}>Verify your number</h1>
-        <p style={{ fontSize: 14, color: T.sec, margin: 0 }}>We sent a 6-digit code to</p>
-        <p style={{ fontSize: 16, fontWeight: 700, margin: '4px 0 0' }}>+233 {phone}</p>
+  const handleKey = (i, e) => {
+    if (e.key === 'Backspace' && !otp[i] && i > 0) refs[i - 1].current?.focus();
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: T.bg }}>
+      <StatusBar T={T} />
+
+      <div style={{ padding: '8px 24px' }}>
+        <button
+          onClick={onBack}
+          className="tap"
+          style={{
+            width: 40, height: 40, borderRadius: 20,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: T.fill, border: `1px solid ${T.border}`,
+          }}
+        >
+          <ArrowLeft size={18} style={{ color: T.text }} />
+        </button>
       </div>
-      <div className="fu stg1" style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 24 }}>
-        {otp.map((d, i) => (
-          <input key={i} ref={refs[i]} value={d} onChange={e => handleChange(e.target.value, i)} onKeyDown={e => handleKey(e, i)}
-            style={{ width: 48, height: 56, borderRadius: 12, border: `2px solid ${d ? T.blue : T.border}`, background: d ? T.blueBg : T.fill, textAlign: 'center', fontSize: 22, fontWeight: 700, color: T.text, transition: 'border .2s, background .2s' }}
-            maxLength={1} inputMode="numeric" />
-        ))}
-      </div>
-      {ld && <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}><RefreshCw size={20} className="sp" style={{ color: T.blue }} /></div>}
-      <div className="fu stg2" style={{ textAlign: 'center' }}>
-        {timer > 0 ? <p style={{ fontSize: 14, color: T.sec }}>Resend code in <b style={{ color: T.text }}>{timer}s</b></p>
-          : <button onClick={resendOtp} className="tap" style={{ border: 'none', background: 'none', fontSize: 14, fontWeight: 700, color: T.blue }}>{resent ? 'Code resent!' : 'Resend Code'}</button>}
+
+      <div style={{ flex: 1, padding: '24px 24px 0' }}>
+        <div className="fu">
+          <div style={{
+            width: 52, height: 52, borderRadius: 16,
+            background: T.fill,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 26, marginBottom: 20,
+          }}>🔐</div>
+          <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em', fontFamily: hf, color: T.text }}>
+            Verification code
+          </h1>
+          <p style={{ fontSize: 14, color: T.sec, margin: '0 0 28px', fontFamily: ff }}>
+            Sent to{' '}
+            <span style={{ fontWeight: 700, color: T.text, fontFamily: mf }}>+233 {phone}</span>
+          </p>
+        </div>
+
+        <div className="fu d1" style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 32 }}>
+          {otp.map((d, i) => (
+            <input
+              key={i}
+              ref={refs[i]}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={d}
+              onChange={e => handleChange(i, e.target.value)}
+              onKeyDown={e => handleKey(i, e)}
+              style={{
+                width: 48, height: 56, borderRadius: 14,
+                textAlign: 'center', fontSize: 24, fontWeight: 700,
+                fontFamily: mf,
+                background: T.fill,
+                border: `2px solid ${d ? T.text : 'transparent'}`,
+                color: T.text,
+                transition: 'all .2s',
+                outline: 'none',
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="fu d2" style={{ textAlign: 'center' }}>
+          {timer > 0
+            ? <p style={{ fontSize: 13, color: T.sec, fontFamily: ff }}>
+                Resend in <b style={{ color: T.text, fontFamily: mf }}>{timer}s</b>
+              </p>
+            : <button
+                onClick={() => setTimer(30)}
+                className="tap"
+                style={{ border: 'none', background: 'none', fontSize: 13, fontWeight: 700, color: T.red, fontFamily: ff }}
+              >
+                Resend code
+              </button>
+          }
+        </div>
       </div>
     </div>
-    <p style={{ padding: '0 24px 32px', textAlign: 'center', fontSize: 12, color: T.muted }}>Didn't receive the code? Check your SMS inbox</p>
-  </div>;
+  );
 };
 
 export default OtpScreen;

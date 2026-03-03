@@ -7,8 +7,8 @@ const NotifsScreen = ({ onBack, notifItems, setNotifItems, T }) => {
   const items = notifItems; const setItems = setNotifItems;
   const unread = items.filter(n => !n.read).length;
   const iconMap = {
-    urgent: { icon: <AlertTriangle size={18} />, bg: T.amberBg, color: T.amber },
-    info: { icon: <Bell size={18} />, bg: T.blueBg, color: T.blue },
+    urgent: { icon: <AlertTriangle size={18} />, bg: T.redBg, color: T.red },
+    info: { icon: <Bell size={18} />, bg: T.accentBg, color: T.accent },
     success: { icon: <CheckCircle size={18} />, bg: T.greenBg, color: T.green },
   };
   return <div style={{ minHeight: '100vh', background: T.bg, paddingBottom: 32 }}><StatusBar />

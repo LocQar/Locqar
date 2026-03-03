@@ -1,39 +1,50 @@
-import React from "react";
-import { T } from "../theme/themes";
+import React from 'react';
+import { lightTheme } from '../theme/themes';
+
+const T = lightTheme;
 
 export default function LoadingSpinner({ size = 40, color, style }) {
-  const spinnerColor = color || T.accent;
+  const spinnerColor = color || T.blue;
 
   return (
     <div
-      className="spin"
+      className="sp"
       style={{
         width: size,
         height: size,
-        border: `${size / 10}px solid ${T.fill}`,
+        border: `${Math.max(2, size / 10)}px solid ${T.fill}`,
         borderTopColor: spinnerColor,
         borderRadius: '50%',
-        ...style
+        boxShadow: `0 0 12px ${spinnerColor}30`,
+        ...style,
       }}
     />
   );
 }
 
-export function LoadingDots({ size = 8, color, gap = 6 }) {
-  const dotColor = color || T.accent;
+export function LoadingDots({ size = 8, color, gap = 6, T: ThemeT }) {
+  const theme = ThemeT || lightTheme;
+  const dotColor = color || theme.blue;
 
   return (
-    <div className="flex items-center" style={{ gap }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap,
+      }}
+    >
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="loading-dot"
+          className="dotPulse"
           style={{
             width: size,
             height: size,
             borderRadius: '50%',
             background: dotColor,
-            animationDelay: `${i * 0.15}s`
+            animation: `dotPulse 1.4s ease-in-out infinite`,
+            animationDelay: `${i * 0.2}s`,
           }}
         />
       ))}
@@ -41,8 +52,9 @@ export function LoadingDots({ size = 8, color, gap = 6 }) {
   );
 }
 
-export function LoadingPulse({ size = 40, color }) {
-  const pulseColor = color || T.accent;
+export function LoadingPulse({ size = 40, color, T: ThemeT }) {
+  const theme = ThemeT || lightTheme;
+  const pulseColor = color || theme.blue;
 
   return (
     <div
@@ -51,8 +63,10 @@ export function LoadingPulse({ size = 40, color }) {
         width: size,
         height: size,
         borderRadius: '50%',
-        background: pulseColor + '40',
-        position: 'relative'
+        background: `${pulseColor}20`,
+        position: 'relative',
+        boxShadow: `0 0 24px ${pulseColor}25`,
+        animation: 'avatarPulse 2s ease-in-out infinite',
       }}
     >
       <div
@@ -60,30 +74,40 @@ export function LoadingPulse({ size = 40, color }) {
           position: 'absolute',
           inset: size / 4,
           borderRadius: '50%',
-          background: pulseColor
+          background: pulseColor,
         }}
       />
     </div>
   );
 }
 
-export function PageLoader({ message = 'Loading...' }) {
+export function PageLoader({ message = 'Loading...', T: ThemeT }) {
+  const theme = ThemeT || lightTheme;
+
   return (
     <div
-      className="fu fixed inset-0 flex flex-col items-center justify-center"
+      className="fu"
       style={{
-        background: T.bg,
-        zIndex: 9999
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: theme.bg,
+        zIndex: 9999,
+        animation: 'fadeUp 0.4s ease',
       }}
     >
       <LoadingSpinner size={48} />
       {message && (
         <p
           style={{
-            marginTop: 16,
+            marginTop: 20,
             fontSize: 14,
             fontWeight: 600,
-            color: T.sec
+            color: theme.sec,
+            animation: 'fadeUp 0.6s ease 0.2s both',
           }}
         >
           {message}
@@ -93,13 +117,22 @@ export function PageLoader({ message = 'Loading...' }) {
   );
 }
 
-export function InlineLoader({ size = 16, message }) {
+export function InlineLoader({ size = 16, message, T: ThemeT }) {
+  const theme = ThemeT || lightTheme;
+
   return (
-    <div className="flex items-center gap-2">
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+      }}
+    >
       <LoadingSpinner size={size} />
       {message && (
-        <span style={{ fontSize: 13, color: T.sec }}>{message}</span>
+        <span style={{ fontSize: 13, color: theme.sec, fontWeight: 600 }}>{message}</span>
       )}
     </div>
   );
 }
+

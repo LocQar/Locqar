@@ -20,7 +20,7 @@ const LockerDirectoryScreen = ({ tasks, adjLockers, onBack, T }) => {
     <div style={{ padding: '0 20px' }}>
       <div style={{ position: 'relative', marginBottom: 12 }}>
         <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: T.muted }} />
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search lockers..." style={{ width: '100%', height: 44, borderRadius: 12, border: `1.5px solid ${T.border}`, padding: '0 14px 0 40px', fontSize: 14, fontWeight: 500, background: T.fill }} />
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search lockers..." style={{ width: '100%', height: 44, borderRadius: 12, border: `1.5px solid ${T.border}`, padding: '0 14px 0 40px', fontSize: 14, fontWeight: 500, background: T.fill, color: T.text }} />
       </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
         {[{ id: 'all', l: 'All' }, { id: 'online', l: 'Online' }, { id: 'offline', l: 'Offline' }, { id: 'maintenance', l: 'Maintenance' }].map(f => (
@@ -31,15 +31,15 @@ const LockerDirectoryScreen = ({ tasks, adjLockers, onBack, T }) => {
         const isExp = expandedId === l.id;
         const taskCount = tasks.filter(t => t.locker === l.name && t.tab !== 'recall' && t.tab !== 'deposited').length;
         const totalCompartments = Object.values(l.avail).reduce((a, b) => a + b, 0);
-        return <div key={l.id} className="fu" style={{ borderRadius: 16, overflow: 'hidden', background: T.card, border: `1.5px solid ${isExp ? T.blue : T.border}`, boxShadow: T.shadow, marginBottom: 12 }}>
+        return <div key={l.id} className="fu" style={{ borderRadius: 16, overflow: 'hidden', background: T.card, border: `1.5px solid ${isExp ? T.accent : T.border}`, boxShadow: T.shadow, marginBottom: 12 }}>
           <button onClick={() => setExpandedId(isExp ? null : l.id)} className="tap" style={{ width: '100%', textAlign: 'left', border: 'none', background: 'transparent', padding: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: l.status === 'online' ? T.greenBg : l.status === 'maintenance' ? T.amberBg : T.redBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <MapPin size={22} style={{ color: l.status === 'online' ? T.green : l.status === 'maintenance' ? T.amber : T.red }} />
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: l.status === 'online' ? T.greenBg : l.status === 'maintenance' ? T.fill2 : T.redBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <MapPin size={22} style={{ color: l.status === 'online' ? T.green : l.status === 'maintenance' ? T.sec : T.red }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <p style={{ fontWeight: 700, fontSize: 15, margin: 0 }}>{l.name}</p>
-                <div style={{ width: 8, height: 8, borderRadius: 4, background: l.status === 'online' ? T.green : l.status === 'maintenance' ? T.amber : T.red }} />
+                <div style={{ width: 8, height: 8, borderRadius: 4, background: l.status === 'online' ? T.green : l.status === 'maintenance' ? T.sec : T.red }} />
               </div>
               <p style={{ fontSize: 12, color: T.sec, margin: '2px 0 0' }}>{l.addr}</p>
               <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
@@ -62,7 +62,7 @@ const LockerDirectoryScreen = ({ tasks, adjLockers, onBack, T }) => {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Battery size={14} style={{ color: l.bat > 80 ? T.green : l.bat > 40 ? T.amber : T.red }} />
+                <Battery size={14} style={{ color: l.bat > 80 ? T.green : l.bat > 40 ? T.sec : T.red }} />
                 <span style={{ fontSize: 12, fontWeight: 600 }}>{l.bat}%</span>
               </div>
               <span style={{ fontSize: 12, color: T.sec }}>{totalCompartments} compartments {'\u00B7'} {taskCount} active tasks</span>

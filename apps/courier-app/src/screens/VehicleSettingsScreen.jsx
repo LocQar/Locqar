@@ -17,7 +17,7 @@ const VehicleSettingsScreen = ({ vehicleConfig, setVehicleConfig, onBack, T }) =
         ))}
       </div>
       <p style={{ fontSize: 12, fontWeight: 700, color: T.muted, textTransform: 'uppercase', margin: '0 0 10px' }}>Capacity Limits</p>
-      <div style={{ borderRadius: 12, padding: 16, background: T.card, border: `1px solid ${T.border}` }}>
+      <div style={{ borderRadius: 16, padding: 16, background: T.card, border: `1.5px solid ${T.border}`, boxShadow: T.shadow }}>
         <div style={{ marginBottom: 12 }}>
           <p style={{ fontSize: 13, fontWeight: 600, margin: '0 0 6px' }}>Max Packages: {vehicleConfig.maxCapacity}</p>
           <input type="range" min={5} max={50} value={vehicleConfig.maxCapacity} onChange={e => setVehicleConfig(c => ({ ...c, maxCapacity: parseInt(e.target.value) }))} style={{ width: '100%' }} />

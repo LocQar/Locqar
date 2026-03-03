@@ -24,7 +24,7 @@ const ExceptionReportScreen = ({ task, onSubmit, onBack, T }) => {
         ))}
       </div>
       <p style={{ fontSize: 12, fontWeight: 700, color: T.muted, textTransform: 'uppercase', margin: '0 0 10px' }}>Description</p>
-      <textarea value={desc} onChange={e => setDesc(e.target.value)} placeholder="Describe the issue..." style={{ width: '100%', height: 100, borderRadius: 12, border: `1.5px solid ${T.border}`, padding: 14, fontSize: 14, fontFamily: 'inherit', resize: 'none', background: T.fill }} />
+      <textarea value={desc} onChange={e => setDesc(e.target.value)} placeholder="Describe the issue..." style={{ width: '100%', height: 100, borderRadius: 12, border: `1.5px solid ${T.border}`, padding: 14, fontSize: 14, fontFamily: 'inherit', resize: 'none', background: T.fill, color: T.text }} />
       {type && <div style={{ marginTop: 20 }}><SwipeConfirm label="Swipe to Submit Report" color={T.red} onConfirm={() => onSubmit({ type, description: desc, reportedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })} T={T} /></div>}
     </div>
   </div>;

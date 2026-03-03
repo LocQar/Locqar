@@ -27,6 +27,13 @@ import DeliveryHistoryScreen from './screens/DeliveryHistoryScreen';
 import ExceptionReportScreen from './screens/ExceptionReportScreen';
 import VehicleSettingsScreen from './screens/VehicleSettingsScreen';
 
+/* New Feature Screens */
+import NotificationsScreen from './screens/NotificationsScreen';
+import AnalyticsScreen from './screens/AnalyticsScreen';
+import SettingsScreen from './screens/SettingsScreen';
+import RouteMapScreen from './screens/RouteMapScreen';
+import ProofOfDeliveryScreen from './screens/ProofOfDeliveryScreen';
+
 /* localStorage helpers — import from shared when available */
 /* import { loadState, saveState } from '@locqar/shared/utils'; */
 const loadState = (key, def) => { try { const v = localStorage.getItem('locqar_' + key); return v ? JSON.parse(v) : def } catch (e) { return def } };
@@ -41,9 +48,9 @@ const OfflineBanner = ({ T }) => {
     return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off) };
   }, []);
   if (isOnline) return null;
-  return <div style={{ background: T.amberBg, borderBottom: `1px solid ${T.amber}`, padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
-    <Wifi size={14} style={{ color: T.amber }} />
-    <span style={{ fontSize: 12, fontWeight: 600, color: T.amber }}>You're offline. Actions will sync when reconnected.</span>
+  return <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: T.amber, padding: '8px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+    <Wifi size={14} style={{ color: '#fff' }} />
+    <span style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>You're offline. Actions will sync when reconnected.</span>
   </div>;
 };
 
@@ -91,24 +98,91 @@ const VerificationModal = ({ task, onVerified, onClose, T }) => {
 
 /* ---- NAV ---- */
 const Nav = ({ active, onNav, T }) => (
-  <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: T.card, borderTop: `1px solid ${T.border}`, paddingBottom: 'env(safe-area-inset-bottom, 0px)', boxShadow: '0 -4px 20px rgba(0,0,0,.07)' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-around', maxWidth: 448, margin: '0 auto', padding: '4px 0 6px' }}>
+  <div
+    style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      background: T.card,
+      borderTop: `1px solid ${T.border}`,
+      paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      boxShadow: '0 -8px 24px rgba(0,0,0,.08)',
+      backdropFilter: 'blur(12px)',
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-around',
+        maxWidth: 448,
+        margin: '0 auto',
+        padding: '8px 0 12px',
+      }}
+    >
       {[
         { id: 'home', l: 'Home' },
         { id: 'tasks', l: 'Tasks' },
         { id: 'schedule', l: 'Blocks' },
         { id: 'earnings', l: 'Earn' },
-        { id: 'profile', l: 'Profile' }
-      ].map(t => {
+        { id: 'profile', l: 'Profile' },
+      ].map((t) => {
         const isActive = active === t.id;
         return (
-          <button key={t.id} onClick={() => onNav(t.id)} className="tap"
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 14px', border: 'none', background: 'none', position: 'relative', color: isActive ? T.red : T.muted, transition: 'color .2s ease' }}>
-            {isActive && <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 28, height: 3, borderRadius: '0 0 3px 3px', background: T.red, animation: 'navPillSlide .25s ease both' }} />}
-            <span style={{ transition: 'transform .2s', transform: isActive ? 'translateY(1px)' : 'none' }}>
+          <button
+            key={t.id}
+            onClick={() => onNav(t.id)}
+            className="tap"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4,
+              padding: '8px 16px',
+              border: 'none',
+              background: isActive ? T.accentBg : 'transparent',
+              borderRadius: isActive ? 14 : 12,
+              position: 'relative',
+              color: isActive ? T.accent : T.muted,
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              cursor: 'pointer',
+            }}
+          >
+            {isActive && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: -8,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 24,
+                  height: 3,
+                  borderRadius: 2,
+                  background: T.accent,
+                  animation: 'navPillSlide 0.25s ease both',
+                }}
+              />
+            )}
+            <span
+              style={{
+                transition: 'all 0.2s ease',
+                transform: isActive ? 'scale(1.1) translateY(-1px)' : 'scale(1)',
+                lineHeight: 1,
+              }}
+            >
               {NavIcons[t.id]?.(isActive)}
             </span>
-            <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, letterSpacing: isActive ? '0.02em' : '0', transition: 'all .2s' }}>{t.l}</span>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: isActive ? 700 : 500,
+                letterSpacing: isActive ? '0.02em' : 0,
+                transition: 'all 0.2s ease',
+                color: 'inherit',
+              }}
+            >
+              {t.l}
+            </span>
           </button>
         );
       })}
@@ -140,6 +214,7 @@ function LocQarDriverApp() {
   const [vehicleConfig, setVehicleConfig] = useState(() => loadState('vehicle', { type: 'Van', maxCapacity: 30, maxWeight: 150 }));
   const [exceptionTask, setExceptionTask] = useState(null);
   const [verifyTask, setVerifyTask] = useState(null);
+  const [selectedTaskForPOD, setSelectedTaskForPOD] = useState(null);
   const undoTimer = useRef(null);
   const hist = useRef([]);
 
@@ -222,7 +297,7 @@ function LocQarDriverApp() {
       {scr === 'home' && <HomeScreen dels={dels} tasks={tasks} activeBlock={activeBlock} onNav={nav} notifCount={notifCount} onRefresh={() => { }} shiftState={shiftState} onClockIn={clockIn} onClockOut={clockOut} onBreak={startBreak} onResume={endBreak} vehicleConfig={vehicleConfig} T={T} />}
       {scr === 'schedule' && <ScheduleScreen onBack={back} onAccept={acceptBlock} T={T} />}
       {scr === 'itinerary' && <ItineraryScreen dels={dels} tasks={tasks} onBack={back} onNav={nav} T={T} />}
-      {scr === 'stop' && curLock && <StopScreen locker={curLock} stopNum={curStop} dels={dels} onBack={back} onNav={nav} adjLockers={adjLockers} T={T} />}
+      {scr === 'stop' && curLock && <StopScreen locker={curLock} stopNum={curStop} dels={dels} recalls={tasks.filter(t => t.tab === 'recall' && t.locker === curLock.name)} onBack={back} onNav={nav} adjLockers={adjLockers} T={T} />}
       {scr === 'batch' && curLock && <BatchDepositScreen locker={curLock} stopNum={curStop} dels={dels} onBack={back} onDeposit={depositOne} T={T} />}
       {scr === 'tasks' && <TasksScreen tasks={tasks} setTasks={setTasks} onBack={back} T={T} />}
       {scr === 'earnings' && <EarningsScreen onBack={back} T={T} />}
@@ -236,6 +311,13 @@ function LocQarDriverApp() {
       {scr === 'history' && <DeliveryHistoryScreen tasks={tasks} onBack={back} T={T} />}
       {scr === 'exception' && exceptionTask && <ExceptionReportScreen task={exceptionTask} onSubmit={submitException} onBack={() => { setExceptionTask(null); back() }} T={T} />}
       {scr === 'vehicleSettings' && <VehicleSettingsScreen vehicleConfig={vehicleConfig} setVehicleConfig={setVehicleConfig} onBack={back} T={T} />}
+      
+      {/* New Feature Screens */}
+      {scr === 'notifications' && <NotificationsScreen onBack={back} T={T} />}
+      {scr === 'analytics' && <AnalyticsScreen onBack={back} T={T} />}
+      {scr === 'settings' && <SettingsScreen onBack={back} onLogout={() => { setScr('login'); setActiveBlock(null); hist.current = []; localStorage.removeItem('locqar_tasks'); localStorage.removeItem('locqar_activeBlock') }} T={T} />}
+      {scr === 'routeMap' && <RouteMapScreen onBack={back} onSelectLocker={(locker) => nav('batch', { locker: locker.name, stopNum: 1 })} dels={dels} activeBlock={activeBlock} T={T} />}
+      {scr === 'proofOfDelivery' && selectedTaskForPOD && <ProofOfDeliveryScreen task={selectedTaskForPOD} onConfirm={(proof) => { pushNotif('success', 'Proof Submitted', 'Delivery proof recorded'); setSelectedTaskForPOD(null); back() }} onBack={() => { setSelectedTaskForPOD(null); back() }} T={T} />}
     </div>
     <OfflineBanner T={T} />
     {verifyTask && <VerificationModal task={verifyTask} onVerified={() => { setVerifyTask(null) }} onClose={() => setVerifyTask(null)} T={T} />}

@@ -7,7 +7,7 @@ import { driver, lockersData } from '../data/mockData';
 import ShiftTimer from './ShiftTimerWidget';
 import VehicleCapacityCard from './VehicleCapacityWidget';
 
-const sizeColor = (s, T) => s === 'S' ? [T.blueBg, T.blue] : s === 'M' ? [T.greenBg, T.green] : s === 'L' ? [T.amberBg, T.amber] : [T.redBg, T.red];
+const sizeColor = (s, T) => s === 'S' ? [T.fill, T.muted] : s === 'M' ? [T.fill2, T.sec] : s === 'L' ? [T.border, T.text] : [T.text, T.bg];
 
 const getGreeting = () => { const h = new Date().getHours(); if (h < 12) return 'Good morning'; if (h < 17) return 'Good afternoon'; return 'Good evening'; };
 
@@ -15,9 +15,10 @@ const useScreenLoad = (ms = 300) => { const [ok, setOk] = useState(false); useEf
 
 const RATE_PER_PKG = 12.75;
 
-const SizeIcon = ({ sz, big, T }) => {
+const SizeIcon = ({ sz, big, sm, T }) => {
   const [bg, c] = sizeColor(sz, T);
-  return <div style={{ width: big ? 56 : 44, height: big ? 56 : 44, borderRadius: 12, background: bg, color: c, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: big ? 20 : 16, flexShrink: 0 }}>{sz}</div>;
+  const size = big ? 56 : sm ? 32 : 44;
+  return <div style={{ width: size, height: size, borderRadius: sm ? 8 : 12, background: bg, color: c, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: big ? 20 : sm ? 12 : 16, flexShrink: 0 }}>{sz}</div>;
 };
 
 const StopProgress = ({ current, total, doneP, totalP, T }) => (
@@ -60,7 +61,6 @@ const PieChart = ({ slices, size = 120, hole = 0.55, T }) => {
 const HomeScreen = ({ dels, tasks, activeBlock, onNav, notifCount, onRefresh, shiftState, onClockIn, onClockOut, onBreak, onResume, vehicleConfig, T }) => {
   const [online, setOnline] = useState(!!activeBlock);
   const total = dels.length, done = dels.filter(d => d.status === 'delivered').length;
-  const urg = dels.filter(d => d.pri === 'urgent' && d.status === 'pending').length;
   const pct = total > 0 ? (done / total) * 100 : 0;
   const curIdx = lockersData.findIndex(l => dels.some(d => d.locker === l.name && d.status === 'pending'));
   const curStop = curIdx >= 0 ? curIdx + 1 : lockersData.length;
@@ -72,12 +72,12 @@ const HomeScreen = ({ dels, tasks, activeBlock, onNav, notifCount, onRefresh, sh
   const recall = tasks.filter(t => t.tab === 'recall').length;
   const totalTasks = tasks.length;
   const dynamicEarn = deposited * RATE_PER_PKG;
+  const delivering = accepted + inTransit;
   const pieSlices = [
-    { label: 'Assigned', value: assigned, color: T.blue },
-    { label: 'Accepted', value: accepted, color: T.amber },
-    { label: 'In Transit', value: inTransit, color: T.purple },
-    { label: 'Deposited', value: deposited, color: T.green },
-    { label: 'Recalled', value: recall, color: T.red },
+    { label: 'Assigned', value: assigned, color: T.accentBg },
+    { label: 'Delivering', value: delivering, color: T.accent },
+    { label: 'Delivered', value: deposited, color: T.green },
+    { label: 'Recall', value: recall, color: T.red },
   ];
   const loaded = useScreenLoad(300);
 
@@ -114,11 +114,10 @@ const HomeScreen = ({ dels, tasks, activeBlock, onNav, notifCount, onRefresh, sh
       {/* Premium Hero Card */}
       <div style={{
         borderRadius: 20, marginBottom: 16, overflow: 'hidden', position: 'relative',
-        background: `linear-gradient(135deg, ${T.text} 0%, #1a2d4a 60%, #0f1928 100%)`,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.22)',
+        background: `linear-gradient(160deg, #000000 0%, #1C1C1E 100%)`,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.28)',
       }}>
-        <div style={{ position: 'absolute', top: -30, right: -20, width: 130, height: 130, borderRadius: '50%', background: 'rgba(225,29,72,0.12)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -20, left: -10, width: 90, height: 90, borderRadius: '50%', background: 'rgba(59,130,246,0.1)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -30, right: -20, width: 130, height: 130, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 16px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -145,7 +144,7 @@ const HomeScreen = ({ dels, tasks, activeBlock, onNav, notifCount, onRefresh, sh
         <div style={{ padding: '14px 16px 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Today's Earnings</p>
-            <p style={{ fontSize: 30, fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1, letterSpacing: '-0.02em' }}>GH\u20B5 {driver.todayEarn.toFixed(2)}</p>
+            <p style={{ fontSize: 30, fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1, letterSpacing: '-0.02em' }}>GH₵ {dynamicEarn.toFixed(2)}</p>
             <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', margin: '4px 0 0' }}>{deposited} pkgs deposited today</p>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -187,64 +186,63 @@ const HomeScreen = ({ dels, tasks, activeBlock, onNav, notifCount, onRefresh, sh
         <Skeleton w={140} h={14} r={6} T={T} /><div style={{ marginTop: 8 }}><Skeleton w={100} h={28} r={8} T={T} /></div>
         <div style={{ display: 'flex', gap: 20, marginTop: 16 }}><Skeleton w={110} h={110} r={55} T={T} /><div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}><Skeleton h={14} T={T} /><Skeleton h={14} T={T} /><Skeleton h={14} T={T} /><Skeleton h={14} T={T} /></div></div>
       </div>
-        : <div style={{ borderRadius: 12, padding: 20, background: T.card, border: `1px solid ${T.border}` }}>
+        : <div className="fu" style={{ borderRadius: 20, padding: 20, background: T.card, border: `1.5px solid ${T.border}`, boxShadow: T.shadow }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div><p style={{ fontSize: 12, fontWeight: 700, color: T.muted, margin: 0 }}>Package Overview</p><p style={{ fontSize: 24, fontWeight: 700, margin: '2px 0 0' }}>{totalTasks} <span style={{ fontSize: 14, fontWeight: 400, color: T.sec }}>pkgs</span></p></div>
-            <button onClick={() => onNav('tasks')} className="tap" style={{ fontSize: 12, fontWeight: 600, color: T.blue, background: 'none', border: 'none' }}>View All</button>
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: T.muted, margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Package Overview</p>
+              <p style={{ fontSize: 26, fontWeight: 800, margin: '2px 0 0', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-0.02em' }}>{totalTasks} <span style={{ fontSize: 14, fontWeight: 500, color: T.sec, fontFamily: "'Inter', sans-serif" }}>pkgs</span></p>
+            </div>
+            <button onClick={() => onNav('tasks')} className="tap" style={{ fontSize: 12, fontWeight: 700, color: T.sec, background: T.fill, border: 'none', padding: '6px 12px', borderRadius: 10 }}>View All</button>
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', flexShrink: 0 }}>
               <PieChart slices={pieSlices} size={100} hole={0.6} T={T} />
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700 }}>{assigned}</div>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>{totalTasks}</div>
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
               {pieSlices.map(s => (
-                <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color }} />
-                  <span style={{ flex: 1, fontSize: 12, color: T.sec }}>{s.label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{s.value}</span>
+                <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 3, background: s.color, flexShrink: 0 }} />
+                  <span style={{ flex: 1, fontSize: 12, color: T.sec, fontWeight: 500 }}>{s.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{s.value}</span>
                 </div>
               ))}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-            {assigned > 0 && <button onClick={() => onNav('tasks')} className="tap" style={{ flex: 1, height: 40, borderRadius: 8, border: 'none', fontWeight: 600, fontSize: 13, background: T.blue, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}><Camera size={14} />Scan ({assigned})</button>}
-            <button onClick={() => onNav('lockers')} className="tap" style={{ flex: 1, height: 40, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}><MapPin size={14} />Lockers</button>
+            {assigned > 0 && <button onClick={() => onNav('tasks')} className="tap press" style={{ flex: 1, height: 44, borderRadius: 12, border: 'none', fontWeight: 700, fontSize: 13, background: T.accentGradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, boxShadow: `0 4px 12px ${T.accent}40` }}><Camera size={14} />Scan ({assigned})</button>}
+            <button onClick={() => onNav('lockers')} className="tap" style={{ flex: 1, height: 44, borderRadius: 12, border: `1.5px solid ${T.border}`, background: T.card, fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, boxShadow: T.shadow }}><MapPin size={14} />Lockers</button>
           </div>
         </div>}
     </div>
 
-    {urg > 0 && <div style={{ padding: '0 20px', marginBottom: 16 }}>
-      <button onClick={() => onNav('itinerary')} className="tap" style={{ width: '100%', borderRadius: 12, padding: 14, background: T.amberBg, border: `1.5px solid ${T.amber}`, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 16 }}>{'\u26A1'}</span><div style={{ flex: 1, textAlign: 'left' }}><p style={{ fontWeight: 700, fontSize: 14, color: T.amber, margin: 0 }}>{urg} Urgent Package{urg > 1 ? 's' : ''}</p></div><ChevronRight size={18} style={{ color: T.amber }} />
-      </button>
-    </div>}
-
     {activeBlock && <StopProgress current={curStop} total={lockersData.length} doneP={done} totalP={total} T={T} />}
 
     {activeBlock && <div style={{ padding: '16px 20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <h2 style={{ fontWeight: 700, fontSize: 16, margin: 0 }}>Itinerary</h2>
+          <h2 style={{ fontWeight: 800, fontSize: 16, margin: 0, fontFamily: "'Space Grotesk', 'DM Sans', sans-serif", letterSpacing: '-0.025em' }}>Itinerary</h2>
           <Badge v="success" sm T={T}><Navigation size={10} />Optimized</Badge>
         </div>
-        <button onClick={() => onNav('itinerary')} className="press" style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, color: T.red }}>All Stops</button>
+        <button onClick={() => onNav('itinerary')} className="tap" style={{ border: 'none', background: T.fill, borderRadius: 10, padding: '5px 12px', fontSize: 12, fontWeight: 700, color: T.sec }}>All Stops</button>
       </div>
       {lockersData.map((l, i) => {
         const sd = dels.filter(d => d.locker === l.name); const dn = sd.filter(d => d.status === 'delivered').length; const allD = dn === sd.length; const isA = i === curIdx;
-        return <button key={l.id} onClick={() => onNav(isA ? 'stop' : 'itinerary', isA ? { locker: l, stopNum: i + 1 } : null)} className="press" style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', background: isA ? T.blueBg : T.card, border: `1px solid ${isA ? T.blue : T.border}`, padding: 12, borderRadius: 12, marginBottom: 8 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: allD ? '#fff' : isA ? T.blue : T.sec, background: allD ? T.green : T.fill }}>{allD ? <Check size={14} /> : i + 1}</div>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontWeight: 600, fontSize: 14, margin: 0, textDecoration: allD ? 'line-through' : 'none' }}>{l.name}</p>
-            <p style={{ fontSize: 12, color: T.sec, margin: 0 }}>{l.dist} \u00B7 {l.eta}</p>
+        return <button key={l.id} onClick={() => onNav(isA ? 'stop' : 'itinerary', isA ? { locker: l, stopNum: i + 1 } : null)} className={`press fu d${Math.min(i + 1, 6)}`} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', background: isA ? T.fill2 : T.card, border: `1.5px solid ${isA ? T.border : T.border}`, padding: '12px 14px', borderRadius: 16, marginBottom: 8, boxShadow: isA ? T.shadowMd : T.shadow }}>
+          <div style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, background: allD ? T.gradientSuccess : isA ? T.accentGradient : T.fill, flexShrink: 0, color: allD ? '#fff' : isA ? '#fff' : T.sec }}>{allD ? <Check size={14} /> : i + 1}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontWeight: 700, fontSize: 14, margin: 0, textDecoration: allD ? 'line-through' : 'none', color: allD ? T.muted : T.text }}>{l.name}</p>
+            <p style={{ fontSize: 12, color: T.sec, margin: '2px 0 0', fontWeight: 500 }}>{l.dist} · {l.eta}</p>
           </div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: allD ? T.green : T.sec }}>{dn}/{sd.length}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: allD ? T.green : T.sec, fontFamily: "'JetBrains Mono', monospace" }}>{dn}/{sd.length}</div>
         </button>;
       })}
     </div>}
 
-    {!activeBlock && <div style={{ padding: '0 20px', textAlign: 'center', paddingTop: 16 }}>
-      <div style={{ margin: '0 auto 12px', width: 48, height: 48, borderRadius: 16, background: T.fill, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: 24 }}>{'\uD83D\uDCC5\uFE0F'}</span></div><p style={{ fontWeight: 700, margin: 0 }}>No active block</p><p style={{ fontSize: 14, color: T.sec, margin: 0 }}>Pick a delivery block to start</p>
+    {!activeBlock && <div style={{ padding: '0 20px', textAlign: 'center', paddingTop: 32, paddingBottom: 16 }}>
+      <div style={{ margin: '0 auto 16px', width: 56, height: 56, borderRadius: 18, background: T.fill, border: `1.5px solid ${T.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: T.shadow }}><span style={{ fontSize: 26 }}>{'\uD83D\uDCC5\uFE0F'}</span></div>
+      <p style={{ fontWeight: 800, margin: '0 0 4px', fontSize: 16, fontFamily: "'Space Grotesk', 'DM Sans', sans-serif", letterSpacing: '-0.02em' }}>No active block</p>
+      <p style={{ fontSize: 14, color: T.sec, margin: 0, fontWeight: 500 }}>Pick a delivery block to start</p>
     </div>}
   </div>;
 };
