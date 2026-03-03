@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import StatusBar from '../components/StatusBar';
 import Badge from '../components/Badge';
-import Skeleton from '../components/Skeleton';
+import { Skeleton } from '../components/Skeleton';
 import { Bell, ChevronRight, Check, Navigation, Camera, MapPin, RefreshCw } from '../components/Icons';
 import { driver, lockersData } from '../data/mockData';
 import ShiftTimer from './ShiftTimerWidget';
