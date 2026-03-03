@@ -3,6 +3,7 @@ import { lightTheme, darkTheme } from './theme/themes';
 import { tasksData, lockersData, notifsData } from './data/mockData';
 import { NavIcons, Wifi, CheckCircle, Shield, Check } from './components/Icons';
 import SwipeConfirm from './components/SwipeConfirm';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 /* Screens */
 import SplashScreen from './screens/SplashScreen';
@@ -245,6 +246,7 @@ function LocQarDriverApp() {
       <button onClick={() => undoDeposit(undoToast)} style={{ border: 'none', background: 'none', color: T.amber, fontWeight: 700, fontSize: 13, padding: '4px 8px' }}>Undo</button>
     </div>}
     {showNav && <Nav active={scr} onNav={nav} T={T} />}
+    <PWAInstallPrompt />
   </div>;
 }
 
