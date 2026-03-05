@@ -21,3 +21,5 @@ export * from './WorkflowsPage';
 export * from './CRMPage';
 export * from './PayrollPage';
 export * from './HRISPage';
+export * from './LoginPage';
+export * from './CustomerPortalPage';

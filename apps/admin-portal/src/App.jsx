@@ -27,6 +27,8 @@ import {
   CRMPage,
   PayrollPage,
   HRISPage,
+  LoginPage,
+  CustomerPortalPage,
 } from './pages';
 
 // ============ MODAL COMPONENTS ============
@@ -106,6 +108,7 @@ const ROLES = {
   AGENT: { id: 'agent', name: 'Field Agent', level: 40, color: '#B5A0D1', permissions: ['dashboard.view', 'packages.view', 'packages.scan', 'packages.receive', 'dropbox.view', 'dropbox.collect', 'lockers.view', 'lockers.open', 'dispatch.view'] },
   SUPPORT: { id: 'support', name: 'Support', level: 30, color: '#D48E8A', permissions: ['dashboard.view', 'packages.view', 'packages.track', 'customers.*', 'tickets.*'] },
   VIEWER: { id: 'viewer', name: 'View Only', level: 10, color: '#A8A29E', permissions: ['dashboard.view', 'packages.view', 'lockers.view'] },
+  CUSTOMER: { id: 'customer', name: 'Customer', level: 5, color: '#D4AA5A', permissions: ['packages.view.own', 'subscription.view', 'profile.manage'] },
 };
 
 const resolveRole = (userRole, customRoles = []) => {
@@ -738,7 +741,9 @@ function LocQarERPInner() {
   const [activeSubMenu, setActiveSubMenu] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [currentUser, setCurrentUser] = useState({ name: 'John Doe', email: 'john@locqar.com', role: 'SUPER_ADMIN' });
+  const [currentUser, setCurrentUser] = useState(null);
+  const handleLogin = (user) => setCurrentUser(user);
+  const handleLogout = () => setCurrentUser(null);
   const [customRoles, setCustomRoles] = useState([
     { id: 'custom_business_owner', key: 'CUSTOM_BUSINESS_OWNER', name: 'Business Owner', level: 20, color: '#D4A0B9', permissions: ['dashboard.view', 'reports.view'], isCustom: true, createdAt: '2024-01-10T00:00:00Z' },
   ]);
@@ -751,6 +756,7 @@ function LocQarERPInner() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [showScanModal, setShowScanModal] = useState(false);
@@ -1354,6 +1360,15 @@ function LocQarERPInner() {
     { name: 'Other', value: packagesData.filter(p => !['delivered_to_locker', 'pending', 'expired'].includes(p.status) && !p.status.includes('transit')).length },
   ], []);
 
+  // ── AUTH GATE ──────────────────────────────────────────────────────────────
+  if (!currentUser) {
+    return <LoginPage onLogin={handleLogin} themeName={themeName} setThemeName={setThemeName} />;
+  }
+  if (currentUser.role === 'CUSTOMER') {
+    return <CustomerPortalPage currentUser={currentUser} onLogout={handleLogout} themeName={themeName} setThemeName={setThemeName} />;
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: theme.bg.primary, fontFamily: theme.font.primary }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap'); * { font-family: 'Sora', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; } ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: ${theme.border.secondary}; border-radius: 3px; } .font-mono { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace !important; } @keyframes slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } } .animate-slide-in { animation: slide-in 0.3s ease-out; }`}</style>
@@ -1395,12 +1410,70 @@ function LocQarERPInner() {
                 </div>
               )}
             </div>
-            <div className="hidden md:flex items-center gap-3 pl-3 border-l" style={{ borderColor: theme.border.primary }}>
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: ROLES[currentUser.role]?.color, color: '#1C1917' }}>{currentUser.name.charAt(0)}</div>
-              <div className="text-right">
-                <p className="text-sm" style={{ color: theme.text.primary }}>{currentUser.name}</p>
-                <p className="text-xs" style={{ color: theme.text.muted }}>{ROLES[currentUser.role]?.name}</p>
-              </div>
+            {/* Profile dropdown */}
+            <div className="hidden md:block relative pl-3 border-l" style={{ borderColor: theme.border.primary }}>
+              <button
+                onClick={() => setShowProfileMenu(p => !p)}
+                className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-white/5 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold" style={{ backgroundColor: ROLES[currentUser.role]?.color + '30', color: ROLES[currentUser.role]?.color, border: `2px solid ${ROLES[currentUser.role]?.color}50` }}>{currentUser.name.charAt(0)}</div>
+                <div className="text-left">
+                  <p className="text-sm font-medium leading-none" style={{ color: theme.text.primary }}>{currentUser.name}</p>
+                  <p className="text-xs leading-none mt-0.5" style={{ color: theme.text.muted }}>{ROLES[currentUser.role]?.name}</p>
+                </div>
+                <ChevronDown size={13} style={{ color: theme.icon.muted }} />
+              </button>
+
+              {showProfileMenu && (
+                <>
+                  {/* Backdrop */}
+                  <div className="fixed inset-0 z-40" onClick={() => setShowProfileMenu(false)} />
+                  {/* Dropdown */}
+                  <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border shadow-2xl z-50 overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                    {/* User info header */}
+                    <div className="p-4 border-b" style={{ borderColor: theme.border.primary }}>
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold" style={{ backgroundColor: ROLES[currentUser.role]?.color + '20', color: ROLES[currentUser.role]?.color }}>
+                          {currentUser.name.charAt(0)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-sm truncate" style={{ color: theme.text.primary }}>{currentUser.name}</p>
+                          <p className="text-xs truncate" style={{ color: theme.text.muted }}>{currentUser.email}</p>
+                          <span className="inline-block text-xs px-2 py-0.5 rounded-full mt-1 font-medium" style={{ backgroundColor: ROLES[currentUser.role]?.color + '20', color: ROLES[currentUser.role]?.color }}>
+                            {ROLES[currentUser.role]?.name}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menu items */}
+                    <div className="p-1.5">
+                      {[
+                        { label: 'Settings',       icon: Settings,  menu: 'settings',   always: true },
+                        { label: 'Notifications',  icon: Bell,      menu: 'notifications', always: true },
+                        { label: 'Audit Log',      icon: History,   menu: 'audit',      role: ['SUPER_ADMIN', 'ADMIN'] },
+                        { label: 'Keyboard Shortcuts', icon: Keyboard, action: () => { setShowShortcuts(true); setShowProfileMenu(false); }, always: true },
+                      ].filter(item => item.always || (item.role && item.role.includes(currentUser.role))).map(item => {
+                        const Icon = item.icon;
+                        const handleClick = item.action || (() => { setActiveMenu(item.menu); setShowProfileMenu(false); });
+                        return (
+                          <button key={item.label} onClick={handleClick} className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 text-left transition-colors">
+                            <Icon size={15} style={{ color: theme.icon.muted }} />
+                            <span className="text-sm" style={{ color: theme.text.secondary }}>{item.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="p-1.5 border-t" style={{ borderColor: theme.border.primary }}>
+                      <button onClick={handleLogout} className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-500/5 text-left transition-colors">
+                        <LogOut size={15} style={{ color: '#D48E8A' }} />
+                        <span className="text-sm font-medium" style={{ color: '#D48E8A' }}>Sign out</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </header>

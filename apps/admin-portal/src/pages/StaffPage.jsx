@@ -11,7 +11,7 @@ const TEAMS = ['Management', 'Operations', 'Field', 'Support'];
 const StaffDrawer = ({ staff, onClose, onSave, theme }) => {
   const isEdit = !!staff?.id;
   const [form, setForm] = useState(staff || {
-    name: '', email: '', phone: '', role: 'AGENT', terminal: '', team: 'Field', shift: 'morning', status: 'active',
+    name: '', email: '', phone: '', role: 'AGENT', title: '', department: '', terminal: '', team: 'Field', shift: 'morning', status: 'active',
   });
   const [errors, setErrors] = useState({});
   const update = (f, v) => { setForm(p => ({ ...p, [f]: v })); setErrors(p => ({ ...p, [f]: undefined })); };
@@ -56,6 +56,16 @@ const StaffDrawer = ({ staff, onClose, onSave, theme }) => {
             <label className={lbl} style={{ color: theme.text.muted }}>Email *</label>
             <input value={form.email} onChange={e => update('email', e.target.value)} placeholder="kofi@locqar.com" className="w-full px-3 py-2.5 rounded-xl border text-sm" style={inputStyle('email')} />
             {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={lbl} style={{ color: theme.text.muted }}>Job Title</label>
+              <input value={form.title || ''} onChange={e => update('title', e.target.value)} placeholder="e.g. Terminal Manager" className="w-full px-3 py-2.5 rounded-xl border text-sm" style={inputStyle('title')} />
+            </div>
+            <div>
+              <label className={lbl} style={{ color: theme.text.muted }}>Department</label>
+              <input value={form.department || ''} onChange={e => update('department', e.target.value)} placeholder="e.g. Operations" className="w-full px-3 py-2.5 rounded-xl border text-sm" style={inputStyle('department')} />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -220,7 +230,7 @@ export const StaffPage = ({
               <table className="w-full">
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
-                    {[['name', 'Staff'], ['role', 'Role'], ['team', 'Team', 'hidden md:table-cell'], ['terminal', 'Terminal', 'hidden lg:table-cell'], ['performance', 'Performance', 'hidden lg:table-cell'], ['status', 'Status']].map(([field, label, hide]) => (
+                    {[['name', 'Staff'], ['title', 'Title', 'hidden md:table-cell'], ['role', 'Role'], ['team', 'Team', 'hidden md:table-cell'], ['terminal', 'Terminal', 'hidden lg:table-cell'], ['performance', 'Performance', 'hidden lg:table-cell'], ['status', 'Status']].map(([field, label, hide]) => (
                       <th key={field} onClick={() => sortFn(field)} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: sort.field === field ? theme.accent.primary : theme.text.muted }}>
                         <span className="flex items-center gap-1">{label}{sort.field === field && (sort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}</span>
                       </th>
@@ -241,6 +251,10 @@ export const StaffPage = ({
                             <p className="text-xs" style={{ color: theme.text.muted }}>{s.email}</p>
                           </div>
                         </div>
+                      </td>
+                      <td className="p-4 hidden md:table-cell">
+                        <p className="text-sm" style={{ color: theme.text.secondary }}>{s.title ?? '—'}</p>
+                        {s.department && <p className="text-xs" style={{ color: theme.text.muted }}>{s.department}</p>}
                       </td>
                       <td className="p-4"><RoleBadge role={s.role} /></td>
                       <td className="p-4 hidden md:table-cell"><span className="text-sm" style={{ color: theme.text.secondary }}>{s.team}</span></td>
@@ -380,8 +394,9 @@ export const StaffPage = ({
                 <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold" style={{ backgroundColor: `${theme.accent.primary}20`, color: theme.accent.primary }}>{viewStaff.name.charAt(0)}</div>
                 <div>
                   <p className="text-lg font-bold" style={{ color: theme.text.primary }}>{viewStaff.name}</p>
+                  {viewStaff.title && <p className="text-sm font-medium" style={{ color: theme.text.secondary }}>{viewStaff.title}</p>}
                   <RoleBadge role={viewStaff.role} />
-                  <p className="text-xs mt-1" style={{ color: theme.text.muted }}>{viewStaff.team} · {viewStaff.terminal}</p>
+                  <p className="text-xs mt-1" style={{ color: theme.text.muted }}>{viewStaff.department ?? viewStaff.team} · {viewStaff.terminal}</p>
                 </div>
               </div>
               {/* Stats */}
@@ -395,7 +410,7 @@ export const StaffPage = ({
               </div>
               {/* Details */}
               <div className="space-y-2">
-                {[['Email', viewStaff.email], ['Phone', viewStaff.phone || '—'], ['Shift', viewStaff.shift], ['Joined', viewStaff.joinDate], ['Last Active', viewStaff.lastActive], ['Avg Response', viewStaff.avgResponseTime]].map(([l, v]) => (
+                {[['Job Title', viewStaff.title || '—'], ['Department', viewStaff.department || viewStaff.team || '—'], ['Email', viewStaff.email], ['Phone', viewStaff.phone || '—'], ['Shift', viewStaff.shift], ['Joined', viewStaff.joinDate], ['Last Active', viewStaff.lastActive], ['Avg Response', viewStaff.avgResponseTime]].map(([l, v]) => (
                   <div key={l} className="flex items-center justify-between py-2.5 border-b" style={{ borderColor: theme.border.primary }}>
                     <span className="text-xs" style={{ color: theme.text.muted }}>{l}</span>
                     <span className="text-sm" style={{ color: theme.text.primary }}>{v}</span>
