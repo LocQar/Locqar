@@ -8,7 +8,7 @@ const STEP_LABELS = ['Customer', 'Package', 'Delivery', 'Review'];
 const PRODUCTS = ['Standard', "Pick 'N' Go", 'Dropbox Express', 'Home Delivery', 'Airport Pickup'];
 const SIZES = ['Small', 'Medium', 'Large', 'XLarge'];
 
-export const NewPackageDrawer = ({ isOpen, onClose }) => {
+export const NewPackageDrawer = ({ isOpen, onClose, addToast, onSubmit }) => {
   const { theme } = useTheme();
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState({});
@@ -64,9 +64,31 @@ export const NewPackageDrawer = ({ isOpen, onClose }) => {
   };
 
   const handleSubmit = () => {
-    const waybill = `LQ-2024-${String(packagesData.length + 1).padStart(5, '0')}`;
+    const waybill = `LQ-2024-${String(Date.now()).slice(-5)}`;
     const terminal = terminalsData.find(t => t.id === form.destination);
-    // addToast({ type: 'success', message: `Package created! Waybill: ${waybill} → ${terminal?.name || form.destination}` });
+    const newPkg = {
+      id: Date.now(),
+      waybill,
+      customer: form.customer,
+      phone: form.phone,
+      email: form.email,
+      destination: terminal?.name || form.destination,
+      locker: '-',
+      size: form.size,
+      status: 'pending',
+      deliveryMethod: form.deliveryMethod,
+      product: form.product,
+      daysInLocker: 0,
+      value: parseFloat(form.value) || 0,
+      cod: form.cod,
+      weight: form.weight ? `${form.weight}kg` : '—',
+      createdAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      courier: null,
+      notes: form.notes,
+      fragile: form.fragile,
+    };
+    if (onSubmit) onSubmit(newPkg);
+    if (addToast) addToast({ type: 'success', message: `Package created! Waybill: ${waybill}` });
     onClose();
   };
 

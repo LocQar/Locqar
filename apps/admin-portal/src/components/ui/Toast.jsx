@@ -4,7 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 const DURATION = 4000;
 
-export const Toast = ({ message, type = 'info', onClose }) => {
+export const Toast = ({ message, type = 'info', action, onClose }) => {
   const { theme } = useTheme();
   const [progress, setProgress] = useState(100);
 
@@ -46,6 +46,15 @@ export const Toast = ({ message, type = 'info', onClose }) => {
       />
       <Icon size={18} style={{ color }} className="shrink-0" />
       <span className="text-sm flex-1 leading-snug" style={{ color: theme.text.primary }}>{message}</span>
+      {action && (
+        <button
+          onClick={() => { action.onClick(); onClose(); }}
+          className="px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0"
+          style={{ backgroundColor: `${color}20`, color }}
+        >
+          {action.label}
+        </button>
+      )}
       <button
         onClick={onClose}
         className="p-1.5 rounded-lg shrink-0 transition-colors"

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Download, Plus, Search, X, Eye, CheckCircle2, RefreshCw, MapPin, Grid3X3, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, Plus, Search, X, Eye, CheckCircle2, RefreshCw, MapPin, Grid3X3, ArrowUpRight, ArrowDownRight, UserCheck, User, Trash2 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Checkbox, EmptyState, TableSkeleton, Pagination } from '../components/ui';
 import { StatusBadge, DeliveryMethodBadge } from '../components/ui/Badge';
@@ -32,9 +32,13 @@ export const PackagesPage = ({
   setShowNewPackage,
   setSelectedPackage,
   setReassignPackage,
+  setAssignCourierPackage,
+  onMarkDelivered,
+  onDeletePackage,
   addToast,
 }) => {
   const { theme } = useTheme();
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -129,6 +133,7 @@ export const PackagesPage = ({
                       { label: 'Method', field: null, cls: 'hidden lg:table-cell' },
                       { label: 'Destination', field: 'destination', cls: 'hidden md:table-cell' },
                       { label: 'Status', field: 'status', cls: '' },
+                      { label: 'Courier', field: null, cls: 'hidden lg:table-cell' },
                       { label: 'Value', field: 'value', cls: 'hidden lg:table-cell' },
                     ].map(col => (
                       <th key={col.label} className={`text-left p-4 text-xs font-semibold uppercase ${col.cls}`} style={{ color: theme.text.muted }}>
@@ -182,6 +187,29 @@ export const PackagesPage = ({
                         </div>
                       </td>
                       <td className="p-4" onClick={() => setSelectedPackage(pkg)}><StatusBadge status={pkg.status} /></td>
+                      <td className="p-4 hidden lg:table-cell" onClick={e => e.stopPropagation()}>
+                        {pkg.courier ? (
+                          <button
+                            onClick={() => setAssignCourierPackage(pkg)}
+                            className="flex items-center gap-1.5 group"
+                            title="Reassign courier"
+                          >
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: `${theme.accent.primary}20`, color: theme.accent.primary }}>
+                              {pkg.courier.name.charAt(0)}
+                            </div>
+                            <span className="text-sm group-hover:underline" style={{ color: theme.text.primary }}>{pkg.courier.name}</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setAssignCourierPackage(pkg)}
+                            className="flex items-center gap-1.5 text-xs rounded-lg px-2 py-1 border"
+                            style={{ borderColor: theme.border.primary, color: theme.text.muted }}
+                            title="Assign courier"
+                          >
+                            <User size={12} /> Assign
+                          </button>
+                        )}
+                      </td>
                       <td className="p-4 hidden lg:table-cell" onClick={() => setSelectedPackage(pkg)}>
                         <span className="text-sm" style={{ color: theme.text.primary }}>GH₵ {pkg.value}</span>
                         {pkg.cod && <span className="ml-2 text-xs text-amber-500">COD</span>}
@@ -191,9 +219,13 @@ export const PackagesPage = ({
                           <button onClick={() => setSelectedPackage(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="View"><Eye size={15} /></button>
                           {hasPermission(currentUser.role, 'packages.update') && (
                             <>
-                              <button onClick={() => addToast({ type: 'success', message: `${pkg.waybill} marked as delivered` })} className="p-1.5 rounded-lg hover:bg-white/5 text-emerald-500" title="Mark Delivered"><CheckCircle2 size={15} /></button>
+                              <button onClick={() => onMarkDelivered(pkg)} className="p-1.5 rounded-lg hover:bg-white/5 text-emerald-500" title="Mark Delivered"><CheckCircle2 size={15} /></button>
                               <button onClick={() => setReassignPackage(pkg)} className="p-1.5 rounded-lg hover:bg-white/5 text-amber-500" title="Reassign"><RefreshCw size={15} /></button>
+                              <button onClick={() => setAssignCourierPackage(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.accent.primary }} title="Assign Courier"><UserCheck size={15} /></button>
                             </>
+                          )}
+                          {hasPermission(currentUser.role, 'packages.delete') && (
+                            <button onClick={() => setDeleteConfirm(pkg)} className="p-1.5 rounded-lg hover:bg-white/5 text-red-400" title="Delete"><Trash2 size={15} /></button>
                           )}
                         </div>
                       </td>
@@ -206,6 +238,23 @@ export const PackagesPage = ({
           </>
         )}
       </div>
+
+      {/* Delete Confirm */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setDeleteConfirm(null)}>
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative w-full max-w-sm rounded-2xl border p-6 space-y-4" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }} onClick={e => e.stopPropagation()}>
+            <h3 className="font-semibold text-lg" style={{ color: theme.text.primary }}>Delete Package?</h3>
+            <p className="text-sm" style={{ color: theme.text.muted }}>
+              Remove <span className="font-mono font-semibold" style={{ color: theme.text.primary }}>{deleteConfirm.waybill}</span> permanently? This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
+              <button onClick={() => { onDeletePackage(deleteConfirm); setDeleteConfirm(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

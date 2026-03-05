@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, createContext, useContext } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { LayoutDashboard, Package, Users, Settings, ChevronDown, ChevronRight, Search, Truck, MapPin, DollarSign, Box, Bell, Plus, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertTriangle, Filter, Download, Eye, Edit, Trash2, RefreshCw, TrendingUp, Calendar, ChevronLeft, X, QrCode, Building2, UserCheck, PackageX, Timer, Grid3X3, Sun, Moon, Shield, Key, Lock, Unlock, UserPlus, Phone, MessageSquare, Send, Printer, Banknote, Battery, BatteryWarning, Thermometer, Scan, Home, Warehouse, Circle, CheckCircle, Inbox, Route, Car, Wrench, Cog, Briefcase, Users2, Award, Ticket, Receipt, CreditCard, FileText, Command, Keyboard, Check, Info, AlertOctagon, XCircle, ChevronFirst, ChevronLast, MoreHorizontal, FileDown, Loader2, Menu, Smartphone, LogOut, History, Mail } from 'lucide-react';
+import { LayoutDashboard, Package, Users, Settings, ChevronDown, ChevronRight, Search, Truck, MapPin, DollarSign, Box, Bell, Plus, ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertTriangle, Filter, Download, Eye, Edit, Trash2, RefreshCw, TrendingUp, Calendar, ChevronLeft, X, QrCode, Building2, UserCheck, PackageX, Timer, Grid3X3, Sun, Moon, Shield, Key, Lock, Unlock, UserPlus, Phone, MessageSquare, Send, Printer, Banknote, Battery, BatteryWarning, Thermometer, Scan, Home, Warehouse, Circle, CheckCircle, Inbox, Route, Car, Wrench, Cog, Briefcase, Users2, Award, Ticket, Receipt, CreditCard, FileText, Command, Keyboard, Check, Info, AlertOctagon, XCircle, ChevronFirst, ChevronLast, MoreHorizontal, FileDown, Loader2, Menu, Smartphone, LogOut, History, Mail, Wallet } from 'lucide-react';
 
 // ============ PAGE COMPONENTS ============
 import {
@@ -25,6 +25,8 @@ import {
   CouriersPage,
   WorkflowsPage,
   CRMPage,
+  PayrollPage,
+  HRISPage,
 } from './pages';
 
 // ============ MODAL COMPONENTS ============
@@ -36,6 +38,7 @@ import {
   ReassignModal,
   ReturnModal,
   ScanModal,
+  AssignCourierModal,
 } from './components/modals';
 
 // ============ LAYOUT COMPONENTS ============
@@ -203,8 +206,31 @@ const INITIAL_LOCKERS = [
 ];
 
 const INITIAL_PACKAGES = [
-  { id: 1, waybill: 'LQ-2024-00001', customer: 'Joe Doe', phone: '+233551399333', email: 'joe@email.com', destination: 'Achimota Mall', locker: 'A-15', size: 'Medium', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: "Pick 'N' Go", daysInLocker: 2, value: 450, cod: true, weight: '2.5kg', createdAt: '2024-01-15 08:30' },
-  { id: 2, waybill: 'LQ-2024-00002', customer: 'Jane Doe', phone: '+233557821456', email: 'jane@email.com', destination: 'Accra Mall', locker: 'B-08', size: 'Large', status: 'in_transit_to_locker', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 0, value: 320, cod: false, weight: '5.2kg', createdAt: '2024-01-15 09:15' },
+  { id: 1, waybill: 'LQ-2024-00001', customer: 'Joe Doe', phone: '+233551399333', email: 'joe@email.com', destination: 'Achimota Mall', locker: 'A-15', size: 'Medium', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: "Pick 'N' Go", daysInLocker: 2, value: 450, cod: true, weight: '2.5kg', createdAt: '2024-01-15 08:30', courier: { id: 1, name: 'Kwesi Asante' } },
+  { id: 2, waybill: 'LQ-2024-00002', customer: 'Jane Doe', phone: '+233557821456', email: 'jane@email.com', destination: 'Accra Mall', locker: 'B-08', size: 'Large', status: 'in_transit_to_locker', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 0, value: 320, cod: false, weight: '5.2kg', createdAt: '2024-01-15 09:15', courier: { id: 1, name: 'Kwesi Asante' } },
+  { id: 3, waybill: 'LQ-2024-00003', customer: 'Michael Mensah', phone: '+233549876321', email: 'michael@email.com', destination: 'Dome', locker: '-', size: 'Small', status: 'delivered_to_home', deliveryMethod: 'locker_to_home', product: 'Home Delivery', daysInLocker: 0, value: 180, cod: false, weight: '0.8kg', createdAt: '2024-01-14 14:20', courier: null },
+  { id: 4, waybill: 'LQ-2024-00004', customer: 'Sarah Asante', phone: '+233551234567', email: 'sarah@email.com', destination: 'Kotoka T3', locker: 'K-22', size: 'Medium', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: 'Airport Pickup', daysInLocker: 1, value: 890, cod: true, weight: '3.1kg', createdAt: '2024-01-15 07:45', courier: { id: 2, name: 'Kofi Mensah' } },
+  { id: 5, waybill: 'LQ-2024-00005', customer: 'Kwame Boateng', phone: '+233559876543', email: 'kwame@email.com', destination: 'Achimota Mall', locker: 'A-03', size: 'XLarge', status: 'expired', deliveryMethod: 'warehouse_to_locker', product: "Pick 'N' Go", daysInLocker: 7, value: 275, cod: false, weight: '8.5kg', createdAt: '2024-01-08 10:00', courier: null },
+  { id: 6, waybill: 'LQ-2024-00006', customer: 'Ama Serwaa', phone: '+233542345678', email: 'ama@email.com', destination: 'Accra Mall', locker: '-', size: 'Small', status: 'at_warehouse', deliveryMethod: 'warehouse_to_locker', product: 'Standard', daysInLocker: 0, value: 150, cod: true, weight: '1.2kg', createdAt: '2024-01-15 11:30', courier: null },
+  { id: 7, waybill: 'LQ-2024-00007', customer: 'Kofi Mensah', phone: '+233551112222', email: 'kofi@email.com', destination: 'West Hills', locker: '-', size: 'Medium', status: 'pending', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 0, value: 220, cod: false, weight: '2.0kg', createdAt: '2024-01-15 12:00', courier: { id: 4, name: 'Kwame Asiedu' } },
+  { id: 8, waybill: 'LQ-2024-00008', customer: 'Efua Owusu', phone: '+233553334444', email: 'efua@email.com', destination: 'Tema', locker: '-', size: 'Large', status: 'in_transit_to_home', deliveryMethod: 'locker_to_home', product: 'Home Delivery', daysInLocker: 0, value: 550, cod: true, weight: '6.5kg', createdAt: '2024-01-15 06:30', courier: { id: 2, name: 'Kofi Mensah' } },
+  { id: 9, waybill: 'LQ-2024-00009', customer: 'Yaw Asiedu', phone: '+233555556666', email: 'yaw@email.com', destination: 'Achimota Mall', locker: '-', size: 'Small', status: 'at_dropbox', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 0, value: 95, cod: false, weight: '0.5kg', createdAt: '2024-01-15 13:45', courier: null },
+  { id: 10, waybill: 'LQ-2024-00010', customer: 'Akosua Mensah', phone: '+233557778888', email: 'akosua@email.com', destination: 'Junction Mall', locker: 'J-05', size: 'Medium', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: 'Standard', daysInLocker: 3, value: 340, cod: false, weight: '2.8kg', createdAt: '2024-01-12 09:00', courier: { id: 5, name: 'Ama Serwaa' } },
+  { id: 11, waybill: 'LQ-2024-00011', customer: 'Nana Adjei', phone: '+233559991111', email: 'nana@email.com', destination: 'Achimota Mall', locker: '-', size: 'Small', status: 'pending', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 0, value: 120, cod: false, weight: '0.6kg', createdAt: '2024-01-15 14:00', courier: null },
+  { id: 12, waybill: 'LQ-2024-00012', customer: 'Abena Owusu', phone: '+233542223333', email: 'abena@email.com', destination: 'Accra Mall', locker: 'B-14', size: 'Large', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: "Pick 'N' Go", daysInLocker: 5, value: 780, cod: true, weight: '4.2kg', createdAt: '2024-01-10 11:00', courier: { id: 3, name: 'Adjoa Frimpong' } },
+  { id: 13, waybill: 'LQ-2024-00013', customer: 'Kweku Darko', phone: '+233551441221', email: 'kweku@email.com', destination: 'West Hills Mall', locker: '-', size: 'Medium', status: 'in_transit_to_locker', deliveryMethod: 'warehouse_to_locker', product: 'Standard', daysInLocker: 0, value: 290, cod: false, weight: '2.1kg', createdAt: '2024-01-15 07:00', courier: { id: 4, name: 'Kwame Asiedu' } },
+  { id: 14, waybill: 'LQ-2024-00014', customer: 'Esi Boateng', phone: '+233557893214', email: 'esi@email.com', destination: 'Kotoka T3', locker: '-', size: 'XLarge', status: 'at_warehouse', deliveryMethod: 'warehouse_to_locker', product: 'Airport Pickup', daysInLocker: 0, value: 1200, cod: true, weight: '9.5kg', createdAt: '2024-01-15 08:00', courier: null },
+  { id: 15, waybill: 'LQ-2024-00015', customer: 'Kofi Amponsah', phone: '+233551897654', email: 'kofi.a@email.com', destination: 'Junction Mall', locker: '-', size: 'Small', status: 'at_dropbox', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 0, value: 75, cod: false, weight: '0.3kg', createdAt: '2024-01-15 15:30', courier: null },
+  { id: 16, waybill: 'LQ-2024-00016', customer: 'Maame Agyemang', phone: '+233543216789', email: 'maame@email.com', destination: 'Accra Mall', locker: 'C-07', size: 'Small', status: 'delivered_to_locker', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 1, value: 140, cod: false, weight: '0.9kg', createdAt: '2024-01-14 16:00', courier: { id: 5, name: 'Ama Serwaa' } },
+  { id: 17, waybill: 'LQ-2024-00017', customer: 'Yaa Asante', phone: '+233557654321', email: 'yaa@email.com', destination: 'Achimota Mall', locker: '-', size: 'Medium', status: 'in_transit_to_home', deliveryMethod: 'locker_to_home', product: 'Home Delivery', daysInLocker: 0, value: 410, cod: false, weight: '3.3kg', createdAt: '2024-01-15 10:30', courier: { id: 1, name: 'Kwesi Asante' } },
+  { id: 18, waybill: 'LQ-2024-00018', customer: 'Fiifi Mensah', phone: '+233559871234', email: 'fiifi@email.com', destination: 'West Hills Mall', locker: '-', size: 'Large', status: 'expired', deliveryMethod: 'warehouse_to_locker', product: 'Standard', daysInLocker: 8, value: 560, cod: true, weight: '5.8kg', createdAt: '2024-01-06 09:00', courier: null },
+  { id: 19, waybill: 'LQ-2024-00019', customer: 'Akua Amankwah', phone: '+233551235678', email: 'akua.a@email.com', destination: 'Achimota Mall', locker: 'A-22', size: 'Small', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: 'Standard', daysInLocker: 2, value: 95, cod: false, weight: '0.7kg', createdAt: '2024-01-13 13:00', courier: { id: 2, name: 'Kofi Mensah' } },
+  { id: 20, waybill: 'LQ-2024-00020', customer: 'Kwadwo Asare', phone: '+233554321987', email: 'kwadwo@email.com', destination: 'Kotoka T3', locker: '-', size: 'Medium', status: 'pending', deliveryMethod: 'warehouse_to_locker', product: 'Airport Pickup', daysInLocker: 0, value: 670, cod: false, weight: '2.9kg', createdAt: '2024-01-15 16:00', courier: null },
+  { id: 21, waybill: 'LQ-2024-00021', customer: 'Adwoa Boateng', phone: '+233557777001', email: 'adwoa@email.com', destination: 'Junction Mall', locker: 'J-11', size: 'Medium', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: 'Standard', daysInLocker: 4, value: 380, cod: true, weight: '2.4kg', createdAt: '2024-01-11 10:00', courier: { id: 4, name: 'Kwame Asiedu' } },
+  { id: 22, waybill: 'LQ-2024-00022', customer: 'Osei Bonsu', phone: '+233559990022', email: 'osei@email.com', destination: 'Accra Mall', locker: '-', size: 'Large', status: 'at_warehouse', deliveryMethod: 'warehouse_to_locker', product: "Pick 'N' Go", daysInLocker: 0, value: 840, cod: false, weight: '6.0kg', createdAt: '2024-01-15 09:45', courier: null },
+  { id: 23, waybill: 'LQ-2024-00023', customer: 'Ama Frimpong', phone: '+233542113344', email: 'ama.f@email.com', destination: 'Achimota Mall', locker: '-', size: 'Small', status: 'in_transit_to_locker', deliveryMethod: 'dropbox_to_locker', product: 'Dropbox Express', daysInLocker: 0, value: 110, cod: false, weight: '0.5kg', createdAt: '2024-01-15 12:30', courier: { id: 3, name: 'Adjoa Frimpong' } },
+  { id: 24, waybill: 'LQ-2024-00024', customer: 'Bright Owusu', phone: '+233551122334', email: 'bright@email.com', destination: 'West Hills Mall', locker: '-', size: 'Medium', status: 'delivered_to_home', deliveryMethod: 'locker_to_home', product: 'Home Delivery', daysInLocker: 0, value: 320, cod: false, weight: '1.9kg', createdAt: '2024-01-14 08:00', courier: { id: 1, name: 'Kwesi Asante' } },
+  { id: 25, waybill: 'LQ-2024-00025', customer: 'Abina Asante', phone: '+233557770025', email: 'abina@email.com', destination: 'Accra Mall', locker: 'B-03', size: 'XLarge', status: 'delivered_to_locker', deliveryMethod: 'warehouse_to_locker', product: 'Standard', daysInLocker: 0, value: 1550, cod: true, weight: '11.2kg', createdAt: '2024-01-15 06:00', courier: { id: 2, name: 'Kofi Mensah' } },
 ];
 
 const terminalsData = [
@@ -731,6 +757,7 @@ function LocQarERPInner() {
   const [showNewPackage, setShowNewPackage] = useState(false);
   const [showDispatchDrawer, setShowDispatchDrawer] = useState(false);
   const [reassignPackage, setReassignPackage] = useState(null);
+  const [assignCourierPackage, setAssignCourierPackage] = useState(null);
   const [returnPackage, setReturnPackage] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [routeTab, setRouteTab] = useState('stops');
@@ -948,12 +975,14 @@ function LocQarERPInner() {
     } else if (action === 'export') {
       setShowExport(true);
     } else if (action === 'markDelivered') {
+      setPackagesData(prev => prev.map(p => selectedItems.includes(p.id) ? { ...p, status: 'delivered_to_locker' } : p));
       addToast({ type: 'success', message: `${count} package${count > 1 ? 's' : ''} marked as delivered` });
       setSelectedItems([]);
     } else if (action === 'print') {
       addToast({ type: 'success', message: `Printing labels for ${count} package${count > 1 ? 's' : ''}` });
       setSelectedItems([]);
     } else if (action === 'delete') {
+      setPackagesData(prev => prev.filter(p => !selectedItems.includes(p.id)));
       addToast({ type: 'warning', message: `${count} package${count > 1 ? 's' : ''} removed` });
       setSelectedItems([]);
     } else {
@@ -1429,6 +1458,9 @@ function LocQarERPInner() {
               setShowNewPackage={setShowNewPackage}
               setSelectedPackage={setSelectedPackage}
               setReassignPackage={setReassignPackage}
+              setAssignCourierPackage={setAssignCourierPackage}
+              onMarkDelivered={(pkg) => { setPackagesData(prev => prev.map(p => p.id === pkg.id ? { ...p, status: 'delivered_to_locker' } : p)); addToast({ type: 'success', message: `${pkg.waybill} marked as delivered` }); }}
+              onDeletePackage={(pkg) => { setPackagesData(prev => prev.filter(p => p.id !== pkg.id)); addToast({ type: 'warning', message: `${pkg.waybill} deleted` }); }}
               addToast={addToast}
             />
           )}
@@ -1525,35 +1557,6 @@ function LocQarERPInner() {
               loading={loading}
               activeSubMenu={activeSubMenu}
               setShowExport={setShowExport}
-              setShowDispatchDrawer={setShowDispatchDrawer}
-              filteredDispatchPackages={filteredDispatchPackages}
-              dispatchSearch={dispatchSearch}
-              setDispatchSearch={setDispatchSearch}
-              setDispatchPage={setDispatchPage}
-              dispatchFilter={dispatchFilter}
-              setDispatchFilter={setDispatchFilter}
-              selectedDispatchItems={selectedDispatchItems}
-              paginatedDispatchPackages={paginatedDispatchPackages}
-              toggleDispatchSelectAll={toggleDispatchSelectAll}
-              toggleDispatchSelectItem={toggleDispatchSelectItem}
-              dispatchSort={dispatchSort}
-              setDispatchSort={setDispatchSort}
-              setSelectedPackage={setSelectedPackage}
-              dispatchTotalPages={dispatchTotalPages}
-              dispatchPage={dispatchPage}
-              dispatchPageSize={dispatchPageSize}
-              setDispatchPageSize={setDispatchPageSize}
-              selectedRoute={selectedRoute}
-              setSelectedRoute={setSelectedRoute}
-              routeTab={routeTab}
-              setRouteTab={setRouteTab}
-              expandedStops={expandedStops}
-              setExpandedStops={setExpandedStops}
-              driverSearch={driverSearch}
-              setDriverSearch={setDriverSearch}
-              driverSort={driverSort}
-              setDriverSort={setDriverSort}
-              filteredDrivers={filteredDrivers}
               addToast={addToast}
             />
           )}
@@ -1641,7 +1644,12 @@ function LocQarERPInner() {
 
           {/* Couriers Page */}
           {activeMenu === 'couriers' && (
-            <CouriersPage addToast={addToast} />
+            <CouriersPage addToast={addToast} packages={packagesData} />
+          )}
+
+          {/* HRIS Page */}
+          {activeMenu === 'hris' && (
+            <HRISPage activeSubMenu={activeSubMenu} loading={loading} addToast={addToast} />
           )}
 
           {/* Accounting Page */}
@@ -1666,6 +1674,15 @@ function LocQarERPInner() {
             />
           )}
 
+
+          {/* Payroll Page */}
+          {activeMenu === 'payroll' && (
+            <PayrollPage
+              activeSubMenu={activeSubMenu}
+              loading={loading}
+              addToast={addToast}
+            />
+          )}
 
           {/* Business Portal */}
           {activeMenu === 'portal' && (
@@ -1705,6 +1722,7 @@ function LocQarERPInner() {
             <PricingEnginePage
               activeSubMenu={activeSubMenu}
               setShowExport={setShowExport}
+              addToast={addToast}
             />
           )}
 
@@ -1746,7 +1764,7 @@ function LocQarERPInner() {
       {selectedPackage && (
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSelectedPackage(null)} />
-          <PackageDetailDrawer pkg={selectedPackage} onClose={() => setSelectedPackage(null)} userRole={currentUser.role} addToast={addToast} onReassign={(p) => { setSelectedPackage(null); setReassignPackage(p); }} onReturn={(p) => { setSelectedPackage(null); setReturnPackage(p); }} />
+          <PackageDetailDrawer pkg={selectedPackage} onClose={() => setSelectedPackage(null)} userRole={currentUser.role} addToast={addToast} onReassign={(p) => { setSelectedPackage(null); setReassignPackage(p); }} onReturn={(p) => { setSelectedPackage(null); setReturnPackage(p); }} onMarkDelivered={(p) => { setPackagesData(prev => prev.map(x => x.id === p.id ? { ...x, status: 'delivered_to_locker' } : x)); setSelectedPackage(null); }} onSave={(updated) => { setPackagesData(prev => prev.map(x => x.id === updated.id ? updated : x)); setSelectedPackage(updated); }} />
         </>
       )}
 
@@ -1754,10 +1772,11 @@ function LocQarERPInner() {
       <ShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <ExportModal isOpen={showExport} onClose={() => setShowExport(false)} onExport={handleExport} dataType={activeMenu} />
       <ScanModal isOpen={showScanModal} onClose={() => setShowScanModal(false)} userRole={currentUser.role} addToast={addToast} onViewPackage={(pkg) => { setSelectedPackage(pkg); setActiveMenu('packages'); }} onReassign={setReassignPackage} onReturn={setReturnPackage} />
-      <NewPackageDrawer isOpen={showNewPackage} onClose={() => setShowNewPackage(false)} addToast={addToast} />
+      <NewPackageDrawer isOpen={showNewPackage} onClose={() => setShowNewPackage(false)} addToast={addToast} onSubmit={(pkg) => { setPackagesData(prev => [pkg, ...prev]); }} />
       <DispatchDrawer isOpen={showDispatchDrawer} onClose={() => setShowDispatchDrawer(false)} addToast={addToast} onViewFull={() => setActiveMenu('dispatch')} />
-      <ReassignModal isOpen={!!reassignPackage} onClose={() => setReassignPackage(null)} pkg={reassignPackage} addToast={addToast} />
+      <ReassignModal isOpen={!!reassignPackage} onClose={() => setReassignPackage(null)} pkg={reassignPackage} addToast={addToast} onReassign={(pkg, newDestination) => { setPackagesData(prev => prev.map(p => p.id === pkg.id ? { ...p, destination: newDestination, locker: '-', status: 'in_transit_to_locker' } : p)); setReassignPackage(null); }} />
       <ReturnModal isOpen={!!returnPackage} onClose={() => setReturnPackage(null)} pkg={returnPackage} addToast={addToast} />
+      <AssignCourierModal isOpen={!!assignCourierPackage} onClose={() => setAssignCourierPackage(null)} pkg={assignCourierPackage} packages={packagesData} onAssign={(pkg, courier) => { setPackagesData(prev => prev.map(p => p.id === pkg.id ? { ...p, courier } : p)); addToast({ type: 'success', message: courier ? `${pkg.waybill} assigned to ${courier.name}` : `${pkg.waybill} unassigned` }); setAssignCourierPackage(null); }} addToast={addToast} />
 
       {/* Compose Message Modal */}
       {composeOpen && (
@@ -2304,6 +2323,7 @@ function LocQarERPInner() {
             { id: 'markDelivered', label: 'Mark Delivered', icon: CheckCircle2, color: '#81C995' },
             { id: 'export', label: 'Export Selected', icon: FileDown, color: '#B5A0D1' },
             { id: 'print', label: 'Print Labels', icon: Printer, color: '#D4AA5A' },
+            { id: 'delete', label: 'Delete Selected', icon: Trash2, color: '#D48E8A' },
           ]}
         />
       )}

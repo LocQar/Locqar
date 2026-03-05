@@ -140,12 +140,16 @@ export const phonePinData = [
 
 // ============ COURIERS (Winnsen API Aligned) ============
 export const couriersData = [
-  { id: 1, name: 'Kwesi Asante', status: 1, phone: '+233551234567', qrCode: 'CUR-QR-001', cardNo: 'CRD-001', password: '****' },
-  { id: 2, name: 'Kofi Mensah', status: 1, phone: '+233559876543', qrCode: 'CUR-QR-002', cardNo: 'CRD-002', password: '****' },
-  { id: 3, name: 'Yaw Boateng', status: 0, phone: '+233542345678', qrCode: 'CUR-QR-003', cardNo: 'CRD-003', password: '****' },
-  { id: 4, name: 'Kwame Asiedu', status: 1, phone: '+233553456789', qrCode: 'CUR-QR-004', cardNo: 'CRD-004', password: '****' },
-  { id: 5, name: 'Ama Serwaa', status: 1, phone: '+233542345678', qrCode: 'CUR-QR-005', cardNo: 'CRD-005', password: '****' },
-  { id: 6, name: 'Fiifi Atta', status: 0, phone: '+233551000011', qrCode: 'CUR-QR-006', cardNo: 'CRD-006', password: '****' },
+  { id: 1, name: 'Kwesi Asante', status: 1, phone: '+233551234567', email: 'kwesi.a@locqar.com', qrCode: 'CUR-QR-001', cardNo: 'CRD-001', terminal: 'Achimota Mall', zone: 'North Accra', joinDate: '2023-03-15', totalDeliveries: 412, rating: 4.8, vehicleType: 'Motorcycle', vehiclePlate: 'GW-1234-23', notes: 'Senior courier, team lead.' },
+  { id: 2, name: 'Kofi Mensah', status: 1, phone: '+233559876543', email: 'kofi.m@locqar.com', qrCode: 'CUR-QR-002', cardNo: 'CRD-002', terminal: 'Kotoka T3', zone: 'Airport Area', joinDate: '2023-05-20', totalDeliveries: 378, rating: 4.6, vehicleType: 'Bicycle', vehiclePlate: null, notes: 'Handles airport-area deliveries.' },
+  { id: 3, name: 'Yaw Boateng', status: 0, phone: '+233542345678', email: 'yaw.b@locqar.com', qrCode: 'CUR-QR-003', cardNo: 'CRD-003', terminal: 'West Hills Mall', zone: 'Weija', joinDate: '2023-07-01', totalDeliveries: 189, rating: 3.9, vehicleType: 'Motorcycle', vehiclePlate: 'GR-4567-22', notes: 'On suspension pending investigation.' },
+  { id: 4, name: 'Kwame Asiedu', status: 1, phone: '+233553456789', email: 'kwame.asi@locqar.com', qrCode: 'CUR-QR-004', cardNo: 'CRD-004', terminal: 'West Hills Mall', zone: 'Weija', joinDate: '2023-04-10', totalDeliveries: 295, rating: 4.5, vehicleType: 'Motorcycle', vehiclePlate: 'GW-8821-23', notes: '' },
+  { id: 5, name: 'Ama Serwaa', status: 1, phone: '+233542345679', email: 'ama.s@locqar.com', qrCode: 'CUR-QR-005', cardNo: 'CRD-005', terminal: 'Accra Mall', zone: 'Central Accra', joinDate: '2023-06-18', totalDeliveries: 443, rating: 4.9, vehicleType: 'Bicycle', vehiclePlate: null, notes: 'Top-rated courier.' },
+  { id: 6, name: 'Fiifi Atta', status: 0, phone: '+233551000011', email: 'fiifi.a@locqar.com', qrCode: 'CUR-QR-006', cardNo: 'CRD-006', terminal: 'Junction Mall', zone: 'Nungua', joinDate: '2023-09-05', totalDeliveries: 102, rating: 3.5, vehicleType: 'Motorcycle', vehiclePlate: 'GE-3322-23', notes: 'Disabled pending retraining.' },
+  { id: 7, name: 'Efua Amponsah', status: 1, phone: '+233557771234', email: 'efua.amp@locqar.com', qrCode: 'CUR-QR-007', cardNo: 'CRD-007', terminal: 'Achimota Mall', zone: 'North Accra', joinDate: '2023-11-12', totalDeliveries: 211, rating: 4.3, vehicleType: 'Bicycle', vehiclePlate: null, notes: '' },
+  { id: 8, name: 'Adjei Bonsu', status: 1, phone: '+233554443322', email: 'adjei.b@locqar.com', qrCode: 'CUR-QR-008', cardNo: 'CRD-008', terminal: 'Accra Mall', zone: 'Central Accra', joinDate: '2024-01-08', totalDeliveries: 87, rating: 4.1, vehicleType: 'Motorcycle', vehiclePlate: 'GW-0099-24', notes: 'Newest team member.' },
+  { id: 9, name: 'Nana Owusu', status: 1, phone: '+233559998877', email: 'nana.o@locqar.com', qrCode: 'CUR-QR-009', cardNo: 'CRD-009', terminal: 'Junction Mall', zone: 'Nungua', joinDate: '2023-08-22', totalDeliveries: 320, rating: 4.7, vehicleType: 'Motorcycle', vehiclePlate: 'GE-7711-23', notes: '' },
+  { id: 10, name: 'Akosua Darko', status: 0, phone: '+233541122334', email: 'akosua.d@locqar.com', qrCode: 'CUR-QR-010', cardNo: 'CRD-010', terminal: 'Kotoka T3', zone: 'Airport Area', joinDate: '2023-10-30', totalDeliveries: 155, rating: 3.8, vehicleType: 'Bicycle', vehiclePlate: null, notes: 'On extended leave.' },
 ];
 
 // ============ TERMINAL ERRORS (Winnsen API Aligned) ============

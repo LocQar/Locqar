@@ -4,7 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { StatusBadge } from '../ui/Badge';
 import { terminalsData, driversData } from '../../constants/mockData';
 
-export const ReassignModal = ({ isOpen, onClose, pkg, addToast }) => {
+export const ReassignModal = ({ isOpen, onClose, pkg, addToast, onReassign }) => {
   const { theme } = useTheme();
   const [reassignType, setReassignType] = useState('terminal');
   const [selectedTerminal, setSelectedTerminal] = useState('');
@@ -29,7 +29,8 @@ export const ReassignModal = ({ isOpen, onClose, pkg, addToast }) => {
     if (reassignType === 'driver' && !selectedDriver) { addToast({ type: 'warning', message: 'Please select a driver' }); return; }
     const target = reassignType === 'terminal' ? selectedTerminal : selectedDriver;
     addToast({ type: 'success', message: `${pkg.waybill} reassigned to ${target}` });
-    onClose();
+    if (onReassign && reassignType === 'terminal') onReassign(pkg, selectedTerminal);
+    else onClose();
   };
 
   return (

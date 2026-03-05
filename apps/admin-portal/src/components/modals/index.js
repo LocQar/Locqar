@@ -5,3 +5,4 @@ export * from './ExportModal';
 export * from './ReassignModal';
 export * from './ReturnModal';
 export * from './ScanModal';
+export * from './AssignCourierModal';

@@ -1,319 +1,656 @@
-import React from 'react';
-import { FileDown, Plus, Search, X, Package, Truck, Eye, CheckCircle2, MapPin, ArrowUpRight, ArrowDownRight, Route, Users, Clock, ChevronLeft, GripVertical, ChevronUp, ChevronDown, Car, RefreshCw } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { FileDown, Plus, Search, X, Truck, CheckCircle2, MapPin, Route, Users, Clock, ChevronLeft, ChevronUp, ChevronDown, RefreshCw, Edit, Trash2, Star, UserPlus } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-import { TableSkeleton, Pagination } from '../components/ui';
+import { Pagination } from '../components/ui';
 import { StatusBadge, DeliveryMethodBadge } from '../components/ui/Badge';
 import { hasPermission } from '../constants';
 import { packagesData, driversData, terminalsData, routesData, getTerminalAddress } from '../constants/mockData';
 
-export const DispatchPage = ({
-  currentUser,
-  activeSubMenu,
-  loading,
-  setShowExport,
-  setShowDispatchDrawer,
-  filteredDispatchPackages,
-  dispatchSearch,
-  setDispatchSearch,
-  setDispatchPage,
-  dispatchFilter,
-  setDispatchFilter,
-  selectedDispatchItems,
-  paginatedDispatchPackages,
-  toggleDispatchSelectAll,
-  toggleDispatchSelectItem,
-  dispatchSort,
-  setDispatchSort,
-  setSelectedPackage,
-  addToast,
-  dispatchTotalPages,
-  dispatchPage,
-  dispatchPageSize,
-  setDispatchPageSize,
-  selectedRoute,
-  setSelectedRoute,
-  routeTab,
-  setRouteTab,
-  expandedStops,
-  setExpandedStops,
-  driverSearch,
-  setDriverSearch,
-  driverSort,
-  setDriverSort,
-  filteredDrivers,
-}) => {
+// ─── initial data ─────────────────────────────────────────────────────────────
+const INIT_ROUTES = [
+  ...routesData,
+  {
+    id: 'RT-002', zone: 'East Legon', status: 'pending', driver: driversData[1],
+    startTime: '09:30', estEndTime: '12:00', distance: '22 km', createdAt: '2024-01-15 09:00',
+    stops: [
+      { id: 10, order: 1, terminal: 'Kotoka T3', packages: [4], delivered: 0, eta: '09:55', status: 'pending', arrivedAt: null },
+    ],
+    timeline: [{ time: '09:00', event: 'Route created', icon: 'route', by: 'System' }]
+  },
+  {
+    id: 'RT-003', zone: 'Weija / West', status: 'completed', driver: driversData[3],
+    startTime: '07:00', estEndTime: '09:30', distance: '35 km', createdAt: '2024-01-15 06:45',
+    stops: [
+      { id: 20, order: 1, terminal: 'West Hills Mall', packages: [7], delivered: 1, eta: '07:40', status: 'completed', arrivedAt: '07:38' },
+    ],
+    timeline: [
+      { time: '06:45', event: 'Route created', icon: 'route', by: 'System' },
+      { time: '09:25', event: 'Route completed', icon: 'truck', by: 'Kwame Asiedu' }
+    ]
+  },
+];
+
+// ─── CreateRouteDrawer ─────────────────────────────────────────────────────────
+const CreateRouteDrawer = ({ onClose, onSave, drivers, theme }) => {
+  const [form, setForm] = useState({ zone: '', driverId: '', startTime: '08:00', estEndTime: '10:30' });
+  const [stops, setStops] = useState([]);
+  const [stopTerminal, setStopTerminal] = useState('');
+  const [err, setErr] = useState({});
+  const upd = (f, v) => { setForm(p => ({ ...p, [f]: v })); setErr(p => ({ ...p, [f]: undefined })); };
+  const is = { backgroundColor: 'transparent', borderColor: theme.border.primary, color: theme.text.primary };
+
+  const addStop = () => {
+    if (!stopTerminal) return;
+    setStops(p => [...p, { id: Date.now(), order: p.length + 1, terminal: stopTerminal, packages: [], delivered: 0, eta: '--', status: 'pending', arrivedAt: null }]);
+    setStopTerminal('');
+  };
+
+  const handleSave = () => {
+    const e = {};
+    if (!form.zone.trim()) e.zone = true;
+    if (!form.driverId) e.driverId = true;
+    if (stops.length === 0) e.stops = true;
+    setErr(e);
+    if (Object.keys(e).length) return;
+    const driver = drivers.find(d => d.id === parseInt(form.driverId));
+    onSave({
+      id: `RT-${String(Date.now()).slice(-3)}`,
+      zone: form.zone, status: 'pending', driver,
+      startTime: form.startTime, estEndTime: form.estEndTime,
+      distance: `${Math.round(stops.length * 8 + 5)} km`,
+      createdAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      stops,
+      timeline: [{ time: form.startTime, event: 'Route created', icon: 'route', by: 'Admin' }]
+    });
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="relative w-full sm:w-[480px] h-full border-l shadow-2xl flex flex-col" style={{ backgroundColor: theme.bg.secondary, borderColor: theme.border.primary }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: theme.border.primary }}>
+          <div>
+            <p className="text-xs uppercase font-semibold" style={{ color: theme.text.muted }}>New Route</p>
+            <h2 className="font-semibold" style={{ color: theme.text.primary }}>Create Dispatch Route</h2>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.text.secondary }}><X size={18} /></button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          <div>
+            <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Zone / Route Name *</label>
+            <input value={form.zone} onChange={e => upd('zone', e.target.value)} placeholder="e.g. Accra Central" className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ ...is, borderColor: err.zone ? '#D48E8A' : theme.border.primary }} />
+          </div>
+          <div>
+            <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Assign Driver *</label>
+            <select value={form.driverId} onChange={e => upd('driverId', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ ...is, borderColor: err.driverId ? '#D48E8A' : theme.border.primary }}>
+              <option value="">Select driver...</option>
+              {drivers.filter(d => d.status !== 'offline').map(d => (
+                <option key={d.id} value={d.id}>{d.name} — {d.zone} ({d.status})</option>
+              ))}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Start Time</label>
+              <input type="time" value={form.startTime} onChange={e => upd('startTime', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={is} />
+            </div>
+            <div>
+              <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Est. End Time</label>
+              <input type="time" value={form.estEndTime} onChange={e => upd('estEndTime', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={is} />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Stops *</label>
+            <div className="flex gap-2">
+              <select value={stopTerminal} onChange={e => setStopTerminal(e.target.value)} className="flex-1 px-3 py-2 rounded-xl border text-sm" style={{ ...is, borderColor: err.stops ? '#D48E8A' : theme.border.primary }}>
+                <option value="">Select terminal...</option>
+                {terminalsData.filter(t => !stops.find(s => s.terminal === t.name)).map(t => (
+                  <option key={t.id} value={t.name}>{t.name}</option>
+                ))}
+              </select>
+              <button onClick={addStop} className="px-3 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
+                <Plus size={16} />
+              </button>
+            </div>
+            {err.stops && <p className="text-xs text-red-400 mt-1">Add at least one stop</p>}
+            {stops.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {stops.map((s, i) => (
+                  <div key={s.id} className="flex items-center gap-2 px-3 py-2 rounded-xl border" style={{ borderColor: theme.border.primary }}>
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: theme.accent.light, color: theme.accent.primary }}>{i + 1}</div>
+                    <span className="flex-1 text-sm" style={{ color: theme.text.primary }}>{s.terminal}</span>
+                    <button onClick={() => setStops(p => p.filter(x => x.id !== s.id).map((x, j) => ({ ...x, order: j + 1 })))} style={{ color: theme.icon.muted }}><X size={14} /></button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="p-5 border-t flex gap-3" style={{ borderColor: theme.border.primary }}>
+          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
+          <button onClick={handleSave} className="flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
+            <Route size={15} />Create Route
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── DriverDrawer ─────────────────────────────────────────────────────────────
+const DriverDrawer = ({ driver, onClose, onSave, theme }) => {
+  const isEdit = !!driver?.id;
+  const [form, setForm] = useState(driver || { name: '', phone: '', vehicle: '', zone: '', status: 'active', deliveriesToday: 0, rating: 5.0 });
+  const [err, setErr] = useState({});
+  const upd = (f, v) => { setForm(p => ({ ...p, [f]: v })); setErr(p => ({ ...p, [f]: undefined })); };
+  const is = (f) => ({ backgroundColor: 'transparent', borderColor: err[f] ? '#D48E8A' : theme.border.primary, color: theme.text.primary });
+
+  const handleSave = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = true;
+    if (!form.phone.trim()) e.phone = true;
+    setErr(e);
+    if (Object.keys(e).length) return;
+    onSave(isEdit ? form : { ...form, id: Date.now() });
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="relative w-full sm:w-[420px] h-full border-l shadow-2xl flex flex-col" style={{ backgroundColor: theme.bg.secondary, borderColor: theme.border.primary }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: theme.border.primary }}>
+          <div>
+            <p className="text-xs uppercase font-semibold" style={{ color: theme.text.muted }}>{isEdit ? 'Edit Driver' : 'New Driver'}</p>
+            <h2 className="font-semibold" style={{ color: theme.text.primary }}>{isEdit ? form.name : 'Add Driver'}</h2>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.text.secondary }}><X size={18} /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          {[['name', 'Full Name *', 'text', 'Kwesi Asante'], ['phone', 'Phone *', 'text', '+233551234567'], ['vehicle', 'Vehicle & Plate', 'text', 'Toyota Hiace - GW-1234-23'], ['zone', 'Zone', 'text', 'Accra Central']].map(([f, lbl, type, ph]) => (
+            <div key={f}>
+              <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>{lbl}</label>
+              <input type={type} value={form[f]} onChange={e => upd(f, e.target.value)} placeholder={ph} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={is(f)} />
+            </div>
+          ))}
+          <div>
+            <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Status</label>
+            <div className="flex gap-2">
+              {['active', 'on_delivery', 'offline'].map(s => (
+                <button key={s} onClick={() => upd('status', s)} className="flex-1 py-2 rounded-xl border text-xs capitalize" style={{ backgroundColor: form.status === s ? (s === 'active' ? '#81C99520' : s === 'on_delivery' ? '#D4AA5A20' : '#78716C20') : theme.bg.tertiary, color: form.status === s ? (s === 'active' ? '#81C995' : s === 'on_delivery' ? '#D4AA5A' : '#78716C') : theme.text.muted, borderColor: form.status === s ? 'transparent' : theme.border.primary }}>{s.replace('_', ' ')}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="p-5 border-t flex gap-3" style={{ borderColor: theme.border.primary }}>
+          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
+          <button onClick={handleSave} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
+            {isEdit ? 'Save Changes' : 'Add Driver'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExport, addToast }) => {
   const { theme } = useTheme();
+  const toast = (msg, type = 'success', action) => addToast && addToast({ type, message: msg, ...(action && { action }) });
+
+  // ── data state ──
+  const [packages, setPackages] = useState(packagesData);
+  const [drivers, setDrivers] = useState(driversData);
+  const [routes, setRoutes] = useState(INIT_ROUTES);
+
+  // ── outgoing tab state ──
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [sort, setSort] = useState({ field: 'createdAt', dir: 'desc' });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selected, setSelected] = useState([]);
+
+  // ── route planning state ──
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [routeTab, setRouteTab] = useState('stops');
+  const [expandedStops, setExpandedStops] = useState([]);
+  const [addStopTerminal, setAddStopTerminal] = useState('');
+  const [reassignDriverId, setReassignDriverId] = useState('');
+
+  // ── driver tab state ──
+  const [driverSearch, setDriverSearch] = useState('');
+  const [driverSort, setDriverSort] = useState({ field: 'name', dir: 'asc' });
+
+  // ── active tab (internal navigation) ──
+  const [activeTab, setActiveTab] = useState(activeSubMenu || 'Outgoing');
+  React.useEffect(() => { if (activeSubMenu) setActiveTab(activeSubMenu); }, [activeSubMenu]);
+
+  // ── modals ──
+  const [showCreateRoute, setShowCreateRoute] = useState(false);
+  const [driverDrawer, setDriverDrawer] = useState(null); // null=closed, false=new, obj=edit
+  const [deleteRoute, setDeleteRoute] = useState(null);
+  const [deleteDriver, setDeleteDriver] = useState(null);
+
+  // ── computed: outgoing ──
+  const filteredPackages = useMemo(() => {
+    let data = [...packages];
+    if (filter === 'ready') data = data.filter(p => ['pending', 'at_warehouse', 'at_dropbox'].includes(p.status));
+    else if (filter === 'in_transit') data = data.filter(p => p.status.startsWith('in_transit'));
+    else if (filter === 'delivered') data = data.filter(p => p.status.startsWith('delivered'));
+    if (search) {
+      const q = search.toLowerCase();
+      data = data.filter(p => p.waybill.toLowerCase().includes(q) || p.customer.toLowerCase().includes(q) || p.destination.toLowerCase().includes(q) || p.phone?.includes(q));
+    }
+    const { field, dir } = sort;
+    data.sort((a, b) => {
+      const av = a[field] ?? ''; const bv = b[field] ?? '';
+      return dir === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    });
+    return data;
+  }, [packages, filter, search, sort]);
+
+  const paginated = useMemo(() => filteredPackages.slice((page - 1) * pageSize, page * pageSize), [filteredPackages, page, pageSize]);
+  const totalPages = Math.ceil(filteredPackages.length / pageSize);
+
+  // ── computed: drivers ──
+  const filteredDrivers = useMemo(() => {
+    let data = [...drivers];
+    if (driverSearch) {
+      const q = driverSearch.toLowerCase();
+      data = data.filter(d => d.name.toLowerCase().includes(q) || d.zone?.toLowerCase().includes(q) || d.phone?.includes(q));
+    }
+    const { field, dir } = driverSort;
+    data.sort((a, b) => dir === 'asc' ? (a[field] > b[field] ? 1 : -1) : (a[field] < b[field] ? 1 : -1));
+    return data;
+  }, [drivers, driverSearch, driverSort]);
+
+  // ── sort helper ──
+  const toggleSort = (field) => setSort(s => ({ field, dir: s.field === field && s.dir === 'asc' ? 'desc' : 'asc' }));
+  const SortIcon = ({ field }) => sort.field === field ? (sort.dir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />) : null;
+
+  // ── package actions ──
+  const handleDispatch = (pkg) => {
+    const snap = packages.slice();
+    setPackages(p => p.map(x => x.id === pkg.id ? { ...x, status: 'in_transit_to_locker' } : x));
+    toast(`${pkg.waybill} dispatched`, 'success', { label: 'Undo', onClick: () => { setPackages(snap); toast('Dispatch undone', 'info'); } });
+  };
+  const handleMarkDelivered = (pkg) => {
+    const snap = packages.slice();
+    setPackages(p => p.map(x => x.id === pkg.id ? { ...x, status: 'delivered_to_locker' } : x));
+    toast(`${pkg.waybill} marked as delivered`, 'success', { label: 'Undo', onClick: () => { setPackages(snap); toast('Delivery undone', 'info'); } });
+  };
+
+  // ── route actions ──
+  const handleCreateRoute = (newRoute) => {
+    setRoutes(p => [newRoute, ...p]);
+    toast(`Route ${newRoute.id} created`);
+  };
+  const handleDeleteRoute = (route) => {
+    const snap = routes.slice();
+    setRoutes(p => p.filter(r => r.id !== route.id));
+    if (selectedRoute?.id === route.id) setSelectedRoute(null);
+    setDeleteRoute(null);
+    toast(`Route ${route.id} deleted`, 'warning', { label: 'Undo', onClick: () => { setRoutes(snap); toast('Route restored', 'info'); } });
+  };
+  const handleReassignDriver = (routeId) => {
+    if (!reassignDriverId) return;
+    const driver = drivers.find(d => d.id === parseInt(reassignDriverId));
+    if (!driver) return;
+    const snap = routes.slice();
+    setRoutes(p => p.map(r => r.id === routeId ? { ...r, driver, timeline: [...r.timeline, { time: new Date().toTimeString().slice(0, 5), event: `Driver reassigned to ${driver.name}`, icon: 'user', by: 'Admin' }] } : r));
+    if (selectedRoute?.id === routeId) setSelectedRoute(r => ({ ...r, driver }));
+    setReassignDriverId('');
+    toast(`Route reassigned to ${driver.name}`, 'success', { label: 'Undo', onClick: () => { setRoutes(snap); toast('Reassignment undone', 'info'); } });
+  };
+  const handleMarkStopComplete = (routeId, stopId) => {
+    const snap = routes.slice();
+    setRoutes(p => p.map(r => r.id !== routeId ? r : {
+      ...r,
+      stops: r.stops.map(s => s.id !== stopId ? s : { ...s, status: 'completed', arrivedAt: new Date().toTimeString().slice(0, 5), delivered: s.packages.length }),
+      timeline: [...r.timeline, { time: new Date().toTimeString().slice(0, 5), event: 'Stop marked complete', icon: 'mappin', by: 'Admin' }]
+    }));
+    toast('Stop marked complete', 'success', { label: 'Undo', onClick: () => { setRoutes(snap); toast('Stop restored', 'info'); } });
+  };
+  const handleAddStop = (routeId) => {
+    if (!addStopTerminal) return;
+    const snap = routes.slice();
+    setRoutes(p => p.map(r => r.id !== routeId ? r : {
+      ...r,
+      stops: [...r.stops, { id: Date.now(), order: r.stops.length + 1, terminal: addStopTerminal, packages: [], delivered: 0, eta: '--', status: 'pending', arrivedAt: null }]
+    }));
+    setAddStopTerminal('');
+    toast('Stop added to route', 'success', { label: 'Undo', onClick: () => { setRoutes(snap); toast('Stop removed', 'info'); } });
+  };
+  const handleRemoveStop = (routeId, stopId) => {
+    const snap = routes.slice();
+    setRoutes(p => p.map(r => r.id !== routeId ? r : {
+      ...r,
+      stops: r.stops.filter(s => s.id !== stopId).map((s, i) => ({ ...s, order: i + 1 }))
+    }));
+    toast('Stop removed', 'warning', { label: 'Undo', onClick: () => { setRoutes(snap); toast('Stop restored', 'info'); } });
+  };
+
+  // ── driver actions ──
+  const handleSaveDriver = (form) => {
+    if (form.id && drivers.find(d => d.id === form.id)) {
+      setDrivers(p => p.map(d => d.id === form.id ? form : d));
+      toast(`${form.name} updated`);
+    } else {
+      setDrivers(p => [...p, form]);
+      toast(`${form.name} added`);
+    }
+  };
+  const handleDeleteDriver = (driver) => {
+    const snap = drivers.slice();
+    setDrivers(p => p.filter(d => d.id !== driver.id));
+    setDeleteDriver(null);
+    toast(`${driver.name} removed`, 'warning', { label: 'Undo', onClick: () => { setDrivers(snap); toast('Driver restored', 'info'); } });
+  };
+  const handleRecall = (driver) => {
+    const snap = drivers.slice();
+    setDrivers(p => p.map(d => d.id === driver.id ? { ...d, status: 'active' } : d));
+    toast(`${driver.name} recalled`, 'success', { label: 'Undo', onClick: () => { setDrivers(snap); toast('Recall undone', 'info'); } });
+  };
+
+  // ── bulk package actions ──
+  const handleBulkDispatch = () => {
+    const toDispatch = selected.filter(id => {
+      const pkg = packages.find(p => p.id === id);
+      return pkg && !pkg.status.startsWith('in_transit') && !pkg.status.startsWith('delivered');
+    });
+    const snap = packages.slice();
+    setPackages(p => p.map(x => toDispatch.includes(x.id) ? { ...x, status: 'in_transit_to_locker' } : x));
+    setSelected([]);
+    toast(`${toDispatch.length} package${toDispatch.length !== 1 ? 's' : ''} dispatched`, 'success', { label: 'Undo', onClick: () => { setPackages(snap); toast('Bulk dispatch undone', 'info'); } });
+  };
+
+  // ── route status actions ──
+  const handleStartRoute = (routeId) => {
+    const snap = routes.slice();
+    setRoutes(p => p.map(r => r.id !== routeId ? r : {
+      ...r, status: 'active',
+      timeline: [...r.timeline, { time: new Date().toTimeString().slice(0, 5), event: 'Route started', icon: 'truck', by: 'Admin' }]
+    }));
+    toast('Route started', 'success', { label: 'Undo', onClick: () => { setRoutes(snap); toast('Route start undone', 'info'); } });
+  };
+  const handleCompleteRoute = (routeId) => {
+    const snap = routes.slice();
+    setRoutes(p => p.map(r => r.id !== routeId ? r : {
+      ...r, status: 'completed',
+      timeline: [...r.timeline, { time: new Date().toTimeString().slice(0, 5), event: 'Route completed', icon: 'truck', by: 'Admin' }]
+    }));
+    setSelectedRoute(null);
+    toast('Route completed', 'success', { label: 'Undo', onClick: () => { setRoutes(snap); toast('Route completion undone', 'info'); } });
+  };
+
+  // ── metric helpers ──
+  const ready = packages.filter(p => ['pending', 'at_warehouse', 'at_dropbox'].includes(p.status)).length;
+  const inTransit = packages.filter(p => p.status.startsWith('in_transit')).length;
+  const delivered = packages.filter(p => p.status.startsWith('delivered')).length;
+  const activeDrivers = drivers.filter(d => d.status !== 'offline').length;
+
+  const STOP_COLORS = { completed: '#81C995', in_progress: '#D4AA5A', pending: theme.border.primary };
+  const TIMELINE_ICONS = { route: Route, truck: Truck, user: Users, mappin: MapPin };
 
   return (
     <div className="p-4 md:p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold" style={{ color: theme.text.primary }}>Dispatch</h1>
-          <p style={{ color: theme.text.muted }}>{activeSubMenu || 'Outgoing'}</p>
+
+      {/* ── MODALS ── */}
+      {showCreateRoute && <CreateRouteDrawer onClose={() => setShowCreateRoute(false)} onSave={handleCreateRoute} drivers={drivers} theme={theme} />}
+      {driverDrawer !== null && <DriverDrawer driver={driverDrawer || undefined} onClose={() => setDriverDrawer(null)} onSave={handleSaveDriver} theme={theme} />}
+
+      {/* Delete Route Confirm */}
+      {deleteRoute && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setDeleteRoute(null)}>
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative w-full max-w-sm rounded-2xl border p-6" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }} onClick={e => e.stopPropagation()}>
+            <h3 className="font-semibold mb-2" style={{ color: theme.text.primary }}>Delete Route {deleteRoute.id}?</h3>
+            <p className="text-sm mb-5" style={{ color: theme.text.muted }}>This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteRoute(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
+              <button onClick={() => handleDeleteRoute(deleteRoute)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#1C1917' }}>Delete</button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setShowExport(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm border" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}><FileDown size={18} />Export</button>
-          <button onClick={() => setShowDispatchDrawer(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}><Plus size={18} />New Dispatch</button>
+      )}
+
+      {/* Delete Driver Confirm */}
+      {deleteDriver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setDeleteDriver(null)}>
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative w-full max-w-sm rounded-2xl border p-6" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }} onClick={e => e.stopPropagation()}>
+            <h3 className="font-semibold mb-2" style={{ color: theme.text.primary }}>Remove {deleteDriver.name}?</h3>
+            <p className="text-sm mb-5" style={{ color: theme.text.muted }}>This will remove the driver from the system.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteDriver(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
+              <button onClick={() => handleDeleteDriver(deleteDriver)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#1C1917' }}>Remove</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── HEADER ── */}
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl md:text-2xl font-bold" style={{ color: theme.text.primary }}>Dispatch</h1>
+        <div className="flex gap-2">
+          {activeTab === 'Route Planning' && (
+            <button onClick={() => setShowCreateRoute(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
+              <Plus size={16} />Create Route
+            </button>
+          )}
+          {activeTab === 'Driver Assignment' && (
+            <button onClick={() => setDriverDrawer(false)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
+              <UserPlus size={16} />Add Driver
+            </button>
+          )}
+          <button onClick={() => setShowExport && setShowExport(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>
+            <FileDown size={16} />Export
+          </button>
         </div>
       </div>
 
-      {/* Outgoing Sub-tab */}
-      {(!activeSubMenu || activeSubMenu === 'Outgoing') && (
-        <div className="space-y-4">
-          {/* Summary Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Ready</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: '#D4AA5A' }}>{filteredDispatchPackages.filter(p => ['pending', 'at_warehouse', 'at_dropbox'].includes(p.status)).length}</p>
-            </div>
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>In Transit</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: '#7EA8C9' }}>{filteredDispatchPackages.filter(p => p.status.startsWith('in_transit')).length}</p>
-            </div>
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Delivered</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: '#81C995' }}>{filteredDispatchPackages.filter(p => p.status.startsWith('delivered')).length}</p>
-            </div>
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Active Drivers</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: theme.text.primary }}>{driversData.filter(d => d.status !== 'offline').length}</p>
-            </div>
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Total Value</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: theme.accent.primary }}>GH₵ {filteredDispatchPackages.reduce((sum, p) => sum + p.value, 0).toLocaleString()}</p>
-            </div>
+      {/* ── TAB BAR ── */}
+      <div className="flex items-center gap-1 mb-6 p-1 rounded-xl w-fit" style={{ backgroundColor: theme.bg.tertiary }}>
+        {['Outgoing', 'Route Planning', 'Driver Assignment'].map(tab => (
+          <button key={tab} onClick={() => setActiveTab(tab)}
+            className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
+            style={{ backgroundColor: activeTab === tab ? theme.accent.primary : 'transparent', color: activeTab === tab ? theme.accent.contrast : theme.text.muted }}>
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* ════════════════ OUTGOING ════════════════ */}
+      {activeTab === 'Outgoing' && (
+        <>
+          {/* Metrics */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+            {[
+              { label: 'Ready', value: ready, color: '#D4AA5A' },
+              { label: 'In Transit', value: inTransit, color: '#7EA8C9' },
+              { label: 'Delivered', value: delivered, color: '#81C995' },
+              { label: 'Active Drivers', value: activeDrivers, color: '#B5A0D1' },
+              { label: 'Total Value', value: `GH₵ ${packages.reduce((s, p) => s + (p.value || 0), 0).toLocaleString()}`, color: theme.accent.primary },
+            ].map(m => (
+              <div key={m.label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                <p className="text-xs mb-1" style={{ color: theme.text.muted }}>{m.label}</p>
+                <p className="text-xl font-bold" style={{ color: m.color }}>{m.value}</p>
+              </div>
+            ))}
           </div>
 
-          {/* Search Bar */}
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-            <Search size={18} style={{ color: theme.icon.muted }} />
-            <input type="text" value={dispatchSearch} onChange={e => { setDispatchSearch(e.target.value); setDispatchPage(1); }} placeholder="Search by waybill, customer, phone, destination..." className="flex-1 bg-transparent outline-none text-sm" style={{ color: theme.text.primary }} />
-            {dispatchSearch && <button onClick={() => { setDispatchSearch(''); setDispatchPage(1); }} className="p-1 rounded" style={{ color: theme.text.muted }}><X size={16} /></button>}
-          </div>
-
-          {/* Filter Buttons */}
-          <div className="flex flex-col md:flex-row md:items-center gap-3">
-            <div className="flex flex-wrap gap-2">
-              {[['all', 'All'], ['ready', 'Ready'], ['in_transit', 'In Transit'], ['delivered', 'Delivered']].map(([k, l]) => (
-                <button key={k} onClick={() => { setDispatchFilter(k); setDispatchPage(1); }} className="px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: dispatchFilter === k ? theme.accent.light : 'transparent', color: dispatchFilter === k ? theme.accent.primary : theme.text.muted, border: dispatchFilter === k ? `1px solid ${theme.accent.border}` : '1px solid transparent' }}>{l}</button>
+          {/* Search + Filter */}
+          <div className="flex flex-col md:flex-row gap-3 mb-4">
+            <div className="relative flex-1">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.icon.muted }} />
+              <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search waybill, customer, destination..." className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.input, borderColor: theme.border.primary, color: theme.text.primary }} />
+              {search && <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: theme.icon.muted }}><X size={14} /></button>}
+            </div>
+            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
+              {[['all', 'All'], ['ready', 'Ready'], ['in_transit', 'In Transit'], ['delivered', 'Delivered']].map(([v, l]) => (
+                <button key={v} onClick={() => { setFilter(v); setPage(1); }} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: filter === v ? theme.accent.primary : 'transparent', color: filter === v ? theme.accent.contrast : theme.text.muted }}>
+                  {l}
+                </button>
               ))}
-            </div>
-            <div className="h-6 w-px hidden md:block" style={{ backgroundColor: theme.border.primary }} />
-            <div className="flex items-center gap-2 text-sm" style={{ color: theme.text.muted }}>
-              <span>{filteredDispatchPackages.length} package{filteredDispatchPackages.length !== 1 ? 's' : ''}</span>
-              {selectedDispatchItems.length > 0 && <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: theme.accent.light, color: theme.accent.primary }}>{selectedDispatchItems.length} selected</span>}
             </div>
           </div>
 
           {/* Table */}
           <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-            {loading ? <TableSkeleton rows={5} cols={7} theme={theme} /> : (
-              <table className="w-full">
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
-                    <th className="p-4 w-10"><input type="checkbox" checked={paginatedDispatchPackages.length > 0 && selectedDispatchItems.length === paginatedDispatchPackages.length} onChange={toggleDispatchSelectAll} className="rounded" /></th>
-                    {[
-                      { label: 'Package', field: 'waybill', cls: '' },
-                      { label: 'Customer', field: 'customer', cls: 'hidden md:table-cell' },
-                      { label: 'Method', field: null, cls: 'hidden lg:table-cell' },
-                      { label: 'Destination', field: 'destination', cls: 'hidden md:table-cell' },
-                      { label: 'Size', field: 'size', cls: 'hidden lg:table-cell' },
-                      { label: 'Status', field: 'status', cls: '' },
-                    ].map(col => (
-                      <th key={col.label} className={`text-left p-4 text-xs font-semibold uppercase ${col.cls}`} style={{ color: theme.text.muted }}>
-                        {col.field ? (
-                          <button onClick={() => setDispatchSort(prev => ({ field: col.field, dir: prev.field === col.field && prev.dir === 'asc' ? 'desc' : 'asc' }))} className="flex items-center gap-1 hover:opacity-80">
-                            {col.label}
-                            {dispatchSort.field === col.field && (dispatchSort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}
-                          </button>
-                        ) : col.label}
-                      </th>
-                    ))}
-                    <th className="text-right p-4 text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedDispatchPackages.map(pkg => (
-                    <tr key={pkg.id} className="hover:bg-white/5 cursor-pointer" style={{ borderBottom: `1px solid ${theme.border.primary}` }} onClick={() => setSelectedPackage(pkg)}>
-                      <td className="p-4" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedDispatchItems.includes(pkg.id)} onChange={() => toggleDispatchSelectItem(pkg.id)} className="rounded" /></td>
-                      <td className="p-4">
-                        <span className="font-mono text-sm" style={{ color: theme.accent.primary }}>{pkg.waybill}</span>
-                        <p className="text-xs mt-0.5" style={{ color: theme.text.muted }}>{pkg.size} · {pkg.weight}</p>
-                      </td>
-                      <td className="p-4 hidden md:table-cell">
-                        <p className="text-sm" style={{ color: theme.text.primary }}>{pkg.customer}</p>
-                        <p className="text-xs" style={{ color: theme.text.muted }}>{pkg.phone}</p>
-                      </td>
-                      <td className="p-4 hidden lg:table-cell"><DeliveryMethodBadge method={pkg.deliveryMethod} /></td>
-                      <td className="p-4 hidden md:table-cell">
-                        <div className="flex items-start gap-2">
-                          <MapPin size={14} className="mt-0.5 shrink-0" style={{ color: theme.icon.muted }} />
-                          <div>
-                            <p className="text-sm" style={{ color: theme.text.primary }}>{pkg.destination}</p>
-                            {(() => { const t = terminalsData.find(t => t.name === pkg.destination); return t ? <p className="text-xs font-mono mt-0.5" style={{ color: theme.text.muted }}>{getTerminalAddress(t)}</p> : null; })()}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4 hidden lg:table-cell"><span className="text-sm" style={{ color: theme.text.secondary }}>{pkg.size}</span></td>
-                      <td className="p-4"><StatusBadge status={pkg.status} /></td>
-                      <td className="p-4 text-right" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => setSelectedPackage(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="View"><Eye size={15} /></button>
-                          {hasPermission(currentUser.role, 'packages.dispatch') && (
-                            <button onClick={() => addToast({ type: 'info', message: `${pkg.waybill} dispatched` })} className="p-1.5 rounded-lg hover:bg-white/5 text-blue-500" title="Dispatch"><Truck size={15} /></button>
-                          )}
-                          {hasPermission(currentUser.role, 'packages.update') && (
-                            <button onClick={() => addToast({ type: 'success', message: `${pkg.waybill} marked as delivered` })} className="p-1.5 rounded-lg hover:bg-white/5 text-emerald-500" title="Mark Delivered"><CheckCircle2 size={15} /></button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
+            <table className="w-full">
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
+                  <th className="p-3 w-10">
+                    <input type="checkbox" checked={selected.length === paginated.length && paginated.length > 0} onChange={e => setSelected(e.target.checked ? paginated.map(p => p.id) : [])} className="rounded" />
+                  </th>
+                  {[['waybill', 'Package'], ['customer', 'Customer'], ['deliveryMethod', 'Method', 'hidden lg:table-cell'], ['destination', 'Destination', 'hidden md:table-cell'], ['status', 'Status'], ['', 'Actions']].map(([f, l, cls = '']) => (
+                    <th key={l} onClick={() => f && toggleSort(f)} className={`text-left p-3 text-xs font-semibold uppercase cursor-pointer select-none ${cls}`} style={{ color: theme.text.muted }}>
+                      <span className="flex items-center gap-1">{l}{f && <SortIcon field={f} />}</span>
+                    </th>
                   ))}
-                  {paginatedDispatchPackages.length === 0 && (
-                    <tr><td colSpan={9} className="p-12 text-center" style={{ color: theme.text.muted }}>
-                      <Package size={40} className="mx-auto mb-3 opacity-30" />
-                      <p className="text-sm">No packages match your filters</p>
-                    </td></tr>
-                  )}
-                </tbody>
-              </table>
-            )}
+                </tr>
+              </thead>
+              <tbody>
+                {paginated.map(pkg => (
+                  <tr key={pkg.id} className="hover:bg-white/3" style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
+                    <td className="p-3">
+                      <input type="checkbox" checked={selected.includes(pkg.id)} onChange={() => setSelected(p => p.includes(pkg.id) ? p.filter(x => x !== pkg.id) : [...p, pkg.id])} className="rounded" />
+                    </td>
+                    <td className="p-3">
+                      <p className="text-xs font-mono font-medium" style={{ color: theme.accent.primary }}>{pkg.waybill}</p>
+                      <p className="text-xs" style={{ color: theme.text.muted }}>{pkg.size} · {pkg.weight}</p>
+                    </td>
+                    <td className="p-3 hidden md:table-cell">
+                      <p className="text-sm" style={{ color: theme.text.primary }}>{pkg.customer}</p>
+                      <p className="text-xs font-mono" style={{ color: theme.text.muted }}>{pkg.phone}</p>
+                    </td>
+                    <td className="p-3 hidden lg:table-cell"><DeliveryMethodBadge method={pkg.deliveryMethod} /></td>
+                    <td className="p-3 hidden md:table-cell">
+                      <p className="text-sm" style={{ color: theme.text.primary }}>{pkg.destination}</p>
+                      <p className="text-xs" style={{ color: theme.text.muted }}>{(() => { const t = terminalsData.find(x => x.name === pkg.destination); return t ? getTerminalAddress(t) : pkg.destination; })()}</p>
+                    </td>
+                    <td className="p-3"><StatusBadge status={pkg.status} /></td>
+                    <td className="p-3">
+                      <div className="flex items-center gap-1 justify-end">
+                        {hasPermission(currentUser?.role, 'packages.dispatch') && !pkg.status.startsWith('in_transit') && !pkg.status.startsWith('delivered') && (
+                          <button onClick={() => handleDispatch(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Dispatch" style={{ color: '#7EA8C9' }}><Truck size={14} /></button>
+                        )}
+                        {hasPermission(currentUser?.role, 'packages.update') && !pkg.status.startsWith('delivered') && (
+                          <button onClick={() => handleMarkDelivered(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Mark Delivered" style={{ color: '#81C995' }}><CheckCircle2 size={14} /></button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {paginated.length === 0 && (
+                  <tr><td colSpan={7} className="text-center py-12 text-sm" style={{ color: theme.text.muted }}>No packages found</td></tr>
+                )}
+              </tbody>
+            </table>
           </div>
-
-          {/* Pagination */}
-          {dispatchTotalPages > 1 && (
-            <Pagination currentPage={dispatchPage} totalPages={dispatchTotalPages} onPageChange={setDispatchPage} pageSize={dispatchPageSize} onPageSizeChange={(s) => { setDispatchPageSize(s); setDispatchPage(1); }} totalItems={filteredDispatchPackages.length} theme={theme} />
+          {totalPages > 1 && (
+            <div className="mt-4">
+              <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} pageSize={pageSize} onPageSizeChange={s => { setPageSize(s); setPage(1); }} totalItems={filteredPackages.length} />
+            </div>
           )}
-        </div>
+
+          {/* Bulk Action Bar */}
+          {selected.length > 0 && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl" style={{ backgroundColor: theme.bg.card, border: `1.5px solid ${theme.border.primary}` }}>
+              <span className="text-sm font-medium" style={{ color: theme.text.secondary }}>{selected.length} selected</span>
+              <div style={{ width: 1, height: 18, backgroundColor: theme.border.primary }} />
+              {hasPermission(currentUser?.role, 'packages.dispatch') && (
+                <button onClick={handleBulkDispatch} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
+                  <Truck size={14} /> Dispatch All
+                </button>
+              )}
+              <button onClick={() => setSelected([])} className="px-3 py-2 rounded-xl text-sm" style={{ color: theme.text.muted, backgroundColor: theme.bg.input }}>Clear</button>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Route Planning Sub-tab */}
-      {activeSubMenu === 'Route Planning' && (
-        <div className="space-y-4">
+      {/* ════════════════ ROUTE PLANNING ════════════════ */}
+      {activeTab === 'Route Planning' && (
+        <>
           {!selectedRoute ? (
             <>
-              {/* ====== ROUTE LIST VIEW ====== */}
-              {/* Summary Metrics */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                  <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Routes</p>
-                  <p className="text-2xl font-bold mt-1" style={{ color: theme.accent.primary }}>{routesData.filter(r => r.status === 'active').length}<span className="text-sm font-normal" style={{ color: theme.text.muted }}>/{routesData.length}</span></p>
-                  <p className="text-xs mt-0.5" style={{ color: theme.text.muted }}>active</p>
-                </div>
-                <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                  <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Total Stops</p>
-                  <p className="text-2xl font-bold mt-1" style={{ color: '#7EA8C9' }}>{routesData.reduce((s, r) => s + r.stops.length, 0)}</p>
-                </div>
-                <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                  <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Packages</p>
-                  <p className="text-2xl font-bold mt-1" style={{ color: '#81C995' }}>{routesData.reduce((s, r) => s + r.stops.reduce((ss, st) => ss + st.packages.length, 0), 0)}</p>
-                </div>
-                <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                  <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Avg Completion</p>
-                  {(() => {
-                    const totalPkgs = routesData.reduce((s, r) => s + r.stops.reduce((ss, st) => ss + st.packages.length, 0), 0);
-                    const totalDel = routesData.reduce((s, r) => s + r.stops.reduce((ss, st) => ss + st.delivered, 0), 0);
-                    return <p className="text-2xl font-bold mt-1" style={{ color: '#D4AA5A' }}>{totalPkgs > 0 ? Math.round((totalDel / totalPkgs) * 100) : 0}%</p>;
-                  })()}
-                </div>
-              </div>
-
-              {/* Map Placeholder */}
-              <div className="p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-3" style={{ borderColor: theme.border.secondary, backgroundColor: theme.bg.card }}>
-                <div className="p-3 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}><MapPin size={28} style={{ color: theme.icon.muted }} /></div>
-                <p className="font-medium text-sm" style={{ color: theme.text.secondary }}>Map View Coming Soon</p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {terminalsData.map(t => (
-                    <span key={t.id} className="text-xs px-2 py-1 rounded-lg" style={{ backgroundColor: theme.bg.tertiary, color: theme.text.muted }}>{t.name} ({t.lat.toFixed(2)}, {t.lng.toFixed(2)})</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Create Route + Optimize buttons */}
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium" style={{ color: theme.text.secondary }}>{routesData.length} routes</p>
-                <div className="flex gap-2">
-                  <button onClick={() => addToast({ type: 'success', message: 'Routes optimized successfully' })} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm border" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}><Route size={16} /> Optimize</button>
-                  <button onClick={() => addToast({ type: 'info', message: 'Create route wizard coming soon' })} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}><Plus size={16} /> Create Route</button>
-                </div>
+              {/* Route Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                {[
+                  { label: 'Active Routes', value: `${routes.filter(r => r.status === 'active').length} / ${routes.length}`, color: theme.accent.primary },
+                  { label: 'Total Stops', value: routes.reduce((s, r) => s + r.stops.length, 0), color: '#7EA8C9' },
+                  { label: 'Packages Out', value: routes.reduce((s, r) => s + r.stops.reduce((ss, st) => ss + st.packages.length, 0), 0), color: '#D4AA5A' },
+                  { label: 'Avg Completion', value: (() => { const t = routes.reduce((s, r) => { const pkg = r.stops.reduce((ss, st) => ss + st.packages.length, 0); const del = r.stops.reduce((ss, st) => ss + st.delivered, 0); return { pkg: s.pkg + pkg, del: s.del + del }; }, { pkg: 0, del: 0 }); return t.pkg ? `${Math.round(t.del / t.pkg * 100)}%` : '—'; })(), color: '#81C995' },
+                ].map(m => (
+                  <div key={m.label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                    <p className="text-xs mb-1" style={{ color: theme.text.muted }}>{m.label}</p>
+                    <p className="text-xl font-bold" style={{ color: m.color }}>{m.value}</p>
+                  </div>
+                ))}
               </div>
 
               {/* Route Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {routesData.map(r => {
-                  const totalPkgs = r.stops.reduce((s, st) => s + st.packages.length, 0);
-                  const totalDel = r.stops.reduce((s, st) => s + st.delivered, 0);
-                  const pct = totalPkgs > 0 ? Math.round((totalDel / totalPkgs) * 100) : 0;
-                  const statusColors = { active: '#81C995', pending: '#D4AA5A', completed: '#78716C' };
-                  const clr = statusColors[r.status] || '#78716C';
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {routes.map(route => {
+                  const totalPkg = route.stops.reduce((s, st) => s + st.packages.length, 0);
+                  const delPkg = route.stops.reduce((s, st) => s + st.delivered, 0);
+                  const pct = totalPkg ? Math.round(delPkg / totalPkg * 100) : 0;
+                  const statusColor = route.status === 'active' ? '#81C995' : route.status === 'completed' ? '#7EA8C9' : '#D4AA5A';
                   return (
-                    <div key={r.id} className="rounded-2xl border overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }} onClick={() => { setSelectedRoute(r); setRouteTab('stops'); setExpandedStops([]); }}>
-                      <div className="p-4">
-                        {/* Header */}
-                        <div className="flex items-center justify-between mb-2">
+                    <div key={route.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                      <div className="p-4 border-b" style={{ borderColor: theme.border.primary }}>
+                        <div className="flex items-center justify-between mb-1">
                           <div>
-                            <p className="font-semibold" style={{ color: theme.text.primary }}>{r.zone}</p>
-                            <p className="text-xs font-mono" style={{ color: theme.text.muted }}>{r.id}</p>
+                            <p className="font-semibold" style={{ color: theme.text.primary }}>{route.zone}</p>
+                            <p className="text-xs font-mono" style={{ color: theme.text.muted }}>{route.id}</p>
                           </div>
-                          <span className="text-xs px-2 py-1 rounded-full capitalize" style={{ backgroundColor: clr + '15', color: clr }}>{r.status}</span>
+                          <span className="text-xs px-2 py-1 rounded-full capitalize" style={{ backgroundColor: `${statusColor}15`, color: statusColor }}>{route.status}</span>
                         </div>
-
-                        {/* Progress */}
-                        <div className="mb-3">
-                          <div className="flex items-center justify-between text-xs mb-1">
-                            <span style={{ color: theme.text.muted }}>{totalDel}/{totalPkgs} delivered</span>
-                            <span style={{ color: theme.text.muted }}>{pct}%</span>
+                        <div className="mt-3">
+                          <div className="flex justify-between text-xs mb-1" style={{ color: theme.text.muted }}>
+                            <span>Delivery progress</span>
+                            <span style={{ color: pct === 100 ? '#81C995' : theme.text.secondary }}>{pct}%</span>
                           </div>
-                          <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
-                            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: clr }} />
+                          <div className="h-1.5 rounded-full" style={{ backgroundColor: theme.bg.tertiary }}>
+                            <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#81C995' : '#D4AA5A' }} />
                           </div>
-                        </div>
-
-                        {/* Stats */}
-                        <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-                          <div><span style={{ color: theme.text.muted }}>Stops:</span> <span style={{ color: theme.text.primary }}>{r.stops.length}</span></div>
-                          <div><span style={{ color: theme.text.muted }}>Distance:</span> <span style={{ color: theme.text.primary }}>{r.distance}</span></div>
-                          <div><span style={{ color: theme.text.muted }}>Start:</span> <span style={{ color: theme.text.primary }}>{r.startTime}</span></div>
-                          <div><span style={{ color: theme.text.muted }}>ETA:</span> <span style={{ color: theme.text.primary }}>{r.estEndTime}</span></div>
-                        </div>
-
-                        {/* Stop Preview */}
-                        <div className="flex items-center gap-1.5 mb-3">
-                          {r.stops.map((st, i) => {
-                            const stClr = st.status === 'completed' ? '#81C995' : st.status === 'in_progress' ? '#7EA8C9' : theme.border.secondary;
-                            return (
-                              <React.Fragment key={st.id}>
-                                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: stClr }} title={st.terminal} />
-                                {i < r.stops.length - 1 && <div className="flex-1 h-px" style={{ backgroundColor: theme.border.secondary }} />}
-                              </React.Fragment>
-                            );
-                          })}
-                        </div>
-                        <div className="flex gap-2 text-xs overflow-hidden" style={{ color: theme.text.muted }}>
-                          {r.stops.slice(0, 3).map(st => <span key={st.id} className="truncate">{st.terminal}</span>)}
-                          {r.stops.length > 3 && <span>+{r.stops.length - 3}</span>}
-                        </div>
-
-                        {/* Driver */}
-                        <div className="flex items-center gap-2 pt-3 mt-3 border-t" style={{ borderColor: theme.border.primary }}>
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs" style={{ backgroundColor: clr, color: '#1C1917' }}>{r.driver.name.charAt(0)}</div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm truncate" style={{ color: theme.text.primary }}>{r.driver.name}</p>
-                            <p className="text-xs font-mono truncate" style={{ color: theme.text.muted }}>{r.driver.vehicle.split(' - ')[1]}</p>
-                          </div>
-                          {r.status === 'active' && <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0" />}
                         </div>
                       </div>
-
-                      {/* Action Footer */}
-                      <div className="flex border-t" style={{ borderColor: theme.border.primary }}>
-                        <button onClick={(e) => { e.stopPropagation(); setSelectedRoute(r); setRouteTab('stops'); setExpandedStops([]); }} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs hover:bg-white/5" style={{ color: theme.accent.primary }}>
-                          <Eye size={14} /> View Details
-                        </button>
-                        <div className="w-px" style={{ backgroundColor: theme.border.primary }} />
-                        <button onClick={(e) => { e.stopPropagation(); addToast({ type: 'info', message: `Reassigning route: ${r.zone}` }); }} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs hover:bg-white/5" style={{ color: theme.text.muted }}>
-                          <RefreshCw size={14} /> Reassign
-                        </button>
+                      <div className="p-4">
+                        <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                          {[['Stops', route.stops.length], ['Distance', route.distance], ['Start', route.startTime], ['ETA', route.estEndTime]].map(([l, v]) => (
+                            <div key={l}><span style={{ color: theme.text.muted }}>{l}: </span><span className="font-medium" style={{ color: theme.text.secondary }}>{v}</span></div>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex gap-1">
+                            {route.stops.map(s => <div key={s.id} className="w-2 h-2 rounded-full" style={{ backgroundColor: STOP_COLORS[s.status] }} />)}
+                          </div>
+                          <span className="text-xs" style={{ color: theme.text.muted }}>{route.stops.map(s => s.terminal).slice(0, 2).join(' → ')}{route.stops.length > 2 ? ` +${route.stops.length - 2}` : ''}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: theme.accent.light, color: theme.accent.primary }}>{route.driver?.name?.charAt(0)}</div>
+                          <div>
+                            <p className="text-xs font-medium" style={{ color: theme.text.primary }}>{route.driver?.name}</p>
+                            <p className="text-xs font-mono" style={{ color: theme.text.muted }}>{route.driver?.vehicle?.split(' - ')[1] || '—'}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => { setSelectedRoute(route); setRouteTab('stops'); }} className="flex-1 py-2 rounded-xl text-xs border" style={{ borderColor: theme.accent.border, color: theme.accent.primary }}>View Details</button>
+                          {route.status === 'pending' && (
+                            <button onClick={() => handleStartRoute(route.id)} className="px-3 py-2 rounded-xl text-xs font-medium" style={{ backgroundColor: '#10B98118', color: '#10B981', border: '1px solid #10B98130' }} title="Start Route">▶</button>
+                          )}
+                          {route.status === 'active' && (
+                            <button onClick={() => handleCompleteRoute(route.id)} className="px-3 py-2 rounded-xl text-xs font-medium" style={{ backgroundColor: '#7EA8C918', color: '#7EA8C9', border: '1px solid #7EA8C930' }} title="Complete Route">✓</button>
+                          )}
+                          <button onClick={() => setDeleteRoute(route)} className="p-2 rounded-xl border" style={{ borderColor: theme.border.primary, color: '#D48E8A' }}><Trash2 size={13} /></button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -321,264 +658,222 @@ export const DispatchPage = ({
               </div>
             </>
           ) : (
+            /* ── Route Detail View ── */
             <>
-              {/* ====== ROUTE DETAIL VIEW ====== */}
-              {(() => {
-                const r = selectedRoute;
-                const totalPkgs = r.stops.reduce((s, st) => s + st.packages.length, 0);
-                const totalDel = r.stops.reduce((s, st) => s + st.delivered, 0);
-                const statusColors = { active: '#81C995', pending: '#D4AA5A', completed: '#78716C' };
-                const clr = statusColors[r.status] || '#78716C';
-                const allRoutePkgs = r.stops.flatMap(st => st.packages.map(pid => ({ ...packagesData.find(p => p.id === pid), stopTerminal: st.terminal, stopStatus: st.status }))).filter(p => p.id);
-                return (
-                  <div className="space-y-4">
-                    {/* Back + Header */}
-                    <div className="flex items-center gap-3">
-                      <button onClick={() => setSelectedRoute(null)} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.text.secondary }}><ChevronLeft size={20} /></button>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h2 className="font-semibold text-lg" style={{ color: theme.text.primary }}>{r.zone}</h2>
-                          <span className="text-xs px-2 py-1 rounded-full capitalize" style={{ backgroundColor: clr + '15', color: clr }}>{r.status}</span>
-                        </div>
-                        <p className="text-xs font-mono" style={{ color: theme.text.muted }}>{r.id} · {r.distance} · {r.startTime} — {r.estEndTime}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs" style={{ backgroundColor: clr, color: '#1C1917' }}>{r.driver.name.charAt(0)}</div>
-                        <div className="hidden sm:block">
-                          <p className="text-sm" style={{ color: theme.text.primary }}>{r.driver.name}</p>
-                          <p className="text-xs" style={{ color: theme.text.muted }}>{r.driver.phone}</p>
-                        </div>
-                      </div>
+              <button onClick={() => setSelectedRoute(null)} className="flex items-center gap-2 text-sm mb-5 hover:opacity-80" style={{ color: theme.text.secondary }}>
+                <ChevronLeft size={16} />Back to Routes
+              </button>
+
+              {/* Detail Header */}
+              <div className="p-5 rounded-2xl border mb-5" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                      <h2 className="font-bold text-lg" style={{ color: theme.text.primary }}>{selectedRoute.zone}</h2>
+                      <span className="text-xs px-2 py-0.5 rounded-full capitalize" style={{ backgroundColor: selectedRoute.status === 'active' ? '#81C99520' : selectedRoute.status === 'completed' ? '#7EA8C920' : '#D4AA5A20', color: selectedRoute.status === 'active' ? '#81C995' : selectedRoute.status === 'completed' ? '#7EA8C9' : '#D4AA5A' }}>{selectedRoute.status}</span>
+                      {selectedRoute.status === 'pending' && (
+                        <button onClick={() => handleStartRoute(selectedRoute.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: '#10B98118', color: '#10B981', border: '1px solid #10B98130' }}>
+                          <Truck size={11} /> Start Route
+                        </button>
+                      )}
+                      {selectedRoute.status === 'active' && (
+                        <button onClick={() => handleCompleteRoute(selectedRoute.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: '#7EA8C918', color: '#7EA8C9', border: '1px solid #7EA8C930' }}>
+                          <CheckCircle2 size={11} /> Complete Route
+                        </button>
+                      )}
                     </div>
-
-                    {/* Progress */}
-                    <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-4 text-sm">
-                          <span style={{ color: theme.text.muted }}>{r.stops.filter(s => s.status === 'completed').length}/{r.stops.length} stops completed</span>
-                          <span style={{ color: theme.text.muted }}>{totalDel}/{totalPkgs} packages delivered</span>
-                        </div>
-                        <span className="text-sm font-semibold" style={{ color: clr }}>{totalPkgs > 0 ? Math.round((totalDel / totalPkgs) * 100) : 0}%</span>
-                      </div>
-                      <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
-                        <div className="h-full rounded-full transition-all" style={{ width: `${totalPkgs > 0 ? (totalDel / totalPkgs) * 100 : 0}%`, backgroundColor: clr }} />
-                      </div>
+                    <div className="flex flex-wrap gap-4 text-xs" style={{ color: theme.text.muted }}>
+                      <span>ID: <span className="font-mono" style={{ color: theme.text.secondary }}>{selectedRoute.id}</span></span>
+                      <span>{selectedRoute.distance}</span>
+                      <span>Start: {selectedRoute.startTime}</span>
+                      <span>ETA: {selectedRoute.estEndTime}</span>
                     </div>
-
-                    {/* Tabs */}
-                    <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
-                      {['stops', 'packages', 'timeline'].map(tab => (
-                        <button key={tab} onClick={() => setRouteTab(tab)} className="flex-1 px-4 py-2 rounded-lg text-sm capitalize" style={{ backgroundColor: routeTab === tab ? theme.bg.card : 'transparent', color: routeTab === tab ? theme.text.primary : theme.text.muted, boxShadow: routeTab === tab ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}>{tab}</button>
-                      ))}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: theme.accent.light, color: theme.accent.primary }}>{selectedRoute.driver?.name?.charAt(0)}</div>
+                    <div>
+                      <p className="font-medium text-sm" style={{ color: theme.text.primary }}>{selectedRoute.driver?.name}</p>
+                      <p className="text-xs" style={{ color: theme.text.muted }}>{selectedRoute.driver?.phone}</p>
                     </div>
+                    {/* Reassign Driver */}
+                    <div className="flex items-center gap-2">
+                      <select value={reassignDriverId} onChange={e => setReassignDriverId(e.target.value)} className="px-2 py-1.5 rounded-lg border text-xs" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary, color: theme.text.primary }}>
+                        <option value="">Reassign...</option>
+                        {drivers.filter(d => d.status !== 'offline' && d.id !== selectedRoute.driver?.id).map(d => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                      {reassignDriverId && (
+                        <button onClick={() => handleReassignDriver(selectedRoute.id)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>Apply</button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                    {/* ---- STOPS TAB ---- */}
-                    {routeTab === 'stops' && (
-                      <div className="space-y-0">
-                        {r.stops.map((stop, idx) => {
-                          const terminal = terminalsData.find(t => t.name === stop.terminal);
-                          const stopPkgs = stop.packages.map(pid => packagesData.find(p => p.id === pid)).filter(Boolean);
-                          const isExpanded = expandedStops.includes(stop.id);
-                          const stClr = stop.status === 'completed' ? '#81C995' : stop.status === 'in_progress' ? '#7EA8C9' : '#9ca3af';
-                          return (
-                            <div key={stop.id} className="flex gap-3">
-                              {/* Timeline column */}
-                              <div className="flex flex-col items-center">
-                                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ backgroundColor: stClr, color: '#1C1917' }}>{stop.order}</div>
-                                {idx < r.stops.length - 1 && <div className="w-0.5 flex-1 my-1" style={{ backgroundColor: theme.border.secondary }} />}
-                              </div>
-                              {/* Stop Card */}
-                              <div className="flex-1 mb-3 rounded-xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                                <div className="p-4">
-                                  <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2">
-                                        <p className="font-medium" style={{ color: theme.text.primary }}>{stop.terminal}</p>
-                                        <span className="text-xs px-2 py-0.5 rounded-full capitalize" style={{ backgroundColor: stClr + '15', color: stClr }}>{stop.status.replace('_', ' ')}</span>
-                                      </div>
-                                      {terminal && <p className="text-xs font-mono mt-0.5" style={{ color: theme.text.muted }}>{getTerminalAddress(terminal)}</p>}
-                                      <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: theme.text.muted }}>
-                                        <span>ETA: {stop.eta}</span>
-                                        {stop.arrivedAt && <span>Arrived: {stop.arrivedAt}</span>}
-                                        <span>{stop.packages.length} pkg{stop.packages.length !== 1 ? 's' : ''}</span>
-                                        <span>{stop.delivered} delivered</span>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <button onClick={() => addToast({ type: 'success', message: `Stop ${stop.order} marked complete` })} className="p-1.5 rounded-lg hover:bg-white/5 text-emerald-500" title="Mark Complete"><CheckCircle2 size={15} /></button>
-                                      <button onClick={() => addToast({ type: 'info', message: `Stop ${stop.order} skipped` })} className="p-1.5 rounded-lg hover:bg-white/5 text-amber-500" title="Skip"><ArrowUpRight size={15} /></button>
-                                      <button onClick={() => addToast({ type: 'warning', message: `Stop ${stop.order} removed` })} className="p-1.5 rounded-lg hover:bg-white/5 text-red-500" title="Remove Stop"><X size={15} /></button>
-                                      <div className="p-1.5 cursor-grab" style={{ color: theme.text.muted }} title="Drag to reorder"><GripVertical size={15} /></div>
-                                    </div>
-                                  </div>
-                                </div>
+              {/* Route Tabs */}
+              <div className="flex gap-1 p-1 rounded-xl mb-5 w-fit" style={{ backgroundColor: theme.bg.tertiary }}>
+                {['stops', 'packages', 'timeline'].map(t => (
+                  <button key={t} onClick={() => setRouteTab(t)} className="px-4 py-1.5 rounded-lg text-sm capitalize font-medium" style={{ backgroundColor: routeTab === t ? theme.accent.primary : 'transparent', color: routeTab === t ? theme.accent.contrast : theme.text.muted }}>
+                    {t}
+                  </button>
+                ))}
+              </div>
 
-                                {/* Expand to see packages */}
-                                {stopPkgs.length > 0 && (
-                                  <>
-                                    <button onClick={() => setExpandedStops(prev => prev.includes(stop.id) ? prev.filter(i => i !== stop.id) : [...prev, stop.id])} className="w-full flex items-center justify-center gap-1 py-1.5 text-xs border-t hover:bg-white/5" style={{ borderColor: theme.border.primary, color: theme.text.muted }}>
-                                      {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                      {isExpanded ? 'Hide' : 'Show'} {stopPkgs.length} package{stopPkgs.length !== 1 ? 's' : ''}
-                                    </button>
-                                    {isExpanded && (
-                                      <div className="border-t" style={{ borderColor: theme.border.primary }}>
-                                        {stopPkgs.map(pkg => (
-                                          <div key={pkg.id} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5" style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
-                                            <Package size={14} style={{ color: theme.icon.muted }} />
-                                            <span className="font-mono text-xs" style={{ color: theme.accent.primary }}>{pkg.waybill}</span>
-                                            <span className="text-xs flex-1" style={{ color: theme.text.secondary }}>{pkg.customer}</span>
-                                            <span className="text-xs" style={{ color: theme.text.muted }}>{pkg.size}</span>
-                                            <StatusBadge status={pkg.status} />
-                                            <button onClick={() => setSelectedPackage(pkg)} className="p-1 rounded hover:bg-white/5" style={{ color: theme.text.muted }}><Eye size={13} /></button>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </>
+              {/* ── Stops Tab ── */}
+              {routeTab === 'stops' && (
+                <div className="space-y-3">
+                  {(routes.find(r => r.id === selectedRoute.id)?.stops ?? []).map((stop, i) => {
+                    const isExpanded = expandedStops.includes(stop.id);
+                    const stopColor = STOP_COLORS[stop.status];
+                    return (
+                      <div key={stop.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                        <div className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ backgroundColor: `${stopColor}20`, color: stopColor }}>{i + 1}</div>
+                            <div className="flex-1">
+                              <p className="font-medium" style={{ color: theme.text.primary }}>{stop.terminal}</p>
+                              <p className="text-xs" style={{ color: theme.text.muted }}>{(() => { const t = terminalsData.find(x => x.name === stop.terminal); return t ? getTerminalAddress(t) : stop.terminal; })()} · ETA {stop.eta}{stop.arrivedAt ? ` · Arrived ${stop.arrivedAt}` : ''}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs px-2 py-0.5 rounded-full capitalize" style={{ backgroundColor: `${stopColor}20`, color: stopColor }}>{stop.status.replace('_', ' ')}</span>
+                              <div className="flex gap-1">
+                                {stop.status !== 'completed' && (
+                                  <button onClick={() => handleMarkStopComplete(selectedRoute.id, stop.id)} className="p-1.5 rounded-lg hover:bg-white/5" title="Mark Complete" style={{ color: '#81C995' }}><CheckCircle2 size={14} /></button>
                                 )}
+                                <button onClick={() => handleRemoveStop(selectedRoute.id, stop.id)} className="p-1.5 rounded-lg hover:bg-white/5" title="Remove Stop" style={{ color: '#D48E8A' }}><Trash2 size={14} /></button>
+                                <button onClick={() => setExpandedStops(p => isExpanded ? p.filter(x => x !== stop.id) : [...p, stop.id])} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.icon.muted }}>
+                                  {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                </button>
                               </div>
                             </div>
-                          );
-                        })}
-
-                        {/* Add Stop */}
-                        <div className="flex gap-3">
-                          <div className="flex flex-col items-center">
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center border-2 border-dashed shrink-0" style={{ borderColor: theme.border.secondary, color: theme.text.muted }}><Plus size={14} /></div>
                           </div>
-                          <div className="flex-1 mb-3">
-                            <select onChange={(e) => { if (e.target.value) { addToast({ type: 'success', message: `${e.target.value} added as stop ${r.stops.length + 1}` }); e.target.value = ''; } }} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.input, borderColor: theme.border.primary, color: theme.text.primary }}>
-                              <option value="">Add stop...</option>
-                              {terminalsData.filter(t => !r.stops.find(s => s.terminal === t.name)).map(t => (
-                                <option key={t.id} value={t.name}>{t.name} — {t.location}</option>
-                              ))}
-                            </select>
+                          <div className="flex gap-4 mt-2 text-xs" style={{ color: theme.text.muted }}>
+                            <span>{stop.packages.length} packages assigned</span>
+                            <span style={{ color: '#81C995' }}>{stop.delivered} delivered</span>
                           </div>
                         </div>
-                      </div>
-                    )}
-
-                    {/* ---- PACKAGES TAB ---- */}
-                    {routeTab === 'packages' && (
-                      <div className="space-y-4">
-                        {/* Package Summary */}
-                        <div className="grid grid-cols-3 gap-3">
-                          <div className="p-3 rounded-xl text-center" style={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}` }}>
-                            <p className="text-lg font-bold" style={{ color: theme.text.primary }}>{totalPkgs}</p>
-                            <p className="text-xs" style={{ color: theme.text.muted }}>Total</p>
-                          </div>
-                          <div className="p-3 rounded-xl text-center" style={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}` }}>
-                            <p className="text-lg font-bold" style={{ color: '#81C995' }}>{totalDel}</p>
-                            <p className="text-xs" style={{ color: theme.text.muted }}>Delivered</p>
-                          </div>
-                          <div className="p-3 rounded-xl text-center" style={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}` }}>
-                            <p className="text-lg font-bold" style={{ color: '#D4AA5A' }}>{totalPkgs - totalDel}</p>
-                            <p className="text-xs" style={{ color: theme.text.muted }}>Pending</p>
-                          </div>
-                        </div>
-
-                        {/* Package Table */}
-                        <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                          <table className="w-full">
-                            <thead>
-                              <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
-                                <th className="text-left p-3 text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Waybill</th>
-                                <th className="text-left p-3 text-xs font-semibold uppercase hidden md:table-cell" style={{ color: theme.text.muted }}>Customer</th>
-                                <th className="text-left p-3 text-xs font-semibold uppercase hidden md:table-cell" style={{ color: theme.text.muted }}>Stop</th>
-                                <th className="text-left p-3 text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Status</th>
-                                <th className="text-left p-3 text-xs font-semibold uppercase hidden lg:table-cell" style={{ color: theme.text.muted }}>Size</th>
-                                <th className="text-right p-3 text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {allRoutePkgs.length > 0 ? allRoutePkgs.map(pkg => (
-                                <tr key={pkg.id} className="hover:bg-white/5" style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
-                                  <td className="p-3"><span className="font-mono text-sm" style={{ color: theme.accent.primary }}>{pkg.waybill}</span></td>
-                                  <td className="p-3 hidden md:table-cell"><span className="text-sm" style={{ color: theme.text.primary }}>{pkg.customer}</span></td>
-                                  <td className="p-3 hidden md:table-cell"><span className="text-xs" style={{ color: theme.text.muted }}>{pkg.stopTerminal}</span></td>
-                                  <td className="p-3"><StatusBadge status={pkg.status} /></td>
-                                  <td className="p-3 hidden lg:table-cell"><span className="text-sm" style={{ color: theme.text.secondary }}>{pkg.size}</span></td>
-                                  <td className="p-3 text-right">
-                                    <div className="flex items-center justify-end gap-1">
-                                      <button onClick={() => setSelectedPackage(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="View"><Eye size={15} /></button>
-                                      <button onClick={() => addToast({ type: 'warning', message: `${pkg.waybill} removed from route` })} className="p-1.5 rounded-lg hover:bg-white/5 text-red-500" title="Remove"><X size={15} /></button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              )) : (
-                                <tr><td colSpan={6} className="p-8 text-center" style={{ color: theme.text.muted }}>
-                                  <Package size={32} className="mx-auto mb-2 opacity-30" />
-                                  <p className="text-sm">No packages assigned to this route</p>
-                                </td></tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* ---- TIMELINE TAB ---- */}
-                    {routeTab === 'timeline' && (
-                      <div className="rounded-2xl border p-4" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-                        <div className="space-y-0">
-                          {r.timeline.map((evt, idx) => {
-                            const iconMap = { route: Route, user: Users, truck: Truck, mappin: MapPin, package: Package };
-                            const EvtIcon = iconMap[evt.icon] || Clock;
-                            return (
-                              <div key={idx} className="flex gap-3">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: theme.bg.tertiary }}><EvtIcon size={14} style={{ color: theme.icon.muted }} /></div>
-                                  {idx < r.timeline.length - 1 && <div className="w-0.5 flex-1 my-1" style={{ backgroundColor: theme.border.secondary }} />}
+                        {isExpanded && stop.packages.length > 0 && (
+                          <div className="border-t px-4 py-2" style={{ borderColor: theme.border.primary }}>
+                            {stop.packages.map(pkgId => {
+                              const pkg = packages.find(p => p.id === pkgId);
+                              if (!pkg) return null;
+                              return (
+                                <div key={pkgId} className="flex items-center gap-3 py-2 border-b last:border-0" style={{ borderColor: theme.border.primary }}>
+                                  <p className="text-xs font-mono" style={{ color: theme.accent.primary }}>{pkg.waybill}</p>
+                                  <p className="text-xs flex-1" style={{ color: theme.text.secondary }}>{pkg.customer}</p>
+                                  <p className="text-xs hidden md:block" style={{ color: theme.text.muted }}>{pkg.size}</p>
+                                  <StatusBadge status={pkg.status} />
                                 </div>
-                                <div className="pb-4 flex-1">
-                                  <p className="text-sm" style={{ color: theme.text.primary }}>{evt.event}</p>
-                                  <div className="flex items-center gap-2 mt-0.5">
-                                    <span className="text-xs" style={{ color: theme.text.muted }}>{evt.time}</span>
-                                    <span className="text-xs" style={{ color: theme.text.muted }}>· {evt.by}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
-                    )}
+                    );
+                  })}
+                  {/* Add Stop */}
+                  {(routes.find(r => r.id === selectedRoute.id)?.status ?? 'pending') !== 'completed' && (
+                    <div className="flex gap-2">
+                      <select value={addStopTerminal} onChange={e => setAddStopTerminal(e.target.value)} className="flex-1 px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.input, borderColor: theme.border.primary, color: theme.text.primary }}>
+                        <option value="">Add a stop...</option>
+                        {terminalsData.filter(t => !(routes.find(r => r.id === selectedRoute.id)?.stops ?? []).find(s => s.terminal === t.name)).map(t => (
+                          <option key={t.id} value={t.name}>{t.name}</option>
+                        ))}
+                      </select>
+                      <button onClick={() => handleAddStop(selectedRoute.id)} disabled={!addStopTerminal} className="px-4 py-2.5 rounded-xl text-sm font-medium disabled:opacity-40" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ── Packages Tab ── */}
+              {routeTab === 'packages' && (() => {
+                const routePackageIds = (routes.find(r => r.id === selectedRoute.id)?.stops ?? []).flatMap(s => s.packages);
+                const routePkgs = packages.filter(p => routePackageIds.includes(p.id));
+                const del = routePkgs.filter(p => p.status.startsWith('delivered')).length;
+                return (
+                  <div>
+                    <div className="grid grid-cols-3 gap-3 mb-5">
+                      {[['Total', routePkgs.length, theme.text.primary], ['Delivered', del, '#81C995'], ['Pending', routePkgs.length - del, '#D4AA5A']].map(([l, v, c]) => (
+                        <div key={l} className="p-3 rounded-xl border text-center" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                          <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
+                          <p className="text-xl font-bold" style={{ color: c }}>{v}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                      <table className="w-full">
+                        <thead><tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
+                          {['Waybill', 'Customer', 'Size', 'Status'].map(h => <th key={h} className="text-left p-3 text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>{h}</th>)}
+                        </tr></thead>
+                        <tbody>
+                          {routePkgs.map(pkg => (
+                            <tr key={pkg.id} style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
+                              <td className="p-3 font-mono text-xs" style={{ color: theme.accent.primary }}>{pkg.waybill}</td>
+                              <td className="p-3 text-sm" style={{ color: theme.text.secondary }}>{pkg.customer}</td>
+                              <td className="p-3 text-sm" style={{ color: theme.text.muted }}>{pkg.size}</td>
+                              <td className="p-3"><StatusBadge status={pkg.status} /></td>
+                            </tr>
+                          ))}
+                          {routePkgs.length === 0 && <tr><td colSpan={4} className="p-6 text-center text-sm" style={{ color: theme.text.muted }}>No packages on this route</td></tr>}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 );
               })()}
+
+              {/* ── Timeline Tab ── */}
+              {routeTab === 'timeline' && (
+                <div className="space-y-3">
+                  {(routes.find(r => r.id === selectedRoute.id)?.timeline ?? []).map((ev, i) => {
+                    const Icon = TIMELINE_ICONS[ev.icon] || Clock;
+                    const timelineLen = routes.find(r => r.id === selectedRoute.id)?.timeline?.length ?? 0;
+                    return (
+                      <div key={i} className="flex gap-4">
+                        <div className="flex flex-col items-center">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: theme.bg.tertiary }}><Icon size={14} style={{ color: theme.accent.primary }} /></div>
+                          {i < timelineLen - 1 && <div className="w-px flex-1 mt-2" style={{ backgroundColor: theme.border.primary }} />}
+                        </div>
+                        <div className="pb-4">
+                          <p className="text-sm" style={{ color: theme.text.primary }}>{ev.event}</p>
+                          <p className="text-xs" style={{ color: theme.text.muted }}>{ev.time} · {ev.by}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </>
           )}
-        </div>
+        </>
       )}
 
-      {/* Driver Assignment Sub-tab */}
-      {activeSubMenu === 'Driver Assignment' && (
-        <div className="space-y-4">
+      {/* ════════════════ DRIVER ASSIGNMENT ════════════════ */}
+      {activeTab === 'Driver Assignment' && (
+        <>
           {/* Driver Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Total Drivers</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: theme.text.primary }}>{driversData.length}</p>
-            </div>
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Active</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: '#81C995' }}>{driversData.filter(d => d.status === 'active').length}</p>
-            </div>
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>On Delivery</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: '#7EA8C9' }}>{driversData.filter(d => d.status === 'on_delivery').length}</p>
-            </div>
-            <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-              <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Offline</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: '#D48E8A' }}>{driversData.filter(d => d.status === 'offline').length}</p>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {[
+              { label: 'Total Drivers', value: drivers.length, color: theme.accent.primary },
+              { label: 'Active', value: drivers.filter(d => d.status === 'active').length, color: '#81C995' },
+              { label: 'On Delivery', value: drivers.filter(d => d.status === 'on_delivery').length, color: '#D4AA5A' },
+              { label: 'Offline', value: drivers.filter(d => d.status === 'offline').length, color: '#78716C' },
+            ].map(m => (
+              <div key={m.label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                <p className="text-xs mb-1" style={{ color: theme.text.muted }}>{m.label}</p>
+                <p className="text-xl font-bold" style={{ color: m.color }}>{m.value}</p>
+              </div>
+            ))}
           </div>
 
-          {/* Search Bar */}
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-            <Search size={18} style={{ color: theme.icon.muted }} />
-            <input type="text" value={driverSearch} onChange={e => setDriverSearch(e.target.value)} placeholder="Search by driver name, phone, zone..." className="flex-1 bg-transparent outline-none text-sm" style={{ color: theme.text.primary }} />
-            {driverSearch && <button onClick={() => setDriverSearch('')} className="p-1 rounded" style={{ color: theme.text.muted }}><X size={16} /></button>}
+          {/* Search */}
+          <div className="relative max-w-sm mb-4">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.icon.muted }} />
+            <input value={driverSearch} onChange={e => setDriverSearch(e.target.value)} placeholder="Search name, zone, phone..." className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.input, borderColor: theme.border.primary, color: theme.text.primary }} />
           </div>
 
           {/* Drivers Table */}
@@ -586,83 +881,64 @@ export const DispatchPage = ({
             <table className="w-full">
               <thead>
                 <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
-                  {[
-                    { label: 'Driver', field: 'name', cls: '' },
-                    { label: 'Vehicle', field: null, cls: 'hidden md:table-cell' },
-                    { label: 'Zone', field: 'zone', cls: 'hidden lg:table-cell' },
-                    { label: 'Status', field: 'status', cls: '' },
-                    { label: 'Deliveries', field: 'deliveriesToday', cls: '' },
-                    { label: 'Rating', field: 'rating', cls: 'hidden md:table-cell' },
-                  ].map(col => (
-                    <th key={col.label} className={`text-left p-4 text-xs font-semibold uppercase ${col.cls}`} style={{ color: theme.text.muted }}>
-                      {col.field ? (
-                        <button onClick={() => setDriverSort(prev => ({ field: col.field, dir: prev.field === col.field && prev.dir === 'asc' ? 'desc' : 'asc' }))} className="flex items-center gap-1 hover:opacity-80">
-                          {col.label}
-                          {driverSort.field === col.field && (driverSort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}
-                        </button>
-                      ) : col.label}
-                    </th>
+                  {[['name', 'Driver'], ['vehicle', 'Vehicle', 'hidden md:table-cell'], ['zone', 'Zone', 'hidden lg:table-cell'], ['status', 'Status'], ['deliveriesToday', 'Deliveries'], ['rating', 'Rating', 'hidden md:table-cell'], ['', 'Actions']].map(([f, l, cls = '']) => (
+                    <th key={l} onClick={() => f && setDriverSort(s => ({ field: f, dir: s.field === f && s.dir === 'asc' ? 'desc' : 'asc' }))} className={`text-left p-3 text-xs font-semibold uppercase cursor-pointer ${cls}`} style={{ color: theme.text.muted }}>{l}</th>
                   ))}
-                  <th className="text-right p-4 text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredDrivers.map(d => {
-                  const driverColors = { active: '#81C995', on_delivery: '#7EA8C9', offline: '#78716C' };
-                  const capacity = 20;
+                {filteredDrivers.map(driver => {
+                  const statusColor = driver.status === 'active' ? '#81C995' : driver.status === 'on_delivery' ? '#D4AA5A' : '#78716C';
+                  const cap = Math.round(driver.deliveriesToday / 20 * 100);
                   return (
-                  <tr key={d.id} style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: driverColors[d.status] || '#78716C', color: '#1C1917' }}>{d.name.charAt(0)}</div>
-                          {d.status === 'active' && <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2" style={{ borderColor: theme.bg.card }} />}
+                    <tr key={driver.id} className="hover:bg-white/3" style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: `${statusColor}20`, color: statusColor }}>{driver.name.charAt(0)}</div>
+                            {driver.status === 'active' && <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-current animate-pulse" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{driver.name}</p>
+                            <p className="text-xs font-mono" style={{ color: theme.text.muted }}>{driver.phone}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{d.name}</p>
-                          <p className="text-xs" style={{ color: theme.text.muted }}>{d.phone}</p>
+                      </td>
+                      <td className="p-3 hidden md:table-cell text-sm" style={{ color: theme.text.secondary }}>{driver.vehicle}</td>
+                      <td className="p-3 hidden lg:table-cell text-sm" style={{ color: theme.text.muted }}>{driver.zone}</td>
+                      <td className="p-3">
+                        <span className="text-xs px-2 py-1 rounded-full capitalize" style={{ backgroundColor: `${statusColor}15`, color: statusColor }}>{driver.status.replace('_', ' ')}</span>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1.5 rounded-full" style={{ backgroundColor: theme.bg.tertiary }}>
+                            <div className="h-full rounded-full" style={{ width: `${Math.min(cap, 100)}%`, backgroundColor: cap > 80 ? '#D48E8A' : cap > 50 ? '#D4AA5A' : '#81C995' }} />
+                          </div>
+                          <span className="text-xs" style={{ color: theme.text.secondary }}>{driver.deliveriesToday}/20</span>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-4 hidden md:table-cell">
-                      <p className="text-sm" style={{ color: theme.text.secondary }}>{d.vehicle.split(' - ')[0]}</p>
-                      <p className="text-xs font-mono" style={{ color: theme.text.muted }}>{d.vehicle.split(' - ')[1]}</p>
-                    </td>
-                    <td className="p-4 hidden lg:table-cell"><span className="text-sm" style={{ color: theme.text.secondary }}>{d.zone}</span></td>
-                    <td className="p-4"><StatusBadge status={d.status} /></td>
-                    <td className="p-4">
-                      <div>
-                        <span className="text-sm font-medium" style={{ color: theme.text.primary }}>{d.deliveriesToday}</span>
-                        <span className="text-xs" style={{ color: theme.text.muted }}>/{capacity}</span>
-                      </div>
-                      <div className="w-16 h-1.5 rounded-full mt-1 overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
-                        <div className="h-full rounded-full" style={{ width: `${Math.min((d.deliveriesToday / capacity) * 100, 100)}%`, backgroundColor: d.deliveriesToday > capacity * 0.8 ? '#D48E8A' : d.deliveriesToday > capacity * 0.5 ? '#D4AA5A' : '#81C995' }} />
-                      </div>
-                    </td>
-                    <td className="p-4 hidden md:table-cell"><span className="text-sm" style={{ color: '#D4AA5A' }}>★ {d.rating}</span></td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => addToast({ type: 'info', message: `Viewing ${d.name}'s details` })} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="View"><Eye size={15} /></button>
-                        {hasPermission(currentUser.role, 'packages.dispatch') && d.status !== 'offline' && (
-                          <button onClick={() => addToast({ type: 'success', message: `Packages assigned to ${d.name}` })} className="p-1.5 rounded-lg hover:bg-white/5 text-blue-500" title="Assign Packages"><Package size={15} /></button>
-                        )}
-                        {hasPermission(currentUser.role, 'packages.dispatch') && d.status === 'on_delivery' && (
-                          <button onClick={() => addToast({ type: 'info', message: `${d.name} recalled` })} className="p-1.5 rounded-lg hover:bg-white/5 text-amber-500" title="Recall Driver"><RefreshCw size={15} /></button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ); })}
+                      </td>
+                      <td className="p-3 hidden md:table-cell">
+                        <span className="text-xs flex items-center gap-1" style={{ color: '#D4AA5A' }}><Star size={10} fill="#D4AA5A" />{driver.rating}</span>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-1 justify-end">
+                          <button onClick={() => setDriverDrawer(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Edit" style={{ color: theme.icon.muted }}><Edit size={13} /></button>
+                          {driver.status === 'on_delivery' && hasPermission(currentUser?.role, 'packages.dispatch') && (
+                            <button onClick={() => handleRecall(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Recall" style={{ color: '#D4AA5A' }}><RefreshCw size={13} /></button>
+                          )}
+                          <button onClick={() => setDeleteDriver(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Delete" style={{ color: '#D48E8A' }}><Trash2 size={13} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {filteredDrivers.length === 0 && (
-                  <tr><td colSpan={7} className="p-12 text-center" style={{ color: theme.text.muted }}>
-                    <Car size={40} className="mx-auto mb-3 opacity-30" />
-                    <p className="text-sm">No drivers match your search</p>
-                  </td></tr>
+                  <tr><td colSpan={7} className="text-center py-12 text-sm" style={{ color: theme.text.muted }}>No drivers found</td></tr>
                 )}
               </tbody>
             </table>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
