@@ -10,8 +10,8 @@ import { SizeIcon, StopProgress, sizeColor } from './HomeScreen';
 const optimizeRoute = (lockers, tasks, mode = 'distance') => {
   if (mode === 'distance') return [...lockers].sort((a, b) => a.distKm - b.distKm);
   if (mode === 'packages') return [...lockers].sort((a, b) => {
-    const aCount = tasks.filter(t => t.locker === a.name && (t.tab === 'accepted' || t.tab === 'inTransit')).length;
-    const bCount = tasks.filter(t => t.locker === b.name && (t.tab === 'accepted' || t.tab === 'inTransit')).length;
+    const aCount = tasks.filter(t => t.locker === a.name && (t.tab === 'accepted' || t.tab === 'in_transit_to_locker')).length;
+    const bCount = tasks.filter(t => t.locker === b.name && (t.tab === 'accepted' || t.tab === 'in_transit_to_locker')).length;
     return bCount - aCount;
   });
   return [...lockers].sort((a, b) => a.distKm - b.distKm);

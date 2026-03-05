@@ -5,7 +5,7 @@ import { CheckCircle, Check } from '../components/Icons';
 
 const DeliveryHistoryScreen = ({ tasks, onBack, T }) => {
   const [dateFilter, setDateFilter] = useState('today');
-  const deposited = tasks.filter(t => t.tab === 'deposited');
+  const deposited = tasks.filter(t => t.tab === 'delivered_to_locker');
   const totalDeps = deposited.length;
   return <div style={{ minHeight: '100vh', background: T.bg, paddingBottom: 32 }}><StatusBar />
     <TopBar title="Delivery History" onBack={onBack} T={T} />

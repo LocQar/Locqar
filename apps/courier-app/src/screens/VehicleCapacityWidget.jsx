@@ -2,7 +2,7 @@ import React from 'react';
 import { Truck } from '../components/Icons';
 
 const VehicleCapacityCard = ({ tasks, vehicleConfig, T }) => {
-  const activeTasks = tasks.filter(t => t.tab === 'accepted' || t.tab === 'inTransit');
+  const activeTasks = tasks.filter(t => t.tab === 'accepted' || t.tab === 'in_transit_to_locker');
   const currentLoad = activeTasks.length;
   const loadPct = vehicleConfig.maxCapacity > 0 ? (currentLoad / vehicleConfig.maxCapacity) * 100 : 0;
   const loadColor = loadPct > 90 ? T.red : loadPct > 70 ? T.accent : T.green;

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import StatusBar from '../components/StatusBar';
 import Badge from '../components/Badge';
 import { Skeleton } from '../components/Skeleton';
-import { Bell, ChevronRight, Check, Navigation, Camera, MapPin, RefreshCw } from '../components/Icons';
+import { Bell, ChevronRight, Check, Navigation, Camera, MapPin, RefreshCw, Home } from '../components/Icons';
 import { driver, lockersData } from '../data/mockData';
 import ShiftTimer from './ShiftTimerWidget';
 import VehicleCapacityCard from './VehicleCapacityWidget';
@@ -67,9 +67,9 @@ const HomeScreen = ({ dels, tasks, activeBlock, onNav, notifCount, onRefresh, sh
 
   const assigned = tasks.filter(t => t.tab === 'assigned').length;
   const accepted = tasks.filter(t => t.tab === 'accepted').length;
-  const inTransit = tasks.filter(t => t.tab === 'inTransit').length;
-  const deposited = tasks.filter(t => t.tab === 'deposited').length;
-  const recall = tasks.filter(t => t.tab === 'recall').length;
+  const inTransit = tasks.filter(t => t.tab === 'in_transit_to_locker').length;
+  const deposited = tasks.filter(t => t.tab === 'delivered_to_locker').length;
+  const recall = tasks.filter(t => t.tab === 'recalled').length;
   const totalTasks = tasks.length;
   const dynamicEarn = deposited * RATE_PER_PKG;
   const delivering = accepted + inTransit;
@@ -211,6 +211,7 @@ const HomeScreen = ({ dels, tasks, activeBlock, onNav, notifCount, onRefresh, sh
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
             {assigned > 0 && <button onClick={() => onNav('tasks')} className="tap press" style={{ flex: 1, height: 44, borderRadius: 12, border: 'none', fontWeight: 700, fontSize: 13, background: T.accentGradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, boxShadow: `0 4px 12px ${T.accent}40` }}><Camera size={14} />Scan ({assigned})</button>}
+            <button onClick={() => onNav('homeDelivery')} className="tap" style={{ flex: 1, height: 44, borderRadius: 12, border: `1.5px solid ${T.border}`, background: T.card, fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, boxShadow: T.shadow }}><Home size={14} />Home Del.</button>
             <button onClick={() => onNav('lockers')} className="tap" style={{ flex: 1, height: 44, borderRadius: 12, border: `1.5px solid ${T.border}`, background: T.card, fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, boxShadow: T.shadow }}><MapPin size={14} />Lockers</button>
           </div>
         </div>}

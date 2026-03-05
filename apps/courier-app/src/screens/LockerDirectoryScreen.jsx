@@ -29,7 +29,7 @@ const LockerDirectoryScreen = ({ tasks, adjLockers, onBack, T }) => {
       </div>
       {filtered.map(l => {
         const isExp = expandedId === l.id;
-        const taskCount = tasks.filter(t => t.locker === l.name && t.tab !== 'recall' && t.tab !== 'deposited').length;
+        const taskCount = tasks.filter(t => t.locker === l.name && t.tab !== 'recalled' && t.tab !== 'delivered_to_locker').length;
         const totalCompartments = Object.values(l.avail).reduce((a, b) => a + b, 0);
         return <div key={l.id} className="fu" style={{ borderRadius: 16, overflow: 'hidden', background: T.card, border: `1.5px solid ${isExp ? T.accent : T.border}`, boxShadow: T.shadow, marginBottom: 12 }}>
           <button onClick={() => setExpandedId(isExp ? null : l.id)} className="tap" style={{ width: '100%', textAlign: 'left', border: 'none', background: 'transparent', padding: 16, display: 'flex', alignItems: 'center', gap: 14 }}>

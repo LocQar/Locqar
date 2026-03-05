@@ -240,6 +240,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
   const filteredPackages = useMemo(() => {
     let data = [...packages];
     if (filter === 'ready') data = data.filter(p => ['pending', 'at_warehouse', 'at_dropbox'].includes(p.status));
+    else if (filter === 'assigned') data = data.filter(p => p.status === 'assigned');
     else if (filter === 'in_transit') data = data.filter(p => p.status.startsWith('in_transit'));
     else if (filter === 'delivered') data = data.filter(p => p.status.startsWith('delivered'));
     if (search) {
@@ -276,8 +277,13 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
   // ── package actions ──
   const handleDispatch = (pkg) => {
     const snap = packages.slice();
-    setPackages(p => p.map(x => x.id === pkg.id ? { ...x, status: 'in_transit_to_locker' } : x));
-    toast(`${pkg.waybill} dispatched`, 'success', { label: 'Undo', onClick: () => { setPackages(snap); toast('Dispatch undone', 'info'); } });
+    setPackages(p => p.map(x => x.id === pkg.id ? { ...x, status: 'assigned' } : x));
+    toast(`${pkg.waybill} assigned to courier`, 'success', { label: 'Undo', onClick: () => { setPackages(snap); toast('Dispatch undone', 'info'); } });
+  };
+  const handlePackageRecall = (pkg) => {
+    const snap = packages.slice();
+    setPackages(p => p.map(x => x.id === pkg.id ? { ...x, status: 'recalled' } : x));
+    toast(`${pkg.waybill} recalled from courier`, 'warning', { label: 'Undo', onClick: () => { setPackages(snap); toast('Recall undone', 'info'); } });
   };
   const handleMarkDelivered = (pkg) => {
     const snap = packages.slice();
@@ -361,10 +367,10 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
   const handleBulkDispatch = () => {
     const toDispatch = selected.filter(id => {
       const pkg = packages.find(p => p.id === id);
-      return pkg && !pkg.status.startsWith('in_transit') && !pkg.status.startsWith('delivered');
+      return pkg && ['pending', 'at_warehouse', 'at_dropbox'].includes(pkg.status);
     });
     const snap = packages.slice();
-    setPackages(p => p.map(x => toDispatch.includes(x.id) ? { ...x, status: 'in_transit_to_locker' } : x));
+    setPackages(p => p.map(x => toDispatch.includes(x.id) ? { ...x, status: 'assigned' } : x));
     setSelected([]);
     toast(`${toDispatch.length} package${toDispatch.length !== 1 ? 's' : ''} dispatched`, 'success', { label: 'Undo', onClick: () => { setPackages(snap); toast('Bulk dispatch undone', 'info'); } });
   };
@@ -390,6 +396,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
 
   // ── metric helpers ──
   const ready = packages.filter(p => ['pending', 'at_warehouse', 'at_dropbox'].includes(p.status)).length;
+  const assignedCount = packages.filter(p => p.status === 'assigned').length;
   const inTransit = packages.filter(p => p.status.startsWith('in_transit')).length;
   const delivered = packages.filter(p => p.status.startsWith('delivered')).length;
   const activeDrivers = drivers.filter(d => d.status !== 'offline').length;
@@ -469,13 +476,14 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
       {activeTab === 'Outgoing' && (
         <>
           {/* Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
             {[
               { label: 'Ready', value: ready, color: '#D4AA5A' },
-              { label: 'In Transit', value: inTransit, color: '#7EA8C9' },
+              { label: 'Assigned', value: assignedCount, color: '#7EA8C9' },
+              { label: 'In Transit', value: inTransit, color: '#B5A0D1' },
               { label: 'Delivered', value: delivered, color: '#81C995' },
-              { label: 'Active Drivers', value: activeDrivers, color: '#B5A0D1' },
-              { label: 'Total Value', value: `GH₵ ${packages.reduce((s, p) => s + (p.value || 0), 0).toLocaleString()}`, color: theme.accent.primary },
+              { label: 'Active Drivers', value: activeDrivers, color: theme.accent.primary },
+              { label: 'Total Value', value: `GH₵ ${packages.reduce((s, p) => s + (p.value || 0), 0).toLocaleString()}`, color: '#D4AA5A' },
             ].map(m => (
               <div key={m.label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
                 <p className="text-xs mb-1" style={{ color: theme.text.muted }}>{m.label}</p>
@@ -492,7 +500,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
               {search && <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: theme.icon.muted }}><X size={14} /></button>}
             </div>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
-              {[['all', 'All'], ['ready', 'Ready'], ['in_transit', 'In Transit'], ['delivered', 'Delivered']].map(([v, l]) => (
+              {[['all', 'All'], ['ready', 'Ready'], ['assigned', 'Assigned'], ['in_transit', 'In Transit'], ['delivered', 'Delivered']].map(([v, l]) => (
                 <button key={v} onClick={() => { setFilter(v); setPage(1); }} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: filter === v ? theme.accent.primary : 'transparent', color: filter === v ? theme.accent.contrast : theme.text.muted }}>
                   {l}
                 </button>
@@ -537,10 +545,13 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                     <td className="p-3"><StatusBadge status={pkg.status} /></td>
                     <td className="p-3">
                       <div className="flex items-center gap-1 justify-end">
-                        {hasPermission(currentUser?.role, 'packages.dispatch') && !pkg.status.startsWith('in_transit') && !pkg.status.startsWith('delivered') && (
-                          <button onClick={() => handleDispatch(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Dispatch" style={{ color: '#7EA8C9' }}><Truck size={14} /></button>
+                        {hasPermission(currentUser?.role, 'packages.dispatch') && ['pending', 'at_warehouse', 'at_dropbox'].includes(pkg.status) && (
+                          <button onClick={() => handleDispatch(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Assign to Courier" style={{ color: '#7EA8C9' }}><Truck size={14} /></button>
                         )}
-                        {hasPermission(currentUser?.role, 'packages.update') && !pkg.status.startsWith('delivered') && (
+                        {hasPermission(currentUser?.role, 'packages.dispatch') && pkg.status === 'assigned' && (
+                          <button onClick={() => handlePackageRecall(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Recall from Courier" style={{ color: '#D48E8A' }}><RefreshCw size={14} /></button>
+                        )}
+                        {hasPermission(currentUser?.role, 'packages.update') && !['delivered_to_locker', 'delivered_to_home', 'picked_up'].includes(pkg.status) && (
                           <button onClick={() => handleMarkDelivered(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Mark Delivered" style={{ color: '#81C995' }}><CheckCircle2 size={14} /></button>
                         )}
                       </div>

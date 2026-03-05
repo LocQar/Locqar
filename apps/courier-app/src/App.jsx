@@ -33,6 +33,7 @@ import AnalyticsScreen from './screens/AnalyticsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import RouteMapScreen from './screens/RouteMapScreen';
 import ProofOfDeliveryScreen from './screens/ProofOfDeliveryScreen';
+import HomeDeliveryScreen from './screens/HomeDeliveryScreen';
 
 /* localStorage helpers — import from shared when available */
 /* import { loadState, saveState } from '@locqar/shared/utils'; */
@@ -195,7 +196,7 @@ function LocQarDriverApp() {
   /* Migrate old tab names for existing users */
   const migrateTasks = (ts) => ts.map(t => {
     if (t.tab === 'pending') return { ...t, tab: 'accepted', acceptedAt: t.acceptedAt || 'Migrated' };
-    if (t.tab === 'completed') return { ...t, tab: 'deposited', depositedAt: t.completedAt || t.depositedAt || 'Migrated' };
+    if (t.tab === 'completed') return { ...t, tab: 'delivered_to_locker', depositedAt: t.completedAt || t.depositedAt || 'Migrated' };
     return t;
   });
 
@@ -219,12 +220,12 @@ function LocQarDriverApp() {
   const hist = useRef([]);
 
   /* Derive deliveries from unified tasks -- deposited = 'delivered', others = 'pending' */
-  const dels = tasks.filter(t => t.tab !== 'recall').map(t => ({ ...t, status: t.tab === 'deposited' ? 'delivered' : 'pending' }));
+  const dels = tasks.filter(t => t.tab !== 'recalled').map(t => ({ ...t, status: t.tab === 'delivered_to_locker' ? 'delivered' : 'pending' }));
   const notifCount = notifs.filter(n => !n.read).length;
 
   /* Adjust locker compartment availability based on deposited packages */
   const adjLockers = lockersData.map(l => {
-    const deposited = tasks.filter(t => t.locker === l.name && t.tab === 'deposited');
+    const deposited = tasks.filter(t => t.locker === l.name && t.tab === 'delivered_to_locker');
     const used = {}; deposited.forEach(t => { used[t.sz] = (used[t.sz] || 0) + 1 });
     return { ...l, avail: { ...l.avail, ...Object.fromEntries(Object.entries(l.avail).map(([k, v]) => [k, Math.max(0, v - (used[k] || 0))])) } };
   });
@@ -257,7 +258,7 @@ function LocQarDriverApp() {
 
   const depositOne = useCallback((id) => {
     const pkg = tasks.find(t => t.id === id);
-    setTasks(p => p.map(t => t.id === id ? { ...t, tab: 'deposited', depositedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } : t));
+    setTasks(p => p.map(t => t.id === id ? { ...t, tab: 'delivered_to_locker', depositedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } : t));
     if (pkg) pushNotif('success', 'Deposited', `${pkg.trk} deposited at ${pkg.locker}`);
     /* Undo toast */
     if (undoTimer.current) clearTimeout(undoTimer.current);
@@ -266,7 +267,7 @@ function LocQarDriverApp() {
   }, [tasks]);
 
   const undoDeposit = useCallback((id) => {
-    setTasks(p => p.map(t => t.id === id ? { ...t, tab: 'inTransit', depositedAt: undefined } : t));
+    setTasks(p => p.map(t => t.id === id ? { ...t, tab: 'in_transit_to_locker', depositedAt: undefined } : t));
     setUndoToast(null);
   }, []);
 
@@ -297,7 +298,7 @@ function LocQarDriverApp() {
       {scr === 'home' && <HomeScreen dels={dels} tasks={tasks} activeBlock={activeBlock} onNav={nav} notifCount={notifCount} onRefresh={() => { }} shiftState={shiftState} onClockIn={clockIn} onClockOut={clockOut} onBreak={startBreak} onResume={endBreak} vehicleConfig={vehicleConfig} T={T} />}
       {scr === 'schedule' && <ScheduleScreen onBack={back} onAccept={acceptBlock} T={T} />}
       {scr === 'itinerary' && <ItineraryScreen dels={dels} tasks={tasks} onBack={back} onNav={nav} T={T} />}
-      {scr === 'stop' && curLock && <StopScreen locker={curLock} stopNum={curStop} dels={dels} recalls={tasks.filter(t => t.tab === 'recall' && t.locker === curLock.name)} onBack={back} onNav={nav} adjLockers={adjLockers} T={T} />}
+      {scr === 'stop' && curLock && <StopScreen locker={curLock} stopNum={curStop} dels={dels} recalls={tasks.filter(t => t.tab === 'recalled' && t.locker === curLock.name)} onBack={back} onNav={nav} adjLockers={adjLockers} T={T} />}
       {scr === 'batch' && curLock && <BatchDepositScreen locker={curLock} stopNum={curStop} dels={dels} onBack={back} onDeposit={depositOne} T={T} />}
       {scr === 'tasks' && <TasksScreen tasks={tasks} setTasks={setTasks} onBack={back} T={T} />}
       {scr === 'earnings' && <EarningsScreen onBack={back} T={T} />}
@@ -318,6 +319,7 @@ function LocQarDriverApp() {
       {scr === 'settings' && <SettingsScreen onBack={back} onLogout={() => { setScr('login'); setActiveBlock(null); hist.current = []; localStorage.removeItem('locqar_tasks'); localStorage.removeItem('locqar_activeBlock') }} T={T} />}
       {scr === 'routeMap' && <RouteMapScreen onBack={back} onSelectLocker={(locker) => nav('batch', { locker: locker.name, stopNum: 1 })} dels={dels} activeBlock={activeBlock} T={T} />}
       {scr === 'proofOfDelivery' && selectedTaskForPOD && <ProofOfDeliveryScreen task={selectedTaskForPOD} onConfirm={(proof) => { pushNotif('success', 'Proof Submitted', 'Delivery proof recorded'); setSelectedTaskForPOD(null); back() }} onBack={() => { setSelectedTaskForPOD(null); back() }} T={T} />}
+      {scr === 'homeDelivery' && <HomeDeliveryScreen tasks={tasks} setTasks={setTasks} onBack={back} T={T} />}
     </div>
     <OfflineBanner T={T} />
     {verifyTask && <VerificationModal task={verifyTask} onVerified={() => { setVerifyTask(null) }} onClose={() => setVerifyTask(null)} T={T} />}

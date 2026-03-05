@@ -18,15 +18,22 @@ export const COURIER_STATUSES = {
 };
 
 // ============ PACKAGE STATUSES ============
+// Lifecycle: pending → at_warehouse/at_dropbox → assigned → accepted →
+//            in_transit_to_locker → delivered_to_locker → picked_up
+//            in_transit_to_home → delivered_to_home
+//            recalled (courier returned package before delivery)
 export const PACKAGE_STATUSES = {
   pending: { label: 'Pending', color: '#D4AA5A', bg: 'rgba(212, 170, 90, 0.07)' },
   at_warehouse: { label: 'At Warehouse', color: '#B5A0D1', bg: 'rgba(181, 160, 209, 0.07)' },
   at_dropbox: { label: 'At Dropbox', color: '#B5A0D1', bg: 'rgba(181, 160, 209, 0.07)' },
+  assigned: { label: 'Assigned', color: '#D4AA5A', bg: 'rgba(212, 170, 90, 0.07)' },
+  accepted: { label: 'Accepted', color: '#7EA8C9', bg: 'rgba(126, 168, 201, 0.07)' },
   in_transit_to_locker: { label: 'Transit \u2192 Locker', color: '#7EA8C9', bg: 'rgba(126, 168, 201, 0.07)' },
   in_transit_to_home: { label: 'Transit \u2192 Home', color: '#7EA8C9', bg: 'rgba(126, 168, 201, 0.07)' },
   delivered_to_locker: { label: 'In Locker', color: '#81C995', bg: 'rgba(129, 201, 149, 0.07)' },
   delivered_to_home: { label: 'Delivered', color: '#81C995', bg: 'rgba(129, 201, 149, 0.07)' },
   picked_up: { label: 'Picked Up', color: '#A8A29E', bg: 'rgba(168, 162, 158, 0.07)' },
+  recalled: { label: 'Recalled', color: '#D48E8A', bg: 'rgba(212, 142, 138, 0.07)' },
   expired: { label: 'Expired', color: '#D48E8A', bg: 'rgba(212, 142, 138, 0.07)' },
 };
 

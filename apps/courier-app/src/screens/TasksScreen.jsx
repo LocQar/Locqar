@@ -34,18 +34,18 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
   const tabs = [
     { id: 'assigned', label: 'Assigned', color: T.accent, bg: T.accentBg },
     { id: 'accepted', label: 'Delivering', color: T.accent, bg: T.accentBg },
-    { id: 'deposited', label: 'Delivered', color: T.green, bg: T.greenBg },
-    { id: 'recall', label: 'Recall', color: T.red, bg: T.redBg },
+    { id: 'delivered_to_locker', label: 'Delivered', color: T.green, bg: T.greenBg },
+    { id: 'recalled', label: 'Recall', color: T.red, bg: T.redBg },
   ];
 
   const counts = tabs.reduce((a, t) => ({
     ...a,
-    [t.id]: tasks.filter(tk => tk.tab === t.id || (t.id === 'accepted' && tk.tab === 'inTransit')).length,
+    [t.id]: tasks.filter(tk => tk.tab === t.id || (t.id === 'accepted' && tk.tab === 'in_transit_to_locker')).length,
   }), {});
   const totalActive = counts.assigned + counts.accepted;
 
   const filtered = tasks.filter(t => {
-    const effectiveTab = t.tab === 'inTransit' ? 'accepted' : t.tab;
+    const effectiveTab = t.tab === 'in_transit_to_locker' ? 'accepted' : t.tab;
     if (effectiveTab !== activeTab) return false;
     if (search) { const q = search.toLowerCase(); if (!(t.trk.toLowerCase().includes(q) || t.locker.toLowerCase().includes(q) || t.receiver.toLowerCase().includes(q) || t.sender.toLowerCase().includes(q))) return false }
     if (filters.locker !== 'all' && t.locker !== filters.locker) return false;
@@ -61,10 +61,10 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
 
   const moveTask = (id, to, label) => {
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const extra = to === 'accepted' ? { acceptedAt: now } : to === 'inTransit' ? { inTransitAt: now } : to === 'deposited' ? { depositedAt: now } : {};
+    const extra = to === 'accepted' ? { acceptedAt: now } : to === 'in_transit_to_locker' ? { inTransitAt: now } : to === 'delivered_to_locker' ? { depositedAt: now } : {};
     setTasks(prev => prev.map(t => t.id === id ? { ...t, tab: to, ...extra } : t));
     setExpandedId(null); setModal(null);
-    showToast(label || 'Updated', to === 'deposited' ? T.green : to === 'recall' ? T.red : T.text);
+    showToast(label || 'Updated', to === 'delivered_to_locker' ? T.green : to === 'recalled' ? T.red : T.text);
   };
 
   const copyTrk = (trk) => { navigator.clipboard?.writeText(trk); setCopiedId(trk); setTimeout(() => setCopiedId(null), 1500) };
@@ -72,7 +72,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
   useEffect(() => { if (showSearch && searchRef.current) searchRef.current.focus() }, [showSearch]);
 
   const currentTab = tabs.find(t => t.id === activeTab);
-  const progressPct = tasks.length > 0 ? Math.round((counts.deposited / tasks.length) * 100) : 0;
+  const progressPct = tasks.length > 0 ? Math.round((counts.delivered_to_locker / tasks.length) * 100) : 0;
 
   return (
     <div style={{ minHeight: '100vh', background: T.bg, paddingBottom: 88 }}>
@@ -99,7 +99,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
           <div style={{ flex: 1, minWidth: 0 }}>
             <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: '-0.03em', fontFamily: hf, color: T.text }}>Tasks</h1>
             <p style={{ fontSize: 13, color: T.sec, margin: 0, fontFamily: ff }}>
-              {totalActive} active{' \u00B7 '}{counts.deposited} deposited
+              {totalActive} active{' \u00B7 '}{counts.delivered_to_locker} deposited
             </p>
           </div>
           <button
@@ -203,7 +203,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
               <h2 style={{ fontSize: 28, fontWeight: 800, margin: '2px 0 0', color: '#fff', fontFamily: mf, letterSpacing: '-0.02em', lineHeight: 1 }}>{progressPct}%</h2>
             </div>
             <Ring pct={progressPct} sz={52} sw={4} color="#fff" T={T}>
-              <span style={{ fontSize: 14, fontWeight: 800, color: '#fff', fontFamily: mf }}>{counts.deposited}</span>
+              <span style={{ fontSize: 14, fontWeight: 800, color: '#fff', fontFamily: mf }}>{counts.delivered_to_locker}</span>
             </Ring>
           </div>
           <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
@@ -420,7 +420,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
                   const isLocExpanded = isActive || expandedId === ('acc-' + g.locker);
                   const lockerInfo = lockersData.find(l => l.name === g.locker);
                   const isDimmed = activeDropOff && !isActive;
-                  const recallPkgs = tasks.filter(t => t.tab === 'recall' && t.locker === g.locker);
+                  const recallPkgs = tasks.filter(t => t.tab === 'recalled' && t.locker === g.locker);
                   return (
                     <div key={g.locker} className={`fu d${Math.min(gi + 1, 6)}`} style={{
                       borderRadius: 20, overflow: 'hidden', background: T.card,
@@ -478,7 +478,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
                           </div>
                           {g.packages.map(task => {
                             const isTaskExpanded = expandedId === ('pkg-' + task.id);
-                            const isInTransit = task.tab === 'inTransit';
+                            const isInTransit = task.tab === 'in_transit_to_locker';
                             return (
                               <div key={task.id} style={{ borderTop: `1px solid ${T.fill2}` }}>
                                 <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', gap: 10 }}>
@@ -519,7 +519,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
                                     )}
                                     {!isInTransit && (
                                       <button
-                                        onClick={e => { e.stopPropagation(); moveTask(task.id, 'inTransit', 'Delivery started'); }}
+                                        onClick={e => { e.stopPropagation(); moveTask(task.id, 'in_transit_to_locker', 'Delivery started'); }}
                                         className="press"
                                         style={{ width: '100%', height: 44, borderRadius: 12, border: 'none', fontWeight: 700, fontSize: 14, fontFamily: ff, background: T.accentGradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: `0 4px 12px ${T.accent}40` }}
                                       >
@@ -575,21 +575,21 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
       )}
 
       {/* ── Delivered / Recall ── individual cards */}
-      {(activeTab === 'deposited' || activeTab === 'recall') && (
+      {(activeTab === 'delivered_to_locker' || activeTab === 'recalled') && (
         <div style={{ padding: '0 20px' }}>
           {filtered.length === 0 && (
             <div style={{ textAlign: 'center', padding: '40px 20px', borderRadius: 20, background: T.card, border: `1.5px solid ${T.border}`, boxShadow: T.shadow }}>
               <div style={{ width: 60, height: 60, borderRadius: 18, background: currentTab.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                {activeTab === 'deposited' && <CheckCircle size={26} style={{ color: currentTab.color }} />}
-                {activeTab === 'recall' && <RotateCcw size={26} style={{ color: currentTab.color }} />}
+                {activeTab === 'delivered_to_locker' && <CheckCircle size={26} style={{ color: currentTab.color }} />}
+                {activeTab === 'recalled' && <RotateCcw size={26} style={{ color: currentTab.color }} />}
               </div>
               <p style={{ fontWeight: 800, fontSize: 16, margin: '0 0 4px', fontFamily: hf, letterSpacing: '-0.02em' }}>
-                {search ? 'No matches' : activeTab === 'deposited' ? 'No deliveries yet' : 'No recalled packages'}
+                {search ? 'No matches' : activeTab === 'delivered_to_locker' ? 'No deliveries yet' : 'No recalled packages'}
               </p>
               <p style={{ fontSize: 14, color: T.sec, margin: 0, fontFamily: ff }}>
-                {search ? `No results for "${search}"` : activeTab === 'deposited' ? 'Packages confirmed at lockers will appear here' : 'No recalled packages at this time'}
+                {search ? `No results for "${search}"` : activeTab === 'delivered_to_locker' ? 'Packages confirmed at lockers will appear here' : 'No recalled packages at this time'}
               </p>
-              {!search && activeTab === 'deposited' && (
+              {!search && activeTab === 'delivered_to_locker' && (
                 <button onClick={() => { setActiveTab('assigned'); setExpandedId(null) }} className="tap" style={{ marginTop: 16, height: 40, padding: '0 20px', borderRadius: 12, border: 'none', background: T.accentGradient, color: '#fff', fontWeight: 700, fontSize: 13, fontFamily: ff, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                   <Package size={14} />View Pickup List
                 </button>
@@ -645,7 +645,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
                           <span style={{ fontSize: 12, fontWeight: 700, color: T.red, fontFamily: ff }}>{task.ageRestricted ? 'Age Restricted' : 'High Value'} — ID Required</span>
                         </div>
                       )}
-                      {activeTab === 'recall' && task.reason && (
+                      {activeTab === 'recalled' && task.reason && (
                         <div style={{ borderRadius: 10, padding: '8px 12px', background: T.redBg, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                           <AlertTriangle size={13} style={{ color: T.red }} />
                           <div>
@@ -666,7 +666,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
                       </div>
 
                       {/* Primary CTA */}
-                      {activeTab === 'recall' && (
+                      {activeTab === 'recalled' && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                           <div style={{ borderRadius: 14, padding: 14, background: T.fill, textAlign: 'center' }}>
                             <p style={{ fontSize: 11, fontWeight: 700, color: T.muted, margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: ff }}>Pick Up Code</p>
@@ -682,7 +682,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
                           <NavigationButton name={task.locker} addr={task.addr} lat={(lockersData.find(l => l.name === task.locker) || {}).lat} lng={(lockersData.find(l => l.name === task.locker) || {}).lng} T={T} />
                         </div>
                       )}
-                      {activeTab === 'deposited' && (
+                      {activeTab === 'delivered_to_locker' && (
                         <div style={{ borderRadius: 12, padding: 12, background: T.greenBg, display: 'flex', alignItems: 'center', gap: 10 }}>
                           <div style={{ width: 34, height: 34, borderRadius: 10, background: T.green, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <Check size={16} style={{ color: '#fff' }} />
@@ -770,7 +770,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
             )}
 
             {/* In Transit → deposit PIN */}
-            {dropModal.tab === 'inTransit' && dropView === 'pin' && (
+            {dropModal.tab === 'in_transit_to_locker' && dropView === 'pin' && (
               <div style={{ textAlign: 'center' }}>
                 <div style={{ width: 52, height: 52, borderRadius: 16, background: T.greenBg, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                   <Package size={24} style={{ color: T.green }} />
@@ -788,7 +788,7 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
                   </div>
                   <p style={{ fontSize: 12, color: T.sec, margin: 0, fontFamily: ff }}>Scan or enter at the locker terminal</p>
                 </div>
-                <button onClick={() => { moveTask(dropModal.id, 'deposited', 'Package deposited'); setDropModal(null); setDropView('choice'); }} className="press" style={{ width: '100%', height: 52, borderRadius: 16, border: 'none', fontWeight: 800, fontSize: 16, fontFamily: hf, letterSpacing: '-0.025em', background: T.gradientSuccess, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10, boxShadow: `0 8px 24px ${T.green}40` }}>
+                <button onClick={() => { moveTask(dropModal.id, 'delivered_to_locker', 'Package deposited'); setDropModal(null); setDropView('choice'); }} className="press" style={{ width: '100%', height: 52, borderRadius: 16, border: 'none', fontWeight: 800, fontSize: 16, fontFamily: hf, letterSpacing: '-0.025em', background: T.gradientSuccess, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10, boxShadow: `0 8px 24px ${T.green}40` }}>
                   <Check size={20} />Confirm Deposit
                 </button>
                 <button onClick={() => { setDropModal(null); setDropView('choice'); }} className="tap" style={{ width: '100%', height: 44, borderRadius: 12, border: `1.5px solid ${T.border}`, background: T.bg, fontWeight: 600, fontSize: 14, fontFamily: ff, color: T.sec }}>Cancel</button>
@@ -807,8 +807,8 @@ const TasksScreen = ({ tasks, setTasks, onBack, T }) => {
             <div style={{ width: 40, height: 4, borderRadius: 2, background: T.fill2, margin: '0 auto 20px' }} />
             <div style={{ width: 52, height: 52, borderRadius: 16, background: modal.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
               {modal.to === 'accepted' && <Package size={26} style={{ color: modal.color }} />}
-              {modal.to === 'inTransit' && <Truck size={26} style={{ color: modal.color }} />}
-              {modal.to === 'deposited' && <CheckCircle size={26} style={{ color: modal.color }} />}
+              {modal.to === 'in_transit_to_locker' && <Truck size={26} style={{ color: modal.color }} />}
+              {modal.to === 'delivered_to_locker' && <CheckCircle size={26} style={{ color: modal.color }} />}
               {modal.to === 'assigned' && <RotateCcw size={26} style={{ color: modal.color }} />}
             </div>
             <h3 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 6px', textAlign: 'center', fontFamily: hf, letterSpacing: '-0.025em' }}>{modal.label}</h3>
