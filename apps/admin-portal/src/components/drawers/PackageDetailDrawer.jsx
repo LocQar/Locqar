@@ -5,6 +5,78 @@ import { StatusBadge, DeliveryMethodBadge, PackageStatusFlow } from '../ui';
 import { hasPermission, DELIVERY_METHODS } from '../../constants';
 import { terminalsData, getLockerAddress, getTerminalAddress } from '../../constants/mockData';
 
+const printLabel = (pkg) => {
+  const lockerAddr = (() => {
+    const t = terminalsData.find(t => t.name === pkg.destination);
+    return t ? (pkg.locker !== '-' ? getLockerAddress(pkg.locker, pkg.destination) : getTerminalAddress(t)) : '—';
+  })();
+  const method = DELIVERY_METHODS[pkg.deliveryMethod]?.label || pkg.deliveryMethod || '';
+  const html = `<!DOCTYPE html><html><head><title>Label – ${pkg.waybill}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #fff; font-family: 'Courier New', Courier, monospace; }
+  .page { width: 4in; padding: 14px; border: 2px solid #111; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 10px; margin-bottom: 10px; }
+  .brand { font-size: 22px; font-weight: 900; letter-spacing: -1px; }
+  .brand-sub { font-size: 9px; color: #555; margin-top: 2px; }
+  .date { font-size: 10px; color: #555; text-align: right; }
+  .waybill { font-size: 26px; font-weight: 900; letter-spacing: 3px; text-align: center; border: 2px solid #111; padding: 8px; margin: 10px 0; }
+  .barcode-area { text-align: center; font-size: 44px; letter-spacing: 6px; line-height: 1; margin: 4px 0 10px; overflow: hidden; }
+  .dest-box { border: 2px solid #111; padding: 10px; margin: 10px 0; text-align: center; }
+  .dest-addr { font-size: 28px; font-weight: 900; letter-spacing: 4px; }
+  .dest-name { font-size: 12px; margin-top: 4px; }
+  .dest-comp { font-size: 11px; color: #555; margin-top: 2px; }
+  .lbl { font-size: 8px; font-weight: bold; text-transform: uppercase; color: #666; margin-bottom: 2px; }
+  .val { font-size: 13px; font-weight: bold; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+  .cell { padding: 6px 8px; border: 1px solid #ccc; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px dashed #ddd; }
+  .badges { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
+  .badge { font-size: 10px; font-weight: bold; border: 1.5px solid #111; padding: 2px 8px; }
+  .badge-inv { background: #111; color: #fff; }
+  .footer { font-size: 8px; color: #888; text-align: center; border-top: 1px dashed #ccc; padding-top: 6px; margin-top: 8px; }
+  @media print { @page { margin: 0.2in; } }
+</style></head><body>
+<div class="page">
+  <div class="header">
+    <div><div class="brand">LocQar™</div><div class="brand-sub">Smart Locker Network</div></div>
+    <div class="date">${new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}<br/>${new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}</div>
+  </div>
+
+  <div class="waybill">${pkg.waybill}</div>
+  <div class="barcode-area">||| ${pkg.waybill.replace(/-/g,' ')} |||</div>
+
+  <div class="dest-box">
+    <div class="lbl">Delivery Destination</div>
+    <div class="dest-addr">${lockerAddr}</div>
+    <div class="dest-name">${pkg.destination}</div>
+    ${pkg.locker && pkg.locker !== '-' ? `<div class="dest-comp">Compartment ${pkg.locker}</div>` : ''}
+  </div>
+
+  <div class="row"><div><div class="lbl">Recipient</div><div class="val">${pkg.customer}</div></div><div style="text-align:right; font-size:11px;">${pkg.phone}</div></div>
+
+  <div class="grid2" style="margin-top:10px;">
+    <div class="cell"><div class="lbl">Service</div><div class="val" style="font-size:11px;">${pkg.product || '—'}</div></div>
+    <div class="cell"><div class="lbl">Method</div><div class="val" style="font-size:11px;">${method}</div></div>
+    <div class="cell"><div class="lbl">Size</div><div class="val" style="font-size:11px;">${pkg.size}</div></div>
+    <div class="cell"><div class="lbl">Weight</div><div class="val" style="font-size:11px;">${pkg.weight || '—'}</div></div>
+    <div class="cell"><div class="lbl">Value</div><div class="val" style="font-size:11px;">GH₵ ${pkg.value}</div></div>
+    <div class="cell"><div class="lbl">Created</div><div class="val" style="font-size:10px;">${pkg.createdAt || '—'}</div></div>
+  </div>
+
+  <div class="badges">
+    <div class="badge">${pkg.size.toUpperCase()}</div>
+    ${pkg.cod ? '<div class="badge badge-inv">CASH ON DELIVERY</div>' : ''}
+  </div>
+
+  <div class="footer">LocQar Locker Network • locqar.com • ${pkg.waybill}</div>
+</div>
+<script>window.onload=function(){window.print();window.onafterprint=function(){window.close();}}</script>
+</body></html>`;
+  const w = window.open('', '_blank', 'width=500,height=700');
+  if (w) { w.document.write(html); w.document.close(); }
+};
+
 const SIZES = ['Small', 'Medium', 'Large', 'Extra Large'];
 
 export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassign, onReturn, onMarkDelivered, onSave }) => {
@@ -65,7 +137,7 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
               </button>
             </>
           )}
-          <button className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.icon.primary }} title="Print">
+          <button onClick={() => printLabel(pkg)} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.icon.primary }} title="Print Label">
             <Printer size={18} />
           </button>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.icon.primary }}>

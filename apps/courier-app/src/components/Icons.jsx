@@ -5,6 +5,7 @@ const I = (s, p) => React.createElement("svg", { ...svgBase, width: p?.size || 2
 
 export const ChevronRight = p => I("M9 18l6-6-6-6", p);
 export const ChevronDown = p => I("M6 9l6 6 6-6", p);
+export const ChevronUp = p => I("M18 15l-6-6-6 6", p);
 export const ArrowLeft = p => I(["M19 12H5", "M12 19l-7-7 7-7"], p);
 export const ArrowRight = p => I(["M5 12h14", "M12 5l7 7-7 7"], p);
 export const X = p => I(["M18 6L6 18", "M6 6l12 12"], p);

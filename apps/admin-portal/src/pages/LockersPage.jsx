@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Search, Grid3X3, Unlock, Package, AlertTriangle, ArrowUpRight, ArrowDownRight, Thermometer, Battery, BatteryWarning, Settings, DoorOpen, DoorClosed, X, Trash2, Edit, Eye, Wrench, CheckCircle, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Search, Grid3X3, Unlock, Package, AlertTriangle, ArrowUpRight, ArrowDownRight, Thermometer, Battery, BatteryWarning, Settings, DoorOpen, DoorClosed, X, Trash2, Edit, Eye, Wrench, CheckCircle, ToggleLeft, ToggleRight, LayoutGrid, List, ChevronDown, ChevronUp, Wifi, WifiOff } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { StatusBadge } from '../components/ui/Badge';
 import { hasPermission, DOOR_SIZES } from '../constants';
@@ -124,6 +124,8 @@ export const LockersPage = ({
   const [drawer, setDrawer] = useState(null);
   const [viewLocker, setViewLocker] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [viewMode, setViewMode] = useState('list');
+  const [expandedTerminals, setExpandedTerminals] = useState({});
 
   const filteredLockers = useMemo(() => {
     return lockers.filter(l => {
@@ -204,6 +206,19 @@ export const LockersPage = ({
 
       {(!activeSubMenu || activeSubMenu === 'All Lockers') && (
         <>
+          {/* View mode toggle */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm" style={{ color: theme.text.muted }}>{filteredLockers.length} of {lockers.length} lockers</p>
+            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
+              <button onClick={() => setViewMode('list')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'list' ? theme.accent.primary : 'transparent', color: viewMode === 'list' ? theme.accent.contrast : theme.text.muted }}>
+                <List size={13} /> List
+              </button>
+              <button onClick={() => setViewMode('terminal')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'terminal' ? theme.accent.primary : 'transparent', color: viewMode === 'terminal' ? theme.accent.contrast : theme.text.muted }}>
+                <LayoutGrid size={13} /> Terminal View
+              </button>
+            </div>
+          </div>
+
           {/* Filters */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col md:flex-row gap-3">
@@ -232,8 +247,124 @@ export const LockersPage = ({
             </div>
           </div>
 
-          <p className="text-xs" style={{ color: theme.text.muted }}>{filteredLockers.length} of {lockers.length} lockers</p>
+          {/* Terminal View */}
+          {viewMode === 'terminal' && (
+            <div className="space-y-4">
+              {terminalsData.map(terminal => {
+                const tLockers = lockers.filter(l => l.terminal === terminal.name);
+                const available = tLockers.filter(l => l.status === 'available').length;
+                const occupied = tLockers.filter(l => l.status === 'occupied').length;
+                const maintenance = tLockers.filter(l => l.status === 'maintenance').length;
+                const reserved = tLockers.filter(l => l.status === 'reserved').length;
+                const fillPct = tLockers.length > 0 ? Math.round((occupied / tLockers.length) * 100) : 0;
+                const isExpanded = expandedTerminals[terminal.id] !== false; // expanded by default
+                const STATUS_COLORS = { available: '#81C995', occupied: '#7EA8C9', reserved: '#D4AA5A', maintenance: '#D48E8A' };
+                return (
+                  <div key={terminal.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                    {/* Terminal header */}
+                    <button
+                      className="w-full flex items-center justify-between p-4 hover:bg-white/5"
+                      onClick={() => setExpandedTerminals(p => ({ ...p, [terminal.id]: !isExpanded }))}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${theme.accent.primary}15` }}>
+                          <Grid3X3 size={18} style={{ color: theme.accent.primary }} />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold" style={{ color: theme.text.primary }}>{terminal.name}</p>
+                          <p className="text-xs" style={{ color: theme.text.muted }}>{terminal.location} • {tLockers.length} compartments</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 ml-2">
+                          {terminal.status === 'online'
+                            ? <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#81C99520', color: '#81C995' }}><Wifi size={10} /> Online</span>
+                            : <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#D48E8A20', color: '#D48E8A' }}><WifiOff size={10} /> Offline</span>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="hidden md:flex items-center gap-3 text-xs">
+                          {[['Available', available, '#81C995'], ['Occupied', occupied, '#7EA8C9'], ['Reserved', reserved, '#D4AA5A'], ['Maint.', maintenance, '#D48E8A']].map(([l, v, c]) => (
+                            <span key={l} style={{ color: c }}><span className="font-bold">{v}</span> <span style={{ color: theme.text.muted }}>{l}</span></span>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 h-2 rounded-full overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
+                            <div className="h-full rounded-full transition-all" style={{ width: `${fillPct}%`, backgroundColor: fillPct > 80 ? '#D48E8A' : fillPct > 60 ? '#D4AA5A' : '#81C995' }} />
+                          </div>
+                          <span className="text-xs font-mono" style={{ color: theme.text.muted }}>{fillPct}%</span>
+                        </div>
+                        {isExpanded ? <ChevronUp size={16} style={{ color: theme.text.muted }} /> : <ChevronDown size={16} style={{ color: theme.text.muted }} />}
+                      </div>
+                    </button>
 
+                    {/* Compartment grid */}
+                    {isExpanded && (
+                      <div className="border-t p-4" style={{ borderColor: theme.border.primary }}>
+                        {/* Legend */}
+                        <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: theme.text.muted }}>
+                          {[['Available', '#81C995'], ['Occupied', '#7EA8C9'], ['Reserved', '#D4AA5A'], ['Maintenance', '#D48E8A']].map(([l, c]) => (
+                            <span key={l} className="flex items-center gap-1.5">
+                              <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `${c}40`, border: `1.5px solid ${c}` }} />
+                              {l}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Grid */}
+                        <div className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))' }}>
+                          {tLockers.sort((a, b) => a.doorNo - b.doorNo).map(locker => {
+                            const sc = STATUS_COLORS[locker.status] || '#A8A29E';
+                            return (
+                              <button
+                                key={locker.id}
+                                onClick={() => setViewLocker(locker)}
+                                title={`${locker.id} • ${locker.sizeLabel} • ${locker.status}${locker.package ? ` • ${locker.package}` : ''}`}
+                                className="relative group rounded-lg p-1.5 text-left transition-all hover:scale-105"
+                                style={{ backgroundColor: `${sc}18`, border: `1.5px solid ${sc}50` }}
+                              >
+                                <p className="text-xs font-mono font-bold leading-tight" style={{ color: sc }}>{locker.id}</p>
+                                <p className="text-xs leading-tight mt-0.5" style={{ color: theme.text.muted, fontSize: 9 }}>{locker.sizeLabel[0]}</p>
+                                {locker.package && (
+                                  <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full" style={{ backgroundColor: theme.accent.primary }} title={locker.package} />
+                                )}
+                                {locker.opened === 1 && (
+                                  <DoorOpen size={8} className="absolute bottom-1 right-1" style={{ color: '#D4AA5A' }} />
+                                )}
+                              </button>
+                            );
+                          })}
+                          {tLockers.length === 0 && (
+                            <p className="col-span-full text-center text-sm py-4" style={{ color: theme.text.muted }}>No compartments configured for this terminal</p>
+                          )}
+                        </div>
+
+                        {/* Quick actions footer */}
+                        <div className="flex gap-2 mt-3 pt-3 border-t" style={{ borderColor: theme.border.primary }}>
+                          <button
+                            onClick={() => setDrawer({ terminal: terminal.name })}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border"
+                            style={{ borderColor: theme.border.primary, color: theme.text.muted }}
+                          >
+                            <Plus size={12} /> Add Compartment
+                          </button>
+                          <button
+                            onClick={() => { tLockers.filter(l => l.status === 'available').forEach(l => handleOpenLocker(l)); }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border"
+                            style={{ borderColor: '#D4AA5A40', color: '#D4AA5A' }}
+                            title="Bulk open all available doors"
+                          >
+                            <DoorOpen size={12} /> Open All Available
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* List View */}
+          {viewMode === 'list' && (
           <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -288,6 +419,7 @@ export const LockersPage = ({
               </table>
             </div>
           </div>
+          )}
         </>
       )}
 
