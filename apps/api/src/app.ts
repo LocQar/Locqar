@@ -41,6 +41,7 @@ import { podRouter }            from './domains/proofOfDelivery/proofOfDelivery.
 import { routesRouter }         from './domains/routes/routes.router';
 import { driversRouter }        from './domains/drivers/drivers.router';
 import { contactsRouter }       from './domains/contacts/contacts.router';
+import { winnsenRouter }        from './domains/winnsen/winnsen.router';
 
 export function createApp() {
   const app = express();
@@ -112,6 +113,9 @@ export function createApp() {
   app.use(`${v1}/routes`,         routesRouter);
   app.use(`${v1}/drivers`,        driversRouter);
   app.use(`${v1}/contacts`,       contactsRouter);
+
+  // ── Winnsen integration (no v1 prefix — kiosk uses /api/winnsen directly) ──
+  app.use('/api/winnsen',         winnsenRouter);
 
   // ── 404 handler ───────────────────────────────────────────────────────────
   app.use((_req, res) => res.status(404).json({ success: false, error: 'Route not found', code: 'NOT_FOUND' }));

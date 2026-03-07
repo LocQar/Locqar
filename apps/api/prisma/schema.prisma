@@ -39,6 +39,10 @@ enum PackageStatus {
   picked_up
   recalled
   expired
+  // Winnsen send & return flows
+  at_locker_pending_courier
+  return_at_locker
+  return_in_transit
 }
 
 enum DeliveryMethod {
@@ -375,6 +379,10 @@ model Package {
   recipientPhone  String
   recipientEmail  String?
 
+  // Winnsen locker assignment
+  pickupCode      String?
+  lockerDoorNo    Int?
+
   // Pricing
   price           Float           @default(0)
   currency        String          @default("GHS")
@@ -437,6 +445,7 @@ model Courier {
   team            String?
   status          CourierStatus @default(active)
   cardNo          String?       @unique
+  qrCode          String?       @unique
   vehicleId       String?       @unique
   vehicle         Vehicle?      @relation(fields: [vehicleId], references: [id])
   totalDeliveries Int           @default(0)

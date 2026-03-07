@@ -69,10 +69,12 @@ export const config = {
   },
 
   winnsen: {
-    apiBase: optional('WINNSEN_API_BASE', 'https://api.winnsen.com'),
-    appId: optional('WINNSEN_APP_ID', ''),
-    appSecret: optional('WINNSEN_APP_SECRET', ''),
-    webhookSecret: optional('WINNSEN_WEBHOOK_SECRET', ''),
+    // URL we call for cloud API actions (SetPinCode, GetTerminalInfo, etc.)
+    cloudApiBase: optional('WINNSEN_CLOUD_API_BASE', 'https://cloud.winnsen.com/logistics3/api2'),
+    // APIKey provided by Winnsen — sent in every cloud request body
+    apiKey: optional('WINNSEN_API_KEY', ''),
+    // Secret the kiosk hardware sends as x-api-key when calling our /api/winnsen/events
+    inboundApiKey: optional('WINNSEN_INBOUND_API_KEY', ''),
   },
 
   storage: {

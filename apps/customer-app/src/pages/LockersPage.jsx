@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { T, ff, mf } from "../theme/themes";
 import StatusBar from "../components/StatusBar";
 import PageHeader from "../components/PageHeader";
@@ -6,23 +9,61 @@ import Chip from "../components/Chip";
 import { initLockers, avSt } from "../data/mockData";
 import { MapPin, Package, Navigation, Clock, Star } from "../components/Icons";
 
+var USER_POS = [5.558, -0.185];
+
+// Emoji pin marker
+function makePinIcon(emoji, isSel) {
+  var size = isSel ? 44 : 36;
+  var br = isSel ? 14 : 12;
+  return L.divIcon({
+    html: '<div style="display:flex;flex-direction:column;align-items:center;">' +
+      '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:' + br + 'px;' +
+      'display:flex;align-items:center;justify-content:center;font-size:' + (isSel ? 18 : 15) + 'px;' +
+      'background:' + (isSel ? T.text : '#fff') + ';' +
+      'border:' + (isSel ? '3px solid #fff' : '2px solid #e5e7eb') + ';' +
+      'box-shadow:' + (isSel ? '0 4px 16px rgba(0,0,0,0.25)' : '0 2px 8px rgba(0,0,0,0.1)') + ';' +
+      'transition:all .2s;">' + emoji + '</div>' +
+      '<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;' +
+      'border-top:7px solid ' + (isSel ? T.text : '#fff') + ';margin-top:-1px;' +
+      'filter:drop-shadow(0 1px 2px rgba(0,0,0,0.1));"></div>' +
+      '</div>',
+    iconSize: [size + 12, size + 15],
+    iconAnchor: [(size + 12) / 2, size + 15],
+    className: '',
+  });
+}
+
+// Blue dot for user location
+var USER_ICON = L.divIcon({
+  html: '<div style="width:36px;height:36px;border-radius:18px;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;">' +
+    '<div style="width:14px;height:14px;border-radius:7px;background:#3B82F6;border:3px solid #fff;box-shadow:0 2px 8px rgba(59,130,246,0.4);"></div></div>',
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
+  className: '',
+});
+
+// Internal component that gets map access via useMap()
+function MapController({ selPin, mapRef }) {
+  var map = useMap();
+  useEffect(function () { mapRef.current = map; }, [map, mapRef]);
+  useEffect(function () {
+    if (selPin) map.flyTo([selPin.lat, selPin.lng], 14, { animate: true, duration: 0.8 });
+  }, [selPin, map]);
+  return null;
+}
+
 export default function LockersPage(props) {
   var [filter, setFilter] = useState('all');
   var [view, setView] = useState('map');
   var [selPin, setSelPin] = useState(null);
+  var mapRef = useRef(null);
+
   var sorted = initLockers.slice().sort(function (a, b) { return parseFloat(a.dist) - parseFloat(b.dist); });
   var filtered = filter === 'all' ? sorted : sorted.filter(function (l) { return l.type === filter; });
 
-  // Map bounds — normalize lat/lng to pixel positions
-  var minLat = 5.54, maxLat = 5.65, minLng = -0.32, maxLng = -0.12;
-  var toX = function (lng) { return ((lng - minLng) / (maxLng - minLng)) * 80 + 10; };
-  var toY = function (lat) { return (1 - (lat - minLat) / (maxLat - minLat)) * 75 + 12; };
-
-  // User location (Osu area)
-  var userX = toX(-0.185);
-  var userY = toY(5.558);
-
   var handlePinClick = function (l) { setSelPin(selPin && selPin.id === l.id ? null : l); };
+  var handleRecenter = function () { if (mapRef.current) mapRef.current.flyTo(USER_POS, 12, { animate: true, duration: 0.8 }); };
+  var handleDirections = function (l) { window.open('https://www.google.com/maps/dir/?api=1&destination=' + l.lat + ',' + l.lng, '_blank'); };
 
   return (
     <div className="pb-24 min-h-screen" style={{ background: T.bg }}><StatusBar />
@@ -42,95 +83,41 @@ export default function LockersPage(props) {
       {view === 'map' && (
         <div className="fu" style={{ padding: '0 12px' }}>
           {/* Map container */}
-          <div style={{ position: 'relative', width: '100%', height: 380, borderRadius: 22, overflow: 'hidden', background: '#F0EDE6', border: '1.5px solid ' + T.border, boxShadow: T.shadow }}>
+          <div style={{ position: 'relative', width: '100%', height: 380, borderRadius: 22, overflow: 'hidden', border: '1.5px solid ' + T.border, boxShadow: T.shadow }}>
+            <MapContainer center={USER_POS} zoom={12} style={{ width: '100%', height: '100%' }} zoomControl={false} attributionControl={false}>
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-            {/* Grid roads */}
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-              {/* Horizontal roads */}
-              {[25, 40, 55, 70, 85].map(function (y, i) {
-                return <line key={'h' + i} x1="0%" y1={y + '%'} x2="100%" y2={y + '%'} stroke="#D4CFBF" strokeWidth={i === 2 ? 2.5 : 1} strokeDasharray={i === 2 ? '' : '6 4'} opacity={i === 2 ? 0.6 : 0.35} />;
+              {/* User location dot */}
+              <Marker position={USER_POS} icon={USER_ICON} />
+
+              {/* Locker pins */}
+              {filtered.map(function (l) {
+                var isSel = selPin && selPin.id === l.id;
+                return (
+                  <Marker key={l.id} position={[l.lat, l.lng]} icon={makePinIcon(l.emoji, isSel)}
+                    zIndexOffset={isSel ? 1000 : 0}
+                    eventHandlers={{ click: function () { handlePinClick(l); } }} />
+                );
               })}
-              {/* Vertical roads */}
-              {[20, 35, 50, 65, 80].map(function (x, i) {
-                return <line key={'v' + i} x1={x + '%'} y1="0%" x2={x + '%'} y2="100%" stroke="#D4CFBF" strokeWidth={i === 2 ? 2.5 : 1} strokeDasharray={i === 2 ? '' : '6 4'} opacity={i === 2 ? 0.6 : 0.35} />;
-              })}
-              {/* Main highway — curved */}
-              <path d="M 0 75% Q 30% 60%, 55% 50% T 100% 35%" stroke="#C8C1B0" strokeWidth="4" fill="none" opacity="0.5" />
-            </svg>
 
-            {/* Area labels */}
-            {[
-              { l: 'OSU', x: 28, y: 60, s: 9 },
-              { l: 'AIRPORT', x: 52, y: 38, s: 8 },
-              { l: 'CANTONMENTS', x: 40, y: 50, s: 7 },
-              { l: 'EAST LEGON', x: 72, y: 28, s: 8 },
-              { l: 'NUNGUA', x: 78, y: 48, s: 7 },
-              { l: 'CIRCLE', x: 18, y: 40, s: 8 },
-              { l: 'WEIJA', x: 8, y: 56, s: 7 }
-            ].map(function (a, i) {
-              return <span key={i} style={{ position: 'absolute', left: a.x + '%', top: a.y + '%', fontSize: a.s, fontWeight: 700, color: '#B8B0A0', fontFamily: ff, letterSpacing: '0.12em', transform: 'translate(-50%, -50%)', pointerEvents: 'none', whiteSpace: 'nowrap' }}>{a.l}</span>;
-            })}
+              <MapController selPin={selPin} mapRef={mapRef} />
+            </MapContainer>
 
-            {/* Water/coastline hint at bottom */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '15%', background: 'linear-gradient(to top, rgba(147,197,222,0.15), transparent)', pointerEvents: 'none' }} />
-            <span style={{ position: 'absolute', bottom: 8, right: 14, fontSize: 7, fontWeight: 700, color: '#93C5DE', fontFamily: ff, letterSpacing: '0.15em', opacity: 0.6 }}>GULF OF GUINEA</span>
-
-            {/* User location */}
-            <div style={{ position: 'absolute', left: userX + '%', top: userY + '%', transform: 'translate(-50%, -50%)', zIndex: 20 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 18, background: 'rgba(59,130,246,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'breathe 2s ease-in-out infinite' }}>
-                <div style={{ width: 14, height: 14, borderRadius: 7, background: T.blue, border: '3px solid #fff', boxShadow: '0 2px 8px rgba(59,130,246,0.4)' }} />
-              </div>
-            </div>
-
-            {/* Locker pins */}
-            {filtered.map(function (l) {
-              var x = toX(l.lng); var y = toY(l.lat);
-              var isSel = selPin && selPin.id === l.id;
-              var st = avSt(l.avail, l.total);
-              return (
-                <div key={l.id}>
-                  {/* Distance line to selected */}
-                  {isSel && (
-                    <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
-                      <line x1={userX + '%'} y1={userY + '%'} x2={x + '%'} y2={y + '%'} stroke={T.blue} strokeWidth="1.5" strokeDasharray="4 3" opacity="0.4" />
-                    </svg>
-                  )}
-                  <button onClick={function () { handlePinClick(l); }} className="tap" style={{ position: 'absolute', left: x + '%', top: y + '%', transform: 'translate(-50%, -100%)', zIndex: isSel ? 15 : 10 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      {/* Availability badge */}
-                      {isSel && <div className="fi" style={{ marginBottom: 2, padding: '2px 7px', borderRadius: 6, background: st.bg, border: '1px solid ' + st.c + '33', whiteSpace: 'nowrap' }}><span style={{ fontSize: 9, fontWeight: 700, color: st.c, fontFamily: ff }}>{l.avail} free</span></div>}
-                      {/* Pin */}
-                      <div style={{
-                        width: isSel ? 44 : 36, height: isSel ? 44 : 36, borderRadius: isSel ? 14 : 12,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isSel ? 18 : 15,
-                        background: isSel ? T.text : '#fff',
-                        border: isSel ? '3px solid #fff' : '2px solid ' + T.border,
-                        boxShadow: isSel ? '0 4px 16px rgba(0,0,0,0.25)' : '0 2px 8px rgba(0,0,0,0.1)',
-                        transition: 'all .2s cubic-bezier(.2,.9,.3,1)'
-                      }}>{l.emoji}</div>
-                      {/* Pin point */}
-                      <div style={{ width: 0, height: 0, borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: '7px solid ' + (isSel ? T.text : '#fff'), marginTop: -1, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }} />
-                    </div>
-                  </button>
-                </div>
-              );
-            })}
-
-            {/* Map controls */}
-            <div style={{ position: 'absolute', right: 10, top: 10, display: 'flex', flexDirection: 'column', gap: 4, zIndex: 25 }}>
-              <button className="tap" style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: '1px solid ' + T.border, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontSize: 16, fontWeight: 700 }}>+</button>
-              <button className="tap" style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: '1px solid ' + T.border, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontSize: 16, fontWeight: 700 }}>−</button>
+            {/* Zoom controls */}
+            <div style={{ position: 'absolute', right: 10, top: 10, display: 'flex', flexDirection: 'column', gap: 4, zIndex: 1000 }}>
+              <button className="tap" onClick={function () { if (mapRef.current) mapRef.current.zoomIn(); }} style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: '1px solid ' + T.border, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontSize: 16, fontWeight: 700, color: T.text }}>+</button>
+              <button className="tap" onClick={function () { if (mapRef.current) mapRef.current.zoomOut(); }} style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: '1px solid ' + T.border, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontSize: 16, fontWeight: 700, color: T.text }}>−</button>
             </div>
 
             {/* Recenter button */}
-            <button className="tap" style={{ position: 'absolute', right: 10, bottom: 10, width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: '1px solid ' + T.border, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', zIndex: 25 }}>
+            <button className="tap" onClick={handleRecenter} style={{ position: 'absolute', right: 10, bottom: 10, width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: '1px solid ' + T.border, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', zIndex: 1000 }}>
               <Navigation style={{ width: 14, height: 14, color: T.blue }} />
             </button>
 
             {/* Legend */}
-            <div style={{ position: 'absolute', left: 10, bottom: 10, display: 'flex', gap: 8, zIndex: 25 }}>
+            <div style={{ position: 'absolute', left: 10, bottom: 10, display: 'flex', gap: 8, zIndex: 1000 }}>
               <div className="flex items-center gap-1.5" style={{ padding: '4px 8px', borderRadius: 8, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', border: '1px solid ' + T.border }}>
-                <div style={{ width: 8, height: 8, borderRadius: 4, background: T.blue, border: '1.5px solid #fff', boxShadow: '0 0 0 1px ' + T.blue }} />
+                <div style={{ width: 8, height: 8, borderRadius: 4, background: '#3B82F6', border: '1.5px solid #fff', boxShadow: '0 0 0 1px #3B82F6' }} />
                 <span style={{ fontSize: 8, fontWeight: 600, color: T.sec, fontFamily: ff }}>You</span>
               </div>
               <div className="flex items-center gap-1.5" style={{ padding: '4px 8px', borderRadius: 8, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', border: '1px solid ' + T.border }}>
@@ -164,7 +151,7 @@ export default function LockersPage(props) {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button className="tap flex-1" style={{ padding: '10px 0', borderRadius: 12, fontWeight: 700, fontSize: 12, background: T.text, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontFamily: ff, boxShadow: '0 2px 10px rgba(0,0,0,0.12)' }}><Navigation style={{ width: 13, height: 13 }} />Directions</button>
+                    <button className="tap flex-1" onClick={function () { handleDirections(selPin); }} style={{ padding: '10px 0', borderRadius: 12, fontWeight: 700, fontSize: 12, background: T.text, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontFamily: ff, boxShadow: '0 2px 10px rgba(0,0,0,0.12)' }}><Navigation style={{ width: 13, height: 13 }} />Directions</button>
                     <button onClick={function () { props.onBack(); }} className="tap flex-1" style={{ padding: '10px 0', borderRadius: 12, fontWeight: 700, fontSize: 12, background: T.accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontFamily: ff, boxShadow: '0 2px 10px rgba(225,29,72,0.2)' }}>📤 Send Here</button>
                   </div>
                 </div>
