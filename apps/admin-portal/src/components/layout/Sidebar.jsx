@@ -42,12 +42,11 @@ export const Sidebar = ({
         style={{ backgroundColor: theme.bg.secondary, borderColor: theme.border.primary }}
       >
         <div className="h-16 flex items-center justify-between px-4 border-b" style={{ borderColor: theme.border.primary }}>
-          {(!isCollapsed || isMobile) && (
-            <span className="font-bold text-lg" style={{ color: theme.text.primary }}>LocQar</span>
-          )}
-          {isCollapsed && !isMobile && (
-            <span className="font-bold text-sm" style={{ color: theme.text.primary }}>LQ</span>
-          )}
+          <div className="flex items-center gap-2.5 min-w-0">
+            {(!isCollapsed || isMobile) && (
+              <span className="font-bold text-lg" style={{ color: theme.text.primary }}>LocQar</span>
+            )}
+          </div>
           {!isMobile && (
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}

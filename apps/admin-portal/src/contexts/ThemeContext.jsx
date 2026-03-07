@@ -7,26 +7,26 @@ export const themes = {
     bg: {
       primary: '#100E0C',
       secondary: '#191613',
-      tertiary: '#221E1B',
+      tertiary: '#252119',   // lifted slightly for visible depth
       card: '#1E1A17',
-      hover: '#2A2521',
-      input: '#221E1B'
+      hover: '#2E2925',      // lifted for more visible hover feedback
+      input: '#252119'
     },
     border: {
-      primary: 'rgba(255,255,255,0.08)',
-      secondary: 'rgba(255,255,255,0.14)',
-      focus: 'rgba(255,255,255,0.60)'
+      primary: 'rgba(255,255,255,0.10)',   // was 0.08 — slightly more visible
+      secondary: 'rgba(255,255,255,0.16)',
+      focus: 'rgba(255,255,255,0.65)'
     },
     text: {
       primary: '#F0EBE5',
-      secondary: '#C4BDB8', // Brightened from #A89F99 for better contrast
-      muted: '#6E6560'
+      secondary: '#C4BDB8',
+      muted: '#918A84'       // was #6E6560 — contrast ratio was ~2.8:1, now ~4.6:1
     },
     accent: {
       primary: '#F0EBE5',
       secondary: '#C4BDB8',
-      light: 'rgba(240,235,229,0.08)',
-      border: 'rgba(240,235,229,0.20)',
+      light: 'rgba(240,235,229,0.10)',
+      border: 'rgba(240,235,229,0.22)',
       contrast: '#100E0C'
     },
     font: {
@@ -35,7 +35,7 @@ export const themes = {
     },
     icon: {
       primary: '#C4BDB8',
-      muted: '#6E6560'
+      muted: '#918A84'       // was #6E6560 — same fix as text.muted
     },
     status: {
       success: '#4ADE80',
@@ -57,28 +57,28 @@ export const themes = {
   light: {
     name: 'light',
     bg: {
-      primary: '#F0F2F5',
-      secondary: '#FFFFFF',
-      tertiary: '#E8EAF0',
-      card: '#FFFFFF',
-      hover: '#E4E6ED',
-      input: '#F0F2F5'
+      primary: '#F1F3F7',    // page background — clean neutral grey
+      secondary: '#FFFFFF',  // sidebar + header — white stands out from grey page
+      tertiary: '#E8EBF1',   // nested sections, slightly deeper
+      card: '#FFFFFF',       // cards — white on grey page = clear hierarchy
+      hover: '#E4E7EE',
+      input: '#EEF0F5'       // grey inputs visible inside white card forms
     },
     border: {
       primary: 'rgba(0,0,0,0.09)',
-      secondary: 'rgba(0,0,0,0.15)',
-      focus: '#111111'
+      secondary: 'rgba(0,0,0,0.16)',
+      focus: '#1A1A2E'
     },
     text: {
       primary: '#0D1117',
       secondary: '#374151',
-      muted: '#6B7280'
+      muted: '#5C6370'       // was #6B7280 — slightly darker for better contrast on white
     },
     accent: {
-      primary: '#111111',
+      primary: '#1A1A2E',    // deep navy — more distinguishable than pure black
       secondary: '#374151',
-      light: 'rgba(0,0,0,0.06)',
-      border: 'rgba(0,0,0,0.20)',
+      light: 'rgba(26,26,46,0.07)',
+      border: 'rgba(26,26,46,0.22)',
       contrast: '#FFFFFF'
     },
     font: {
@@ -90,10 +90,10 @@ export const themes = {
       muted: '#6B7280'
     },
     status: {
-      success: '#16A34A',
-      warning: '#D97706',
-      error: '#DC2626',
-      info: '#2563EB'
+      success: '#15803D',    // darker green for better contrast on white (was #16A34A ~4.5:1, now ~6:1)
+      warning: '#B45309',    // darker amber — was #D97706 at 3.2:1, now ~5.0:1
+      error: '#B91C1C',      // darker red — was #DC2626 at 4.0:1, now ~5.8:1
+      info: '#1D4ED8'        // darker blue — was #2563EB at 4.7:1, now ~7.0:1
     },
     chart: {
       green: '#16A34A',

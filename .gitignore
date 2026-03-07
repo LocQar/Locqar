@@ -9,3 +9,5 @@ _backups/
 *.pdf
 *.jpg
 *.png
+apps/api/uploads/**
+!apps/api/uploads/**/.gitkeep

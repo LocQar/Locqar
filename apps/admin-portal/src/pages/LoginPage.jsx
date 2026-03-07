@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Package, Lock, Mail, ChevronRight, Sun, Moon, Shield, Users, Truck, Headphones, BarChart2, UserCircle, Building2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, ChevronRight, Sun, Moon, Shield, Users, Truck, Headphones, BarChart2, UserCircle, Building2 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 // Demo users for each role
@@ -75,13 +75,8 @@ export const LoginPage = ({ onLogin, themeName, setThemeName }) => {
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
         <div className="relative">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7EA8C9, #818CF8)' }}>
-              <Package size={20} color="#fff" />
-            </div>
-            <span className="text-2xl font-black text-white tracking-tight">LocQar</span>
-          </div>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>Smart Locker Network</p>
+          <span className="text-2xl font-black text-white tracking-tight">LocQar</span>
+          <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Smart Locker Network</p>
         </div>
 
         <div className="relative space-y-6">
@@ -128,9 +123,6 @@ export const LoginPage = ({ onLogin, themeName, setThemeName }) => {
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12">
         {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-8 lg:hidden">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7EA8C9, #818CF8)' }}>
-            <Package size={18} color="#fff" />
-          </div>
           <span className="text-xl font-black" style={{ color: theme.text.primary }}>LocQar</span>
         </div>
 
