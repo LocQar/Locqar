@@ -46,7 +46,7 @@ router.post('/onboarding', authorize('hris.edit'), async (req, res, next) => {
 router.get('/onboarding/:id', async (req, res, next) => {
   try {
     const r = await prisma.onboardingRecord.findUnique({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       include: { user: true, documents: true },
     });
     if (!r) throw new NotFoundError('Onboarding record not found');
@@ -56,19 +56,19 @@ router.get('/onboarding/:id', async (req, res, next) => {
 
 router.patch('/onboarding/:id', authorize('hris.edit'), async (req, res, next) => {
   try {
-    const r = await prisma.onboardingRecord.update({ where: { id: req.params.id }, data: req.body });
+    const r = await prisma.onboardingRecord.update({ where: { id: req.params.id as string }, data: req.body });
     res.json(success(r));
   } catch (e) { next(e); }
 });
 
 router.patch('/onboarding/:id/checklist', authorize('hris.edit'), async (req, res, next) => {
   try {
-    const existing = await prisma.onboardingRecord.findUniqueOrThrow({ where: { id: req.params.id } });
+    const existing = await prisma.onboardingRecord.findUniqueOrThrow({ where: { id: req.params.id as string } });
     const checklist = { ...(existing.checklist as object), ...req.body.checklist };
     const vals = Object.values(checklist) as boolean[];
     const isComplete = vals.every(Boolean);
     const r = await prisma.onboardingRecord.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { checklist, isComplete, completedAt: isComplete ? new Date() : null },
     });
     res.json(success(r));
@@ -79,7 +79,7 @@ router.patch('/onboarding/:id/checklist', authorize('hris.edit'), async (req, re
 router.patch('/onboarding/:id/documents/:docId', authorize('hris.edit'), async (req, res, next) => {
   try {
     const doc = await prisma.hrisDocument.update({
-      where: { id: req.params.docId },
+      where: { id: req.params.docId as string },
       data: { status: req.body.status, uploadedAt: req.body.status === 'submitted' ? new Date() : undefined },
     });
     res.json(success(doc));
@@ -121,16 +121,16 @@ router.post('/offboarding', authorize('hris.edit'), async (req, res, next) => {
 
 router.patch('/offboarding/:id', authorize('hris.edit'), async (req, res, next) => {
   try {
-    const r = await prisma.offboardingRecord.update({ where: { id: req.params.id }, data: req.body });
+    const r = await prisma.offboardingRecord.update({ where: { id: req.params.id as string }, data: req.body });
     res.json(success(r));
   } catch (e) { next(e); }
 });
 
 router.patch('/offboarding/:id/checklist', authorize('hris.edit'), async (req, res, next) => {
   try {
-    const existing = await prisma.offboardingRecord.findUniqueOrThrow({ where: { id: req.params.id } });
+    const existing = await prisma.offboardingRecord.findUniqueOrThrow({ where: { id: req.params.id as string } });
     const checklist = { ...(existing.checklist as object), ...req.body.checklist };
-    const r = await prisma.offboardingRecord.update({ where: { id: req.params.id }, data: { checklist } });
+    const r = await prisma.offboardingRecord.update({ where: { id: req.params.id as string }, data: { checklist } });
     res.json(success(r));
   } catch (e) { next(e); }
 });
@@ -138,7 +138,7 @@ router.patch('/offboarding/:id/checklist', authorize('hris.edit'), async (req, r
 router.patch('/offboarding/:id/interview', authorize('hris.edit'), async (req, res, next) => {
   try {
     const r = await prisma.offboardingRecord.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { exitInterview: req.body },
     });
     res.json(success(r));
@@ -148,7 +148,7 @@ router.patch('/offboarding/:id/interview', authorize('hris.edit'), async (req, r
 router.patch('/offboarding/:id/settlement', authorize('hris.edit'), async (req, res, next) => {
   try {
     const r = await prisma.offboardingRecord.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { settlement: req.body },
     });
     res.json(success(r));
@@ -184,7 +184,7 @@ router.post('/alumni', authorize('hris.edit'), async (req, res, next) => {
 
 router.patch('/alumni/:id', authorize('hris.edit'), async (req, res, next) => {
   try {
-    const r = await prisma.alumniRecord.update({ where: { id: req.params.id }, data: req.body });
+    const r = await prisma.alumniRecord.update({ where: { id: req.params.id as string }, data: req.body });
     res.json(success(r));
   } catch (e) { next(e); }
 });

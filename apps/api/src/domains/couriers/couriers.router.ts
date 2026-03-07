@@ -12,15 +12,15 @@ router.get('/', authorize('couriers.view'), async (req, res, next) => {
 });
 
 router.get('/:id', authorize('couriers.view'), async (req, res, next) => {
-  try { res.json(success(await CouriersService.getById(req.params.id))); } catch (e) { next(e); }
+  try { res.json(success(await CouriersService.getById(req.params.id as string))); } catch (e) { next(e); }
 });
 
 router.get('/:id/stats', authorize('couriers.view'), async (req, res, next) => {
-  try { res.json(success(await CouriersService.getStats(req.params.id))); } catch (e) { next(e); }
+  try { res.json(success(await CouriersService.getStats(req.params.id as string))); } catch (e) { next(e); }
 });
 
 router.patch('/:id/status', authorize('couriers.edit'), async (req, res, next) => {
-  try { res.json(success(await CouriersService.updateStatus(req.params.id, req.body.status))); } catch (e) { next(e); }
+  try { res.json(success(await CouriersService.updateStatus(req.params.id as string, req.body.status))); } catch (e) { next(e); }
 });
 
 export { router as couriersRouter };

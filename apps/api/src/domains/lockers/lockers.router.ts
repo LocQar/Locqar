@@ -18,15 +18,15 @@ router.get('/', authorize('lockers.view'), async (req, res, next) => {
 });
 
 router.get('/:id', authorize('lockers.view'), async (req, res, next) => {
-  try { res.json(success(await LockersService.getById(req.params.id))); } catch (e) { next(e); }
+  try { res.json(success(await LockersService.getById(req.params.id as string))); } catch (e) { next(e); }
 });
 
 router.post('/:id/open', authorize('lockers.open'), async (req, res, next) => {
-  try { res.json(success(await LockersService.open(req.params.id, req.user!.id))); } catch (e) { next(e); }
+  try { res.json(success(await LockersService.open(req.params.id as string, req.user!.id))); } catch (e) { next(e); }
 });
 
 router.patch('/:id/status', authorize('lockers.edit'), async (req, res, next) => {
-  try { res.json(success(await LockersService.updateStatus(req.params.id, req.body.status))); } catch (e) { next(e); }
+  try { res.json(success(await LockersService.updateStatus(req.params.id as string, req.body.status))); } catch (e) { next(e); }
 });
 
 export { router as lockersRouter };

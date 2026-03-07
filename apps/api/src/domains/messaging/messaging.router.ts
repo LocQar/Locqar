@@ -22,7 +22,7 @@ router.get('/threads', async (req, res, next) => {
 router.get('/threads/:id', async (req, res, next) => {
   try {
     const thread = await prisma.chatThread.findUniqueOrThrow({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       include: { messages: { orderBy: { createdAt: 'asc' } } },
     });
     res.json(success(thread));
@@ -33,14 +33,14 @@ router.post('/threads/:id/messages', authorize('messaging.send'), async (req, re
   try {
     const msg = await prisma.chatMessage.create({
       data: {
-        threadId: req.params.id,
+        threadId: req.params.id as string,
         senderId: req.user!.id,
         senderName: req.user!.name,
         senderType: req.user!.userType,
         body: req.body.body,
       },
     });
-    await prisma.chatThread.update({ where: { id: req.params.id }, data: { updatedAt: new Date() } });
+    await prisma.chatThread.update({ where: { id: req.params.id as string }, data: { updatedAt: new Date() } });
     res.status(201).json(success(msg));
   } catch (e) { next(e); }
 });

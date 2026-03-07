@@ -42,7 +42,7 @@ router.post('/periods', authorize('payroll.process'), validate(periodSchema), as
 router.get('/periods/:id', async (req, res, next) => {
   try {
     const period = await prisma.payPeriod.findUnique({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       include: { records: true },
     });
     if (!period) throw new NotFoundError('Pay period not found');
@@ -53,11 +53,11 @@ router.get('/periods/:id', async (req, res, next) => {
 // Generate payroll records for a period using salary configs
 router.post('/periods/:id/generate', authorize('payroll.process'), async (req, res, next) => {
   try {
-    const period = await prisma.payPeriod.findUniqueOrThrow({ where: { id: req.params.id } });
+    const period = await prisma.payPeriod.findUniqueOrThrow({ where: { id: req.params.id as string } });
     if (period.status !== 'draft') throw new BadRequestError('Can only generate for draft periods');
 
-    const configs = await prisma.salaryConfig.findMany({
-      include: { user: { select: { name: true, staffRole: true, department: true, jobTitle: true } } } as any,
+    const configs = await (prisma.salaryConfig.findMany as any)({
+      include: { user: { select: { name: true, staffRole: true, department: true, jobTitle: true } } },
     });
 
     const records = configs.map((c: any) => {
@@ -98,7 +98,7 @@ router.patch('/periods/:id/status', authorize('payroll.process'), async (req, re
     const data: any = { status };
     if (status === 'approved') data.approvedAt = new Date(), data.approvedBy = req.user!.id;
     if (status === 'paid') data.paidAt = new Date();
-    const period = await prisma.payPeriod.update({ where: { id: req.params.id }, data });
+    const period = await prisma.payPeriod.update({ where: { id: req.params.id as string }, data });
     res.json(success(period));
   } catch (e) { next(e); }
 });
@@ -108,7 +108,7 @@ router.get('/records', async (req, res, next) => {
   try {
     const { skip, take, page, pageSize } = parsePagination(req);
     const where: any = {};
-    if (req.query.periodId) where.periodId = req.query.periodId;
+    if (req.query.periodId) where.periodId = req.query.periodId as string;
     const [data, total] = await Promise.all([
       prisma.payrollRecord.findMany({ where, skip, take, orderBy: { employeeName: 'asc' } }),
       prisma.payrollRecord.count({ where }),

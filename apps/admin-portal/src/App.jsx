@@ -2427,11 +2427,31 @@ function LocQarERPInner() {
   );
 }
 
+// Error boundary to surface crashes instead of blank screen
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 40, fontFamily: 'monospace', color: '#f87171', background: '#100E0C', minHeight: '100vh' }}>
+          <h2 style={{ color: '#fbbf24', marginBottom: 16 }}>LocQar Admin — Startup Error</h2>
+          <pre style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>{String(this.state.error)}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', fontSize: 11, color: '#9ca3af', marginTop: 16 }}>{this.state.error?.stack}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // Wrap with ThemeProvider
 export default function LocQarERP() {
   return (
-    <ThemeProvider>
-      <LocQarERPInner />
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <LocQarERPInner />
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

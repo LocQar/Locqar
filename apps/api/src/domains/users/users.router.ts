@@ -69,7 +69,7 @@ router.post('/', authorize('staff.create'), validate(createStaffSchema), auditLo
 router.get('/:id', authorize('staff.view'), async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       select: {
         id: true, name: true, email: true, phone: true, avatar: true,
         staffRole: true, terminalId: true, department: true, jobTitle: true,
@@ -86,7 +86,7 @@ router.get('/:id', authorize('staff.view'), async (req, res, next) => {
 router.patch('/:id', authorize('staff.edit'), validate(updateStaffSchema), auditLog('UPDATE', 'User'), async (req, res, next) => {
   try {
     const user = await prisma.user.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: req.body,
       select: { id: true, name: true, email: true, staffRole: true, isActive: true },
     });
@@ -96,7 +96,7 @@ router.patch('/:id', authorize('staff.edit'), validate(updateStaffSchema), audit
 
 router.delete('/:id', authorize('staff.delete'), auditLog('DELETE', 'User'), async (req, res, next) => {
   try {
-    await prisma.user.update({ where: { id: req.params.id }, data: { isActive: false } });
+    await prisma.user.update({ where: { id: req.params.id as string }, data: { isActive: false } });
     res.json(success({ message: 'Staff member deactivated' }));
   } catch (e) { next(e); }
 });

@@ -40,7 +40,7 @@ router.post('/', requireCourier, upload.single('photo'), async (req, res, next) 
 // Get POD for a package
 router.get('/package/:packageId', authorize('packages.view'), async (req, res, next) => {
   try {
-    const pod = await prisma.proofOfDelivery.findUnique({ where: { packageId: req.params.packageId } });
+    const pod = await prisma.proofOfDelivery.findUnique({ where: { packageId: req.params.packageId as string } });
     if (!pod) throw new NotFoundError('Proof of delivery not found');
     res.json(success(pod));
   } catch (e) { next(e); }

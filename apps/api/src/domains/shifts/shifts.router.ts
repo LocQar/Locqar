@@ -36,11 +36,10 @@ router.post('/clock-in', requireCourier, async (req, res, next) => {
   try {
     const courier = await prisma.courier.findUniqueOrThrow({ where: { userId: req.user!.id } });
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    const shift = await prisma.shift.upsert({
-      where: { courierId_date: { courierId: courier.id, date: today } },
-      create: { courierId: courier.id, date: today, startTime: new Date(), status: 'active' },
-      update: { startTime: new Date(), status: 'active' },
-    });
+    const existing = await prisma.shift.findFirst({ where: { courierId: courier.id, date: today } });
+    const shift = existing
+      ? await prisma.shift.update({ where: { id: existing.id }, data: { startTime: new Date(), status: 'active' } })
+      : await prisma.shift.create({ data: { courierId: courier.id, date: today, startTime: new Date(), status: 'active' } });
     res.json(success(shift));
   } catch (e) { next(e); }
 });

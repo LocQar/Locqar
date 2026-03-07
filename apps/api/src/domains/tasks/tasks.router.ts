@@ -29,7 +29,7 @@ router.get('/my', requireCourier, async (req, res, next) => {
 router.patch('/:id/accept', requireCourier, async (req, res, next) => {
   try {
     const task = await prisma.task.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { status: 'accepted', acceptedAt: new Date() },
     });
     await prisma.package.update({
@@ -44,7 +44,7 @@ router.patch('/:id/accept', requireCourier, async (req, res, next) => {
 router.patch('/:id/complete', requireCourier, async (req, res, next) => {
   try {
     const task = await prisma.task.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { status: 'completed', completedAt: new Date() },
     });
     res.json(success(task));

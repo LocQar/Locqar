@@ -65,7 +65,7 @@ router.post('/me/addresses', requireCustomer, async (req, res, next) => {
 
 router.delete('/me/addresses/:id', requireCustomer, async (req, res, next) => {
   try {
-    await prisma.customerAddress.delete({ where: { id: req.params.id } });
+    await prisma.customerAddress.delete({ where: { id: req.params.id as string } });
     res.json(success({ message: 'Address deleted' }));
   } catch (e) { next(e); }
 });
@@ -100,7 +100,7 @@ router.get('/', authorize('customers.view'), async (req, res, next) => {
 router.get('/:id', authorize('customers.view'), async (req, res, next) => {
   try {
     const customer = await prisma.customer.findUnique({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       include: {
         user: true,
         addresses: true,

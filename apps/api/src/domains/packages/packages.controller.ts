@@ -9,7 +9,7 @@ export class PackagesController {
   }
 
   static async getByWaybill(req: Request, res: Response, next: NextFunction) {
-    try { res.json(success(await PackagesService.getByWaybill(req.params.waybill, req.user!))); }
+    try { res.json(success(await PackagesService.getByWaybill(req.params.waybill as string, req.user!))); }
     catch (err) { next(err); }
   }
 
@@ -19,12 +19,12 @@ export class PackagesController {
   }
 
   static async updateStatus(req: Request, res: Response, next: NextFunction) {
-    try { res.json(success(await PackagesService.updateStatus(req.params.waybill, req.body, req.user!))); }
+    try { res.json(success(await PackagesService.updateStatus(req.params.waybill as string, req.body, req.user!))); }
     catch (err) { next(err); }
   }
 
   static async assign(req: Request, res: Response, next: NextFunction) {
-    try { res.json(success(await PackagesService.assign(req.params.waybill, req.body.courierId, req.user!))); }
+    try { res.json(success(await PackagesService.assign(req.params.waybill as string, req.body.courierId, req.user!))); }
     catch (err) { next(err); }
   }
 
@@ -34,13 +34,13 @@ export class PackagesController {
   }
 
   static async track(req: Request, res: Response, next: NextFunction) {
-    try { res.json(success(await PackagesService.track(req.params.waybill, req.query.phone as string))); }
+    try { res.json(success(await PackagesService.track(req.params.waybill as string, req.query.phone as string))); }
     catch (err) { next(err); }
   }
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      await PackagesService.delete(req.params.waybill);
+      await PackagesService.delete(req.params.waybill as string);
       res.json(success({ message: 'Package deleted' }));
     } catch (err) { next(err); }
   }

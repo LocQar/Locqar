@@ -53,7 +53,7 @@ router.post('/', authorize('fleet.create'), validate(vehicleSchema), async (req,
 
 router.get('/:id', authorize('fleet.view'), async (req, res, next) => {
   try {
-    const v = await prisma.vehicle.findUnique({ where: { id: req.params.id }, include: { courier: { include: { user: { select: { name: true } } } } } });
+    const v = await prisma.vehicle.findUnique({ where: { id: req.params.id as string }, include: { courier: { include: { user: { select: { name: true } } } } } });
     if (!v) throw new NotFoundError('Vehicle not found');
     res.json(success(v));
   } catch (e) { next(e); }
@@ -61,14 +61,14 @@ router.get('/:id', authorize('fleet.view'), async (req, res, next) => {
 
 router.patch('/:id', authorize('fleet.edit'), async (req, res, next) => {
   try {
-    const v = await prisma.vehicle.update({ where: { id: req.params.id }, data: req.body });
+    const v = await prisma.vehicle.update({ where: { id: req.params.id as string }, data: req.body });
     res.json(success(v));
   } catch (e) { next(e); }
 });
 
 router.delete('/:id', authorize('fleet.edit'), async (req, res, next) => {
   try {
-    await prisma.vehicle.delete({ where: { id: req.params.id } });
+    await prisma.vehicle.delete({ where: { id: req.params.id as string } });
     res.json(success({ message: 'Vehicle deleted' }));
   } catch (e) { next(e); }
 });

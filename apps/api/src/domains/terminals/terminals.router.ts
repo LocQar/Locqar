@@ -55,7 +55,7 @@ router.get('/', authorize('terminals.view'), async (req, res, next) => {
 router.get('/:id', authorize('terminals.view'), async (req, res, next) => {
   try {
     const t = await prisma.terminal.findUnique({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       include: {
         lockers: true,
         _count: { select: { staff: true, couriers: true, packages: true } },
@@ -75,7 +75,7 @@ router.post('/', authorize('staff.create'), validate(terminalSchema), async (req
 
 router.patch('/:id', authorize('staff.edit'), async (req, res, next) => {
   try {
-    const terminal = await prisma.terminal.update({ where: { id: req.params.id }, data: req.body });
+    const terminal = await prisma.terminal.update({ where: { id: req.params.id as string }, data: req.body });
     res.json(success(terminal));
   } catch (e) { next(e); }
 });

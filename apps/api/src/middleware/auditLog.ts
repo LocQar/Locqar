@@ -11,9 +11,9 @@ export function auditLog(action: string, resource: string) {
             userId: req.user.id,
             action,
             resource,
-            resourceId: req.params.id ?? req.params.waybill ?? undefined,
+            resourceId: (req.params.id as string) ?? (req.params.waybill as string) ?? undefined,
             ipAddress: req.ip,
-            userAgent: req.headers['user-agent'],
+            userAgent: req.headers['user-agent'] as string | undefined,
           },
         });
       }

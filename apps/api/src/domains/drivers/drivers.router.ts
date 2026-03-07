@@ -33,7 +33,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.patch('/:id', authorize('fleet.edit'), async (req, res, next) => {
   try {
-    const driver = await prisma.driver.update({ where: { id: req.params.id }, data: req.body });
+    const driver = await prisma.driver.update({ where: { id: req.params.id as string }, data: req.body });
     res.json(success(driver));
   } catch (e) { next(e); }
 });

@@ -36,7 +36,7 @@ router.post('/', authorize('routes.create'), async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const route = await prisma.route.findUnique({ where: { id: req.params.id }, include: { stops: { orderBy: { sequence: 'asc' } } } });
+    const route = await prisma.route.findUnique({ where: { id: req.params.id as string }, include: { stops: { orderBy: { sequence: 'asc' } } } });
     if (!route) throw new NotFoundError('Route not found');
     res.json(success(route));
   } catch (e) { next(e); }
@@ -44,7 +44,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.patch('/:id', authorize('routes.edit'), async (req, res, next) => {
   try {
-    const route = await prisma.route.update({ where: { id: req.params.id }, data: req.body });
+    const route = await prisma.route.update({ where: { id: req.params.id as string }, data: req.body });
     res.json(success(route));
   } catch (e) { next(e); }
 });

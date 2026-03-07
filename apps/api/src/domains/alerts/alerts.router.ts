@@ -34,14 +34,14 @@ router.post('/', async (req, res, next) => {
 
 router.patch('/:id/read', async (req, res, next) => {
   try {
-    const alert = await prisma.alert.update({ where: { id: req.params.id }, data: { isRead: true } });
+    const alert = await prisma.alert.update({ where: { id: req.params.id as string }, data: { isRead: true } });
     res.json(success(alert));
   } catch (e) { next(e); }
 });
 
 router.patch('/:id/resolve', authorize('alerts.resolve'), async (req, res, next) => {
   try {
-    const alert = await prisma.alert.update({ where: { id: req.params.id }, data: { resolvedAt: new Date() } });
+    const alert = await prisma.alert.update({ where: { id: req.params.id as string }, data: { resolvedAt: new Date() } });
     res.json(success(alert));
   } catch (e) { next(e); }
 });
