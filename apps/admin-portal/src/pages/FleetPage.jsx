@@ -184,8 +184,8 @@ export const FleetPage = ({ addToast }) => {
                             onClick={() => setActiveTab(tab.toLowerCase())}
                             className="px-6 py-3 text-sm font-medium border-b-2 transition-colors"
                             style={{
-                                borderColor: activeTab === tab.toLowerCase() ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent',
-                                color: activeTab === tab.toLowerCase() ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.secondary
+                                borderColor: activeTab === tab.toLowerCase() ? theme.accent.primary : 'transparent',
+                                color: activeTab === tab.toLowerCase() ? theme.accent.primary : theme.text.secondary
                             }}
                         >
                             {tab}
@@ -218,7 +218,7 @@ export const FleetPage = ({ addToast }) => {
                                         <button key={v} onClick={() => setView(v)}
                                             className="p-1.5 rounded-lg transition-all"
                                             title={v === 'grid' ? 'Grid view' : 'List view'}
-                                            style={{ backgroundColor: view === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
+                                            style={{ backgroundColor: view === v ? theme.accent.primary : 'transparent', color: view === v ? theme.accent.contrast : theme.text.muted }}>
                                             <Icon size={16} />
                                         </button>
                                     ))}
@@ -254,8 +254,8 @@ export const FleetPage = ({ addToast }) => {
                                                 {vehicle.mileage.toLocaleString()} km
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Fuel size={16} style={{ color: vehicle.fuelLevel < 30 ? '#EF4444' : theme.icon.primary }} />
-                                                <span style={{ color: vehicle.fuelLevel < 30 ? '#EF4444' : theme.text.secondary }}>{vehicle.fuelLevel}%</span>
+                                                <Fuel size={16} style={{ color: vehicle.fuelLevel < 30 ? '#D48E8A' : theme.icon.primary }} />
+                                                <span style={{ color: vehicle.fuelLevel < 30 ? '#D48E8A' : theme.text.secondary }}>{vehicle.fuelLevel}%</span>
                                             </div>
                                             <StatusBadge status={vehicle.status} />
                                         </div>
@@ -300,8 +300,8 @@ export const FleetPage = ({ addToast }) => {
                                             <span className="text-sm font-mono" style={{ color: theme.text.secondary }}>{vehicle.mileage.toLocaleString()}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5">
-                                            <Fuel size={13} style={{ color: vehicle.fuelLevel < 30 ? '#EF4444' : theme.text.muted }} />
-                                            <span className="text-sm" style={{ color: vehicle.fuelLevel < 30 ? '#EF4444' : theme.text.secondary }}>{vehicle.fuelLevel}%</span>
+                                            <Fuel size={13} style={{ color: vehicle.fuelLevel < 30 ? '#D48E8A' : theme.text.muted }} />
+                                            <span className="text-sm" style={{ color: vehicle.fuelLevel < 30 ? '#D48E8A' : theme.text.secondary }}>{vehicle.fuelLevel}%</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-xs" style={{ color: theme.text.muted }}>{vehicle.nextService}</span>
@@ -354,15 +354,15 @@ export const FleetPage = ({ addToast }) => {
                                 </div>
                                 <div className="p-4 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                                     <p className="text-xs" style={{ color: theme.text.muted }}>Total Gallons</p>
-                                    <p className="text-xl font-bold" style={{ color: '#3B82F6' }}>{fuelLogsData.reduce((s, f) => s + f.gallons, 0)}</p>
+                                    <p className="text-xl font-bold" style={{ color: '#7EA8C9' }}>{fuelLogsData.reduce((s, f) => s + f.gallons, 0)}</p>
                                 </div>
                                 <div className="p-4 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                                     <p className="text-xs" style={{ color: theme.text.muted }}>Avg Cost/Gallon</p>
-                                    <p className="text-xl font-bold" style={{ color: '#D97706' }}>GH₵ {(fuelLogsData.reduce((s, f) => s + f.cost, 0) / fuelLogsData.reduce((s, f) => s + f.gallons, 0)).toFixed(0)}</p>
+                                    <p className="text-xl font-bold" style={{ color: '#D4AA5A' }}>GH₵ {(fuelLogsData.reduce((s, f) => s + f.cost, 0) / fuelLogsData.reduce((s, f) => s + f.gallons, 0)).toFixed(0)}</p>
                                 </div>
                                 <div className="p-4 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                                     <p className="text-xs" style={{ color: theme.text.muted }}>Entries</p>
-                                    <p className="text-xl font-bold" style={{ color: '#10B981' }}>{fuelLogsData.length}</p>
+                                    <p className="text-xl font-bold" style={{ color: '#81C995' }}>{fuelLogsData.length}</p>
                                 </div>
                             </div>
 
@@ -390,7 +390,7 @@ export const FleetPage = ({ addToast }) => {
                                                 </td>
                                                 <td className="p-3" style={{ color: theme.text.secondary }}>{log.date}</td>
                                                 <td className="p-3">
-                                                    <span className="font-medium" style={{ color: '#3B82F6' }}>{log.gallons} gal</span>
+                                                    <span className="font-medium" style={{ color: '#7EA8C9' }}>{log.gallons} gal</span>
                                                 </td>
                                                 <td className="p-3">
                                                     <span className="font-medium" style={{ color: theme.accent.primary }}>GH₵ {log.cost}</span>
@@ -421,7 +421,7 @@ export const FleetPage = ({ addToast }) => {
                                             <div key={vehicle.id} className="flex items-center gap-3">
                                                 <span className="text-sm w-28 shrink-0 truncate" style={{ color: theme.text.primary }}>{vehicle.plate}</span>
                                                 <div className="flex-1 h-2 rounded-full" style={{ backgroundColor: theme.border.primary }}>
-                                                    <div className="h-full rounded-full" style={{ width: `${maxCost > 0 ? (totalCost / maxCost) * 100 : 0}%`, backgroundColor: '#D97706' }} />
+                                                    <div className="h-full rounded-full" style={{ width: `${maxCost > 0 ? (totalCost / maxCost) * 100 : 0}%`, backgroundColor: '#D4AA5A' }} />
                                                 </div>
                                                 <span className="text-sm font-mono w-24 text-right" style={{ color: theme.text.secondary }}>GH₵ {totalCost.toLocaleString()}</span>
                                                 <span className="text-xs w-16 text-right" style={{ color: theme.text.muted }}>{totalGallons} gal</span>

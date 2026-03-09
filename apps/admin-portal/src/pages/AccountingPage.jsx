@@ -24,7 +24,7 @@ const NewTransactionModal = ({ onClose, onSave, theme }) => {
     return Object.keys(e).length === 0;
   };
 
-  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#EF4444' : theme.border.primary, color: theme.text.primary });
+  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#D48E8A' : theme.border.primary, color: theme.text.primary });
   const lbl = "text-xs font-semibold uppercase block mb-1.5";
 
   return (
@@ -58,7 +58,7 @@ const NewTransactionModal = ({ onClose, onSave, theme }) => {
               <label className={lbl} style={{ color: theme.text.muted }}>Type</label>
               <div className="flex gap-2">
                 {TXN_TYPES.map(t => (
-                  <button key={t} onClick={() => update('type', t)} className="flex-1 py-2 rounded-xl text-sm capitalize" style={{ backgroundColor: form.type === t ? (t === 'credit' ? '#10B98120' : '#EF444420') : theme.bg.tertiary, color: form.type === t ? (t === 'credit' ? '#10B981' : '#EF4444') : theme.text.muted, border: `1px solid ${form.type === t ? (t === 'credit' ? '#10B98140' : '#EF444440') : theme.border.primary}` }}>{t}</button>
+                  <button key={t} onClick={() => update('type', t)} className="flex-1 py-2 rounded-xl text-sm capitalize" style={{ backgroundColor: form.type === t ? (t === 'credit' ? '#81C99520' : '#D48E8A20') : theme.bg.tertiary, color: form.type === t ? (t === 'credit' ? '#81C995' : '#D48E8A') : theme.text.muted, border: `1px solid ${form.type === t ? (t === 'credit' ? '#81C99540' : '#D48E8A40') : theme.border.primary}` }}>{t}</button>
                 ))}
               </div>
             </div>
@@ -98,7 +98,7 @@ const InvoiceDrawer = ({ invoice, onClose, onSave, theme }) => {
     return Object.keys(e).length === 0;
   };
 
-  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#EF4444' : theme.border.primary, color: theme.text.primary });
+  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#D48E8A' : theme.border.primary, color: theme.text.primary });
   const lbl = "text-xs font-semibold uppercase block mb-1.5";
 
   return (
@@ -141,7 +141,7 @@ const InvoiceDrawer = ({ invoice, onClose, onSave, theme }) => {
           <div>
             <label className={lbl} style={{ color: theme.text.muted }}>Status</label>
             <div className="flex gap-2">
-              {[['pending', '#D97706'], ['paid', '#10B981'], ['overdue', '#EF4444']].map(([s, c]) => (
+              {[['pending', '#D4AA5A'], ['paid', '#81C995'], ['overdue', '#D48E8A']].map(([s, c]) => (
                 <button key={s} onClick={() => update('status', s)} className="flex-1 py-2.5 rounded-xl text-sm capitalize" style={{ backgroundColor: form.status === s ? `${c}15` : theme.bg.tertiary, color: form.status === s ? c : theme.text.muted, border: `1px solid ${form.status === s ? `${c}40` : theme.border.primary}` }}>{s}</button>
               ))}
             </div>
@@ -281,7 +281,7 @@ export const AccountingPage = ({
             </div>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
               {[['all', 'All'], ['completed', 'Completed'], ['pending', 'Pending']].map(([v, l]) => (
-                <button key={v} onClick={() => setTxnStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: txnStatusFilter === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: txnStatusFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
+                <button key={v} onClick={() => setTxnStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: txnStatusFilter === v ? theme.accent.primary : 'transparent', color: txnStatusFilter === v ? theme.accent.contrast : theme.text.muted }}>{l}</button>
               ))}
             </div>
             <button onClick={() => setShowNewTxn(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
@@ -297,7 +297,7 @@ export const AccountingPage = ({
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
                     {[['id', 'TXN ID'], ['date', 'Date', 'hidden md:table-cell'], ['description', 'Description', 'hidden lg:table-cell'], ['customer', 'Customer'], ['amount', 'Amount']].map(([field, label, hide]) => (
-                      <th key={field} onClick={() => sortTxnFn(field)} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: txnSort.field === field ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.muted }}>
+                      <th key={field} onClick={() => sortTxnFn(field)} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: txnSort.field === field ? theme.accent.primary : theme.text.muted }}>
                         <span className="flex items-center gap-1">{label}{txnSort.field === field && (txnSort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}</span>
                       </th>
                     ))}
@@ -344,7 +344,7 @@ export const AccountingPage = ({
             </div>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
               {[['all', 'All'], ['paid', 'Paid'], ['pending', 'Pending'], ['overdue', 'Overdue']].map(([v, l]) => (
-                <button key={v} onClick={() => setInvStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: invStatusFilter === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: invStatusFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
+                <button key={v} onClick={() => setInvStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: invStatusFilter === v ? theme.accent.primary : 'transparent', color: invStatusFilter === v ? theme.accent.contrast : theme.text.muted }}>{l}</button>
               ))}
             </div>
             <button onClick={() => { setEditInvoice(null); setShowInvDrawer(true); }} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
@@ -408,9 +408,9 @@ export const AccountingPage = ({
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} tickFormatter={v => `${(v/1000).toFixed(0)}K`} />
                   <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12 }} labelStyle={{ color: theme.text.primary }} formatter={v => `GH₵ ${v.toLocaleString()}`} />
                   <Bar dataKey="standard" stackId="a" fill={theme.chart?.stone || '#78716C'} name="Standard" />
-                  <Bar dataKey="express" stackId="a" fill={theme.chart?.amber || '#D97706'} name="Express" />
-                  <Bar dataKey="rush" stackId="a" fill={theme.chart?.coral || '#EF4444'} name="Rush" />
-                  <Bar dataKey="economy" stackId="a" fill={theme.chart?.green || '#10B981'} radius={[4, 4, 0, 0]} name="Economy" />
+                  <Bar dataKey="express" stackId="a" fill={theme.chart?.amber || '#D4AA5A'} name="Express" />
+                  <Bar dataKey="rush" stackId="a" fill={theme.chart?.coral || '#D48E8A'} name="Rush" />
+                  <Bar dataKey="economy" stackId="a" fill={theme.chart?.green || '#81C995'} radius={[4, 4, 0, 0]} name="Economy" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -422,9 +422,9 @@ export const AccountingPage = ({
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.text.muted, fontSize: 12 }} />
                   <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12 }} labelStyle={{ color: theme.text.primary }} />
-                  <Line type="monotone" dataKey="accra" stroke={theme.chart?.blue || '#3B82F6'} strokeWidth={2} name="Accra Mall" />
-                  <Line type="monotone" dataKey="achimota" stroke={theme.chart?.green || '#10B981'} strokeWidth={2} name="Achimota Mall" />
-                  <Line type="monotone" dataKey="kotoka" stroke={theme.chart?.amber || '#D97706'} strokeWidth={2} name="Kotoka T3" />
+                  <Line type="monotone" dataKey="accra" stroke={theme.chart?.blue || '#7EA8C9'} strokeWidth={2} name="Accra Mall" />
+                  <Line type="monotone" dataKey="achimota" stroke={theme.chart?.green || '#81C995'} strokeWidth={2} name="Achimota Mall" />
+                  <Line type="monotone" dataKey="kotoka" stroke={theme.chart?.amber || '#D4AA5A'} strokeWidth={2} name="Kotoka T3" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -433,7 +433,7 @@ export const AccountingPage = ({
             <div className="p-5 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
               <h3 className="font-semibold mb-4" style={{ color: theme.text.primary }}>Invoice Aging</h3>
               <div className="space-y-3">
-                {[['Paid', invoices.filter(i => i.status === 'paid').length, '#10B981'], ['Pending', invoices.filter(i => i.status === 'pending').length, '#D97706'], ['Overdue', invoices.filter(i => i.status === 'overdue').length, '#EF4444']].map(([label, count, color]) => (
+                {[['Paid', invoices.filter(i => i.status === 'paid').length, '#81C995'], ['Pending', invoices.filter(i => i.status === 'pending').length, '#D4AA5A'], ['Overdue', invoices.filter(i => i.status === 'overdue').length, '#D48E8A']].map(([label, count, color]) => (
                   <div key={label} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: `${color}10` }}>
                     <span className="text-sm" style={{ color: theme.text.primary }}>{label}</span>
                     <span className="font-bold" style={{ color }}>{count}</span>
@@ -484,7 +484,7 @@ export const AccountingPage = ({
             <p className="text-sm" style={{ color: theme.text.muted }}>Remove <span className="font-mono font-semibold" style={{ color: theme.text.primary }}>{deleteConfirm.item.id}</span> permanently?</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={handleDelete} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Delete</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Delete</button>
             </div>
           </div>
         </div>

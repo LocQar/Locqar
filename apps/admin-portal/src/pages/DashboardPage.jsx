@@ -45,10 +45,10 @@ export const DashboardPage = ({
 
   const alerts = useMemo(() => {
     const all = [
-      ...(expiredPkgs.length > 0 ? [{ id: 'expired', type: 'error', icon: Package, color: '#EF4444', label: `${expiredPkgs.length} expired package${expiredPkgs.length > 1 ? 's' : ''}`, action: 'packages', sub: 'Expired' }] : []),
-      ...(nearExpiryPkgs.length > 0 ? [{ id: 'nearExpiry', type: 'warning', icon: Clock, color: '#D97706', label: `${nearExpiryPkgs.length} package${nearExpiryPkgs.length > 1 ? 's' : ''} near expiry (4+ days)`, action: 'packages', sub: 'In Locker' }] : []),
-      ...(maintenanceTerminals.length > 0 ? [{ id: 'maintenance', type: 'warning', icon: Wrench, color: '#D97706', label: `${maintenanceTerminals.map(t => t.name).join(', ')} in maintenance`, action: 'terminals', sub: null }] : []),
-      ...(pendingDispatch > 0 ? [{ id: 'dispatch', type: 'info', icon: Truck, color: '#3B82F6', label: `${pendingDispatch} package${pendingDispatch > 1 ? 's' : ''} ready for dispatch`, action: 'dispatch', sub: 'Outgoing' }] : []),
+      ...(expiredPkgs.length > 0 ? [{ id: 'expired', type: 'error', icon: Package, color: '#D48E8A', label: `${expiredPkgs.length} expired package${expiredPkgs.length > 1 ? 's' : ''}`, action: 'packages', sub: 'Expired' }] : []),
+      ...(nearExpiryPkgs.length > 0 ? [{ id: 'nearExpiry', type: 'warning', icon: Clock, color: '#D4AA5A', label: `${nearExpiryPkgs.length} package${nearExpiryPkgs.length > 1 ? 's' : ''} near expiry (4+ days)`, action: 'packages', sub: 'In Locker' }] : []),
+      ...(maintenanceTerminals.length > 0 ? [{ id: 'maintenance', type: 'warning', icon: Wrench, color: '#D4AA5A', label: `${maintenanceTerminals.map(t => t.name).join(', ')} in maintenance`, action: 'terminals', sub: null }] : []),
+      ...(pendingDispatch > 0 ? [{ id: 'dispatch', type: 'info', icon: Truck, color: '#7EA8C9', label: `${pendingDispatch} package${pendingDispatch > 1 ? 's' : ''} ready for dispatch`, action: 'dispatch', sub: 'Outgoing' }] : []),
     ];
     return all.filter(a => !dismissedAlerts.includes(a.id));
   }, [expiredPkgs, nearExpiryPkgs, maintenanceTerminals, pendingDispatch, dismissedAlerts]);
@@ -130,9 +130,9 @@ export const DashboardPage = ({
             onClick={() => setShowTerminalGrid(s => !s)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             style={{
-              backgroundColor: showTerminalGrid ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent',
-              color: showTerminalGrid ? '#fff' : theme.text.secondary,
-              border: `1px solid ${showTerminalGrid ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.border.primary}`,
+              backgroundColor: showTerminalGrid ? theme.accent.primary : 'transparent',
+              color: showTerminalGrid ? theme.accent.contrast : theme.text.secondary,
+              border: `1px solid ${showTerminalGrid ? theme.accent.primary : theme.border.primary}`,
             }}
           >
             <Grid3X3 size={16} /> Terminals
@@ -150,13 +150,13 @@ export const DashboardPage = ({
       {alerts.length > 0 && (
         <div className="space-y-2">
           {alerts.map(alert => (
-            <div key={alert.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border" style={{ backgroundColor: `${alert.color}${theme.name === 'light' ? '14' : '08'}`, borderColor: `${alert.color}${theme.name === 'light' ? '45' : '30'}` }}>
+            <div key={alert.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border" style={{ backgroundColor: `${alert.color}08`, borderColor: `${alert.color}30` }}>
               <alert.icon size={15} style={{ color: alert.color, flexShrink: 0 }} />
               <p className="flex-1 text-sm" style={{ color: alert.color }}>{alert.label}</p>
               <button
                 onClick={() => { setActiveMenu(alert.action); if (alert.sub) setActiveSubMenu(alert.sub); }}
                 className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg"
-                style={{ backgroundColor: `${alert.color}${theme.name === 'light' ? '22' : '15'}`, color: alert.color }}
+                style={{ backgroundColor: `${alert.color}15`, color: alert.color }}
               >
                 View <ChevronRight size={11} />
               </button>
@@ -232,21 +232,21 @@ export const DashboardPage = ({
           <QuickAction
             icon={Scan}
             label="Scan"
-            color={theme.name === 'light' ? '#EF4444' : '#3B82F6'}
+            theme={theme}
             disabled={!hasPermission(currentUser.role, "packages.scan")}
             onClick={() => setShowScanModal(true)}
           />
           <QuickAction
             icon={Plus}
             label="New Package"
-            color="#10B981"
+            theme={theme}
             disabled={!hasPermission(currentUser.role, "packages.receive")}
             onClick={() => setShowNewPackage(true)}
           />
           <QuickAction
             icon={Truck}
             label="Dispatch"
-            color="#D97706"
+            theme={theme}
             disabled={!hasPermission(currentUser.role, "packages.dispatch")}
             onClick={() => setShowDispatchDrawer(true)}
             badge="12"
@@ -254,7 +254,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={Route}
             label="Route Plan"
-            color="#8B5CF6"
+            theme={theme}
             disabled={!hasPermission(currentUser.role, "packages.dispatch")}
             onClick={() => {
               setActiveMenu("dispatch");
@@ -264,7 +264,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={Home}
             label="Home Delivery"
-            color="#06B6D4"
+            theme={theme}
             disabled={!hasPermission(currentUser.role, "packages.dispatch")}
             onClick={() =>
               addToast({ type: "info", message: "Home delivery queue" })
@@ -273,7 +273,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={AlertTriangle}
             label="Report Issue"
-            color={theme.name === 'light' ? '#EF4444' : '#F87171'}
+            theme={theme}
             onClick={() =>
               addToast({ type: "warning", message: "Issue report form" })
             }
@@ -281,13 +281,13 @@ export const DashboardPage = ({
           <QuickAction
             icon={Grid3X3}
             label="Lockers"
-            color="#6366F1"
+            theme={theme}
             onClick={() => setActiveMenu("lockers")}
           />
           <QuickAction
             icon={Users}
             label="Customers"
-            color="#F59E0B"
+            theme={theme}
             onClick={() => setActiveMenu("customers")}
           />
         </div>
@@ -300,7 +300,7 @@ export const DashboardPage = ({
             <div className="flex items-center gap-2">
               <MapPin size={15} style={{ color: theme.icon.muted }} />
               <h3 className="font-semibold text-sm" style={{ color: theme.text.primary }}>Terminal Network</h3>
-              <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#10B98120', color: '#10B981' }}>
+              <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#81C99520', color: '#81C995' }}>
                 {terminalsData.filter(t => t.status === 'online').length}/{terminalsData.length} online
               </span>
             </div>
@@ -323,12 +323,12 @@ export const DashboardPage = ({
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold truncate" style={{ color: theme.text.primary }}>{t.name}</span>
                     {isOnline
-                      ? <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#10B981' }} />
-                      : <Wrench size={11} style={{ color: '#D97706', flexShrink: 0 }} />}
+                      ? <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#81C995' }} />
+                      : <Wrench size={11} style={{ color: '#D4AA5A', flexShrink: 0 }} />}
                   </div>
                   <p className="text-lg font-bold tabular-nums" style={{ color: theme.text.primary }}>{occupancy}%</p>
                   <div className="mt-1.5 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
-                    <div className="h-full rounded-full transition-all" style={{ width: `${occupancy}%`, backgroundColor: occupancy > 80 ? '#D97706' : '#10B981' }} />
+                    <div className="h-full rounded-full transition-all" style={{ width: `${occupancy}%`, backgroundColor: occupancy > 80 ? '#D4AA5A' : '#81C995' }} />
                   </div>
                   <div className="mt-2 flex items-center justify-between text-xs" style={{ color: theme.text.muted }}>
                     <span>{t.available} free</span>
@@ -366,11 +366,11 @@ export const DashboardPage = ({
               <div
                 className="p-3 rounded-xl shrink-0"
                 style={{
-                  background: `linear-gradient(135deg, ${m.color}${theme.name === 'light' ? '18' : '22'}, ${m.color}${theme.name === 'light' ? '0c' : '10'})`,
-                  border: `1px solid ${m.color}${theme.name === 'light' ? '35' : '28'}`,
+                  backgroundColor: theme.bg.tertiary,
+                  border: `1px solid ${theme.border.secondary}`,
                 }}
               >
-                <m.icon size={22} style={{ color: m.color }} />
+                <m.icon size={22} style={{ color: theme.text.primary }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm leading-snug" style={{ color: theme.text.primary }}>
@@ -611,7 +611,7 @@ export const DashboardPage = ({
       <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
         <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: theme.border.primary }}>
           <div className="flex items-center gap-2">
-            <Award size={15} style={{ color: '#D97706' }} />
+            <Award size={15} style={{ color: '#D4AA5A' }} />
             <h3 className="font-semibold text-sm" style={{ color: theme.text.primary }}>Courier Leaderboard</h3>
           </div>
           <button onClick={() => setActiveMenu('couriers')} className="text-xs flex items-center gap-1" style={{ color: theme.accent.primary }}>
@@ -621,7 +621,7 @@ export const DashboardPage = ({
         <div className="grid md:grid-cols-4 divide-x" style={{ borderColor: theme.border.primary }}>
           {courierLeaderboard.map((c, i) => {
             const medals = ['🥇', '🥈', '🥉', ''];
-            const colors = ['#D97706', '#64748B', '#8B5CF6', theme.text.muted];
+            const colors = ['#D4AA5A', '#A8A29E', '#B5A0D1', theme.text.muted];
             return (
               <div key={c.name} className="p-4">
                 <div className="flex items-center gap-2 mb-2">

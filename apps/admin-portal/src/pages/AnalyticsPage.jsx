@@ -15,11 +15,11 @@ const DATE_RANGES = [
 ];
 
 const STATUS_COLORS = {
-  delivered_to_locker: '#10B981',
-  in_transit_to_locker: '#3B82F6',
-  pending: '#D97706',
-  at_warehouse: '#8B5CF6',
-  expired: '#EF4444',
+  delivered_to_locker: '#81C995',
+  in_transit_to_locker: '#7EA8C9',
+  pending: '#D4AA5A',
+  at_warehouse: '#B5A0D1',
+  expired: '#D48E8A',
   delivered_to_home: '#34D399',
   in_transit_to_home: '#60A5FA',
 };
@@ -53,10 +53,10 @@ export const AnalyticsPage = ({ loading, setShowExport }) => {
   , []);
 
   const revenueByMethod = [
-    { method: 'Warehouse→Locker', revenue: 28400, color: '#3B82F6' },
-    { method: 'Dropbox→Locker', revenue: 11200, color: '#8B5CF6' },
-    { method: 'Locker→Home', revenue: 8900, color: '#10B981' },
-    { method: 'Warehouse→Home', revenue: 5600, color: '#D97706' },
+    { method: 'Warehouse→Locker', revenue: 28400, color: '#7EA8C9' },
+    { method: 'Dropbox→Locker', revenue: 11200, color: '#B5A0D1' },
+    { method: 'Locker→Home', revenue: 8900, color: '#81C995' },
+    { method: 'Warehouse→Home', revenue: 5600, color: '#D4AA5A' },
   ].map(d => ({ ...d, revenue: Math.round(d.revenue * mult) }));
 
   return (
@@ -69,7 +69,7 @@ export const AnalyticsPage = ({ loading, setShowExport }) => {
           {/* Date Range Filter */}
           <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
             {DATE_RANGES.map(r => (
-              <button key={r.key} onClick={() => setDateRange(r.key)} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ backgroundColor: dateRange === r.key ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: dateRange === r.key ? '#fff' : theme.text.muted }}>
+              <button key={r.key} onClick={() => setDateRange(r.key)} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ backgroundColor: dateRange === r.key ? theme.accent.primary : 'transparent', color: dateRange === r.key ? theme.accent.contrast : theme.text.muted }}>
                 {r.label}
               </button>
             ))}
@@ -189,7 +189,7 @@ export const AnalyticsPage = ({ loading, setShowExport }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="p-5 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
           <h3 className="font-semibold mb-4 flex items-center gap-2" style={{ color: theme.text.primary }}>
-            <TrendingUp size={18} style={{ color: '#10B981' }} /> Revenue by Delivery Method
+            <TrendingUp size={18} style={{ color: '#81C995' }} /> Revenue by Delivery Method
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={revenueByMethod} layout="vertical">
@@ -207,13 +207,13 @@ export const AnalyticsPage = ({ loading, setShowExport }) => {
         <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
           <div className="p-4 border-b" style={{ borderColor: theme.border.primary }}>
             <h3 className="font-semibold flex items-center gap-2" style={{ color: theme.text.primary }}>
-              <Star size={18} style={{ color: '#D97706' }} /> Top Couriers
+              <Star size={18} style={{ color: '#D4AA5A' }} /> Top Couriers
             </h3>
           </div>
           <div className="divide-y" style={{ borderColor: theme.border.primary }}>
             {topCouriers.map((c, i) => (
               <div key={c.id} className="flex items-center gap-3 px-4 py-3">
-                <div className="w-6 text-center font-bold text-sm" style={{ color: i === 0 ? '#D97706' : theme.text.muted }}>#{i + 1}</div>
+                <div className="w-6 text-center font-bold text-sm" style={{ color: i === 0 ? '#D4AA5A' : theme.text.muted }}>#{i + 1}</div>
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style={{ backgroundColor: theme.accent.light, color: theme.accent.primary }}>
                   {c.name.charAt(0)}
                 </div>
@@ -223,8 +223,8 @@ export const AnalyticsPage = ({ loading, setShowExport }) => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold" style={{ color: theme.text.primary }}>{c.totalDeliveries.toLocaleString()}</p>
-                  <p className="text-xs flex items-center justify-end gap-0.5" style={{ color: '#D97706' }}>
-                    <Star size={10} fill="#D97706" /> {c.rating}
+                  <p className="text-xs flex items-center justify-end gap-0.5" style={{ color: '#D4AA5A' }}>
+                    <Star size={10} fill="#D4AA5A" /> {c.rating}
                   </p>
                 </div>
               </div>
@@ -297,7 +297,7 @@ export const AnalyticsPage = ({ loading, setShowExport }) => {
                     <td className="p-3">
                       <div className="flex items-center gap-2">
                         <div className="w-20 h-2 rounded-full" style={{ backgroundColor: theme.bg.tertiary }}>
-                          <div className="h-full rounded-full" style={{ width: `${util}%`, backgroundColor: util > 80 ? '#EF4444' : util > 60 ? '#D97706' : '#10B981' }} />
+                          <div className="h-full rounded-full" style={{ width: `${util}%`, backgroundColor: util > 80 ? '#D48E8A' : util > 60 ? '#D4AA5A' : '#81C995' }} />
                         </div>
                         <span className="text-xs font-medium" style={{ color: theme.text.secondary }}>{util}%</span>
                       </div>

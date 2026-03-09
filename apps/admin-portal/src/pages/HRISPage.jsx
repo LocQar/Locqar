@@ -24,10 +24,10 @@ const checklistProgress = (cl) => {
 const docsSubmitted = (docs) => docs.filter(d => d.status === 'submitted').length;
 
 const EXIT_TYPE_COLORS = {
-  resignation:  { bg: '#F59E0B28', text: '#D97706' },
-  termination:  { bg: '#EF444428', text: '#DC2626' },
-  retirement:   { bg: '#8B5CF628', text: '#7C3AED' },
-  contract_end: { bg: '#3B82F628', text: '#2563EB' },
+  resignation:  { bg: '#F59E0B15', text: '#D97706' },
+  termination:  { bg: '#EF444415', text: '#DC2626' },
+  retirement:   { bg: '#8B5CF615', text: '#7C3AED' },
+  contract_end: { bg: '#3B82F615', text: '#2563EB' },
 };
 
 const EXIT_REASON_LABELS = {

@@ -33,7 +33,7 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
       {change && isUp && (
         <div
           className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
-          style={{ background: `linear-gradient(90deg, ${theme.accent.primary}${theme.name === 'light' ? '50' : '90'}, transparent)` }}
+          style={{ background: `linear-gradient(90deg, ${theme.accent.primary}90, transparent)` }}
         />
       )}
       {loading ? (
@@ -58,10 +58,8 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
           <div
             className="p-2.5 rounded-xl shrink-0 transition-all duration-200"
             style={{
-              background: theme.name === 'light'
-                ? `linear-gradient(135deg, ${theme.accent.primary}14, ${theme.accent.primary}08)`
-                : `linear-gradient(135deg, ${theme.accent.primary}28, ${theme.accent.primary}10)`,
-              border: `1px solid ${theme.name === 'light' ? `${theme.accent.primary}28` : theme.accent.border}`,
+              background: `linear-gradient(135deg, ${theme.accent.primary}28, ${theme.accent.primary}10)`,
+              border: `1px solid ${theme.accent.border}`,
             }}
           >
             <Icon size={20} style={{ color: theme.accent.primary }} />
@@ -72,12 +70,8 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
   );
 };
 
-export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge, color }) => {
+export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => {
   const { theme } = useTheme();
-  const isLight = theme.name === 'light';
-  const c = color || theme.accent.primary;
-  const restBg = isLight ? theme.bg.secondary : theme.bg.tertiary;
-  const restShadow = isLight ? '0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.06)' : 'none';
 
   return (
     <button
@@ -88,45 +82,40 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge, color
         : 'cursor-pointer hover:-translate-y-0.5 active:translate-y-0'
         }`}
       style={{
-        backgroundColor: restBg,
+        backgroundColor: theme.bg.tertiary,
         borderColor: theme.border.primary,
-        boxShadow: restShadow,
       }}
       onMouseEnter={e => {
         if (!disabled) {
-          e.currentTarget.style.borderColor = `${c}50`;
-          e.currentTarget.style.backgroundColor = isLight ? `${c}08` : `${c}14`;
-          e.currentTarget.style.boxShadow = isLight
-            ? `0 0 0 1px ${c}40, 0 4px 16px ${c}18`
-            : `0 4px 12px rgba(0,0,0,0.16)`;
+          e.currentTarget.style.borderColor = theme.accent.border;
+          e.currentTarget.style.backgroundColor = theme.accent.light;
+          e.currentTarget.style.boxShadow = `0 4px 12px rgba(0,0,0,0.12)`;
         }
       }}
       onMouseLeave={e => {
         if (!disabled) {
           e.currentTarget.style.borderColor = theme.border.primary;
-          e.currentTarget.style.backgroundColor = restBg;
-          e.currentTarget.style.boxShadow = restShadow;
+          e.currentTarget.style.backgroundColor = theme.bg.tertiary;
+          e.currentTarget.style.boxShadow = 'none';
         }
       }}
     >
       {badge && (
         <span
           className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 rounded-full text-xs flex items-center justify-center font-semibold px-1"
-          style={{ backgroundColor: c, color: '#fff' }}
+          style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}
         >
           {badge}
         </span>
       )}
       <div
-        className="p-2.5 rounded-xl"
+        className="p-2.5 rounded-lg"
         style={{
-          background: isLight
-            ? `linear-gradient(135deg, ${c}18, ${c}0c)`
-            : `linear-gradient(135deg, ${c}22, ${c}0a)`,
-          border: `1px solid ${c}${isLight ? '30' : '28'}`,
+          background: `linear-gradient(135deg, ${theme.accent.primary}22, ${theme.accent.primary}0a)`,
+          border: `1px solid ${theme.accent.border}`,
         }}
       >
-        <Icon size={18} style={{ color: c }} />
+        <Icon size={18} style={{ color: theme.accent.primary }} />
       </div>
       <span className="text-xs font-medium leading-tight text-center" style={{ color: theme.text.secondary }}>{label}</span>
     </button>

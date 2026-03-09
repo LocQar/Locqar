@@ -16,11 +16,11 @@ export const MOCK_USERS = [
 ];
 
 const ROLE_META = {
-  SUPER_ADMIN: { label: 'Super Admin',     color: '#3B82F6', icon: Shield,      desc: 'Full system access' },
-  MANAGER:     { label: 'Branch Manager',  color: '#10B981', icon: BarChart2,   desc: 'Operations & reports' },
-  AGENT:       { label: 'Field Agent',     color: '#8B5CF6', icon: Truck,       desc: 'Dispatch & scanning' },
-  SUPPORT:     { label: 'Support',         color: '#EF4444', icon: Headphones,  desc: 'Customer tickets' },
-  CUSTOMER:    { label: 'Customer',        color: '#D97706', icon: UserCircle,  desc: 'Self-service portal' },
+  SUPER_ADMIN: { label: 'Super Admin',     color: '#7EA8C9', icon: Shield,      desc: 'Full system access' },
+  MANAGER:     { label: 'Branch Manager',  color: '#81C995', icon: BarChart2,   desc: 'Operations & reports' },
+  AGENT:       { label: 'Field Agent',     color: '#B5A0D1', icon: Truck,       desc: 'Dispatch & scanning' },
+  SUPPORT:     { label: 'Support',         color: '#D48E8A', icon: Headphones,  desc: 'Customer tickets' },
+  CUSTOMER:    { label: 'Customer',        color: '#D4AA5A', icon: UserCircle,  desc: 'Self-service portal' },
   B2B:         { label: 'B2B Customer',    color: '#818CF8', icon: Building2,   desc: 'Business shipments' },
 };
 
@@ -63,7 +63,7 @@ export const LoginPage = ({ onLogin, themeName, setThemeName }) => {
 
   const is = {
     background: 'transparent',
-    borderColor: error ? '#EF4444' : theme.border.primary,
+    borderColor: error ? '#D48E8A' : theme.border.primary,
     color: theme.text.primary,
   };
 
@@ -178,8 +178,8 @@ export const LoginPage = ({ onLogin, themeName, setThemeName }) => {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-xl" style={{ backgroundColor: '#EF444415', border: '1px solid #EF444440' }}>
-                <span className="text-sm" style={{ color: '#EF4444' }}>{error}</span>
+              <div className="flex items-center gap-2 p-3 rounded-xl" style={{ backgroundColor: '#D48E8A15', border: '1px solid #D48E8A40' }}>
+                <span className="text-sm" style={{ color: '#D48E8A' }}>{error}</span>
               </div>
             )}
 
@@ -187,7 +187,7 @@ export const LoginPage = ({ onLogin, themeName, setThemeName }) => {
               type="submit"
               disabled={loading}
               className="w-full h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2"
-              style={{ background: loading ? theme.bg.tertiary : 'linear-gradient(135deg, #3B82F6, #818CF8)', color: loading ? theme.text.muted : '#fff', cursor: loading ? 'not-allowed' : 'pointer' }}
+              style={{ background: loading ? theme.bg.tertiary : 'linear-gradient(135deg, #7EA8C9, #818CF8)', color: loading ? theme.text.muted : '#fff', cursor: loading ? 'not-allowed' : 'pointer' }}
             >
               {loading ? 'Signing in…' : <><span>Sign in</span><ChevronRight size={16} /></>}
             </button>

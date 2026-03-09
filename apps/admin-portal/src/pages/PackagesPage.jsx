@@ -147,7 +147,7 @@ export const PackagesPage = ({
             style={{
               backgroundColor: showFilterPanel || activeFilterCount > 0 ? theme.accent.light : theme.bg.card,
               borderColor: activeFilterCount > 0 ? theme.accent.primary : theme.border.primary,
-              color: activeFilterCount > 0 ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.secondary,
+              color: activeFilterCount > 0 ? theme.accent.primary : theme.text.secondary,
             }}
           >
             <SlidersHorizontal size={16} />
@@ -173,7 +173,7 @@ export const PackagesPage = ({
                   {[['all', 'All'], ['small', 'Small'], ['medium', 'Medium'], ['large', 'Large'], ['xlarge', 'XLarge']].map(([k, l]) => (
                     <button key={k} onClick={() => setLF('size', k)}
                       className="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all"
-                      style={{ backgroundColor: localFilters.size === k ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: localFilters.size === k ? '#fff' : theme.text.secondary, borderColor: localFilters.size === k ? theme.accent.primary : theme.border.primary }}>
+                      style={{ backgroundColor: localFilters.size === k ? theme.accent.primary : 'transparent', color: localFilters.size === k ? theme.accent.contrast : theme.text.secondary, borderColor: localFilters.size === k ? theme.accent.primary : theme.border.primary }}>
                       {l}
                     </button>
                   ))}
@@ -187,7 +187,7 @@ export const PackagesPage = ({
                   {[['all', 'All'], ['cod', 'COD Only'], ['non_cod', 'Non-COD']].map(([k, l]) => (
                     <button key={k} onClick={() => setLF('cod', k)}
                       className="flex-1 py-1.5 rounded-lg text-xs font-medium border transition-all"
-                      style={{ backgroundColor: localFilters.cod === k ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: localFilters.cod === k ? '#fff' : theme.text.secondary, borderColor: localFilters.cod === k ? theme.accent.primary : theme.border.primary }}>
+                      style={{ backgroundColor: localFilters.cod === k ? theme.accent.primary : 'transparent', color: localFilters.cod === k ? theme.accent.contrast : theme.text.secondary, borderColor: localFilters.cod === k ? theme.accent.primary : theme.border.primary }}>
                       {l}
                     </button>
                   ))}
@@ -238,7 +238,7 @@ export const PackagesPage = ({
                   {[['all', 'Any'], ['0', '0d'], ['1-2', '1–2d'], ['3-5', '3–5d'], ['5+', '5+d']].map(([k, l]) => (
                     <button key={k} onClick={() => setLF('daysInLocker', k)}
                       className="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all"
-                      style={{ backgroundColor: localFilters.daysInLocker === k ? '#D97706' : 'transparent', color: localFilters.daysInLocker === k ? '#fff' : theme.text.secondary, borderColor: localFilters.daysInLocker === k ? '#D97706' : theme.border.primary }}>
+                      style={{ backgroundColor: localFilters.daysInLocker === k ? '#D4AA5A' : 'transparent', color: localFilters.daysInLocker === k ? '#fff' : theme.text.secondary, borderColor: localFilters.daysInLocker === k ? '#D4AA5A' : theme.border.primary }}>
                       {l}
                     </button>
                   ))}
@@ -247,7 +247,7 @@ export const PackagesPage = ({
 
               {/* Clear */}
               {activeFilterCount > 0 && (
-                <button onClick={clearFilters} className="w-full py-2 rounded-xl text-sm border" style={{ borderColor: '#EF444440', color: '#EF4444' }}>
+                <button onClick={clearFilters} className="w-full py-2 rounded-xl text-sm border" style={{ borderColor: '#D48E8A40', color: '#D48E8A' }}>
                   Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
                 </button>
               )}
@@ -263,7 +263,7 @@ export const PackagesPage = ({
           {localFilters.cod !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: theme.accent.light, borderColor: theme.accent.border, color: theme.accent.primary }}>{localFilters.cod === 'cod' ? 'COD Only' : 'Non-COD'}<button onClick={() => setLF('cod', 'all')}><X size={11} /></button></span>}
           {localFilters.destination !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: theme.accent.light, borderColor: theme.accent.border, color: theme.accent.primary }}>{localFilters.destination}<button onClick={() => setLF('destination', 'all')}><X size={11} /></button></span>}
           {(localFilters.minValue !== '' || localFilters.maxValue !== '') && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: theme.accent.light, borderColor: theme.accent.border, color: theme.accent.primary }}>GH₵ {localFilters.minValue || '0'} – {localFilters.maxValue || '∞'}<button onClick={() => { setLF('minValue', ''); setLF('maxValue', ''); }}><X size={11} /></button></span>}
-          {localFilters.daysInLocker !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: '#D9770615', borderColor: '#D9770640', color: '#D97706' }}>Locker: {localFilters.daysInLocker}d<button onClick={() => setLF('daysInLocker', 'all')}><X size={11} /></button></span>}
+          {localFilters.daysInLocker !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: '#D4AA5A15', borderColor: '#D4AA5A40', color: '#D4AA5A' }}>Locker: {localFilters.daysInLocker}d<button onClick={() => setLF('daysInLocker', 'all')}><X size={11} /></button></span>}
         </div>
       )}
 
@@ -271,7 +271,7 @@ export const PackagesPage = ({
       <div className="flex flex-col md:flex-row md:items-center gap-3">
         <div className="flex flex-wrap gap-2">
           {[['all', 'All'], ['locker', 'In Locker'], ['pending_pickup', 'Pending Pickup'], ['transit', 'In Transit'], ['expired', 'Expired']].map(([k, l]) => (
-            <button key={k} onClick={() => { setPackageFilter(k); setCurrentPage(1); }} className="px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: packageFilter === k ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}14` : 'transparent', color: packageFilter === k ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.muted, border: packageFilter === k ? `1px solid ${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}30` : '1px solid transparent' }}>{l}</button>
+            <button key={k} onClick={() => { setPackageFilter(k); setCurrentPage(1); }} className="px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: packageFilter === k ? theme.accent.light : 'transparent', color: packageFilter === k ? theme.accent.primary : theme.text.muted, border: packageFilter === k ? `1px solid ${theme.accent.border}` : '1px solid transparent' }}>{l}</button>
           ))}
         </div>
         <div className="h-6 w-px hidden md:block" style={{ backgroundColor: theme.border.primary }} />
@@ -286,7 +286,7 @@ export const PackagesPage = ({
             <button key={v} onClick={() => setView(v)}
               className="p-1.5 rounded-lg transition-all"
               title={v === 'grid' ? 'Grid view' : 'List view'}
-              style={{ backgroundColor: view === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
+              style={{ backgroundColor: view === v ? theme.accent.primary : 'transparent', color: view === v ? theme.accent.contrast : theme.text.muted }}>
               <Icon size={16} />
             </button>
           ))}
@@ -488,7 +488,7 @@ export const PackagesPage = ({
             </p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={() => { onDeletePackage(deleteConfirm); setDeleteConfirm(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Delete</button>
+              <button onClick={() => { onDeletePackage(deleteConfirm); setDeleteConfirm(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Delete</button>
             </div>
           </div>
         </div>

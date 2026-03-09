@@ -285,7 +285,7 @@ export const SettingsPage = ({ themeName, setThemeName, currentUser, setCurrentU
                           <button onClick={() => openEditModal(role)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }}>
                             <Edit size={14} />
                           </button>
-                          <button onClick={() => deleteRole(role)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: '#EF4444' }}>
+                          <button onClick={() => deleteRole(role)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: '#D48E8A' }}>
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -364,7 +364,7 @@ export const SettingsPage = ({ themeName, setThemeName, currentUser, setCurrentU
                 <div
                   onClick={() => toggleNotification(key)}
                   className="w-10 h-6 rounded-full cursor-pointer flex items-center px-0.5 transition-colors"
-                  style={{ backgroundColor: notifications[key] ? '#10B981' : theme.border.primary }}
+                  style={{ backgroundColor: notifications[key] ? '#81C995' : theme.border.primary }}
                 >
                   <div
                     className="w-5 h-5 rounded-full bg-white transition-transform"
@@ -414,7 +414,7 @@ export const SettingsPage = ({ themeName, setThemeName, currentUser, setCurrentU
                 <History size={16} style={{ color: theme.icon.muted }} />
                 <span style={{ color: theme.text.primary }}>Active Sessions</span>
               </div>
-              <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#10B98115', color: '#10B981' }}>
+              <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#81C99515', color: '#81C995' }}>
                 1 active
               </span>
             </button>
@@ -443,8 +443,8 @@ export const SettingsPage = ({ themeName, setThemeName, currentUser, setCurrentU
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm" style={{ color: theme.text.primary }}>{k.name}</span>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{
-                      backgroundColor: k.status === 'active' ? '#10B98115' : '#EF444415',
-                      color: k.status === 'active' ? '#10B981' : '#EF4444'
+                      backgroundColor: k.status === 'active' ? '#81C99515' : '#D48E8A15',
+                      color: k.status === 'active' ? '#81C995' : '#D48E8A'
                     }}>{k.status}</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -464,7 +464,7 @@ export const SettingsPage = ({ themeName, setThemeName, currentUser, setCurrentU
                   <button
                     onClick={() => addToast({ type: 'warning', message: `Key "${k.name}" revoked` })}
                     className="px-3 py-1.5 rounded-lg text-xs"
-                    style={{ backgroundColor: '#EF444415', color: '#EF4444' }}
+                    style={{ backgroundColor: '#D48E8A15', color: '#D48E8A' }}
                   >
                     Revoke
                   </button>
@@ -515,9 +515,9 @@ export const SettingsPage = ({ themeName, setThemeName, currentUser, setCurrentU
               style={{ borderColor: theme.border.primary }}
             >
               <div className="flex items-center gap-3">
-                <Trash2 size={16} style={{ color: '#EF4444' }} />
+                <Trash2 size={16} style={{ color: '#D48E8A' }} />
                 <div className="text-left">
-                  <span className="text-sm block" style={{ color: '#EF4444' }}>Purge Expired Data</span>
+                  <span className="text-sm block" style={{ color: '#D48E8A' }}>Purge Expired Data</span>
                   <span className="text-xs" style={{ color: theme.text.muted }}>Remove records older than 90 days</span>
                 </div>
               </div>

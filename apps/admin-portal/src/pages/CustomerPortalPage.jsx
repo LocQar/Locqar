@@ -37,9 +37,9 @@ const MONTHLY_DATA = [
 ];
 
 const METHOD_DATA = [
-  { name: 'Warehouse → Locker', value: 65, color: '#3B82F6' },
-  { name: 'Dropbox → Locker',   value: 25, color: '#8B5CF6' },
-  { name: 'Locker → Home',      value: 10, color: '#10B981' },
+  { name: 'Warehouse → Locker', value: 65, color: '#7EA8C9' },
+  { name: 'Dropbox → Locker',   value: 25, color: '#B5A0D1' },
+  { name: 'Locker → Home',      value: 10, color: '#81C995' },
 ];
 
 const ACTIVE_DISPATCHES = [
@@ -60,7 +60,7 @@ const RETURN_STATUSES = {
   pending:    { label: 'Pending Review', color: '#D97706', bg: '#D9770615' },
   approved:   { label: 'Approved',       color: '#818CF8', bg: '#818CF815' },
   in_transit: { label: 'In Transit',     color: '#8B5CF6', bg: '#8B5CF615' },
-  received:   { label: 'Received',       color: '#10B981', bg: '#10B98115' },
+  received:   { label: 'Received',       color: '#81C995', bg: '#81C99515' },
   rejected:   { label: 'Rejected',       color: '#EF4444', bg: '#EF444415' },
 };
 const RETURNS_MOCK = [
@@ -133,12 +133,12 @@ const SLA_BREACHES   = [
 
 const INITIAL_NOTIFS = [
   { id: 1, type: 'package', color: '#818CF8', title: 'Package in locker',    body: 'LQ-2024-00001 is now in Achimota Mall locker A-15. Ready for pickup.',     time: '5m ago',  read: false },
-  { id: 2, type: 'sla',     color: '#D97706', title: 'SLA breach warning',   body: 'LQ-2024-00005 has been in locker 7 days. Pickup deadline in 24h.',           time: '2h ago',  read: false },
-  { id: 3, type: 'billing', color: '#D97706', title: 'Invoice due in 7 days',body: 'INV-2026-003 for GH₵ 2,400 due Apr 1, 2026. Please arrange payment.',       time: '1d ago',  read: false },
-  { id: 4, type: 'package', color: '#10B981', title: 'Delivery completed',   body: 'LQ-2024-00003 was successfully delivered to home address.',                   time: '2d ago',  read: true  },
-  { id: 5, type: 'system',  color: '#3B82F6', title: 'API key expiring',     body: 'Your live API key expires in 30 days. Rotate it in Account > API Access.',   time: '3d ago',  read: true  },
+  { id: 2, type: 'sla',     color: '#D4AA5A', title: 'SLA breach warning',   body: 'LQ-2024-00005 has been in locker 7 days. Pickup deadline in 24h.',           time: '2h ago',  read: false },
+  { id: 3, type: 'billing', color: '#D4AA5A', title: 'Invoice due in 7 days',body: 'INV-2026-003 for GH₵ 2,400 due Apr 1, 2026. Please arrange payment.',       time: '1d ago',  read: false },
+  { id: 4, type: 'package', color: '#81C995', title: 'Delivery completed',   body: 'LQ-2024-00003 was successfully delivered to home address.',                   time: '2d ago',  read: true  },
+  { id: 5, type: 'system',  color: '#7EA8C9', title: 'API key expiring',     body: 'Your live API key expires in 30 days. Rotate it in Account > API Access.',   time: '3d ago',  read: true  },
   { id: 6, type: 'package', color: '#818CF8', title: 'Batch dispatched',     body: '4 packages dispatched to Achimota Mall by courier Kwesi Asante.',            time: '5d ago',  read: true  },
-  { id: 7, type: 'billing', color: '#10B981', title: 'Invoice paid',         body: 'INV-2026-002 (GH₵ 3,050) has been marked as paid. Thank you!',               time: '6d ago',  read: true  },
+  { id: 7, type: 'billing', color: '#81C995', title: 'Invoice paid',         body: 'INV-2026-002 (GH₵ 3,050) has been marked as paid. Thank you!',               time: '6d ago',  read: true  },
 ];
 
 const ENTERPRISE_ACCOUNTS = {
@@ -198,8 +198,8 @@ export const IndividualCustomerRedirect = ({ currentUser, onLogout }) => {
           <p className="text-sm mt-1" style={{ color: theme.text.muted }}>Hi {currentUser?.name?.split(' ')[0]}! Your portal is on the LocQar mobile app.</p>
         </div>
         <div className="p-5 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#D9770620' }}>
-            <Globe size={22} style={{ color: '#D97706' }} />
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#D4AA5A20' }}>
+            <Globe size={22} style={{ color: '#D4AA5A' }} />
           </div>
           <p className="font-semibold" style={{ color: theme.text.primary }}>Use the LocQar App</p>
           <p className="text-xs mt-1" style={{ color: theme.text.muted }}>Track packages, manage your locker address, and view your delivery history from the mobile app.</p>
@@ -424,9 +424,9 @@ function ImportShipmentsModal({ theme, onClose, onImport }) {
 
 // ── New Shipment Drawer ─────────────────────────────────────────────────────
 const DELIVERY_OPTIONS = [
-  { id: 'warehouse_to_locker', label: 'Warehouse → Locker', desc: 'Drop off at our warehouse, we deliver to recipient\'s chosen locker', icon: Warehouse, color: '#3B82F6' },
-  { id: 'dropbox_to_locker',   label: 'Dropbox → Locker',   desc: 'Drop package in any LocQar dropbox, routed to recipient\'s locker',  icon: Inbox,    color: '#8B5CF6' },
-  { id: 'locker_to_home',      label: 'Locker → Home',      desc: 'Recipient collects from locker then requests home delivery',        icon: HomeIcon,  color: '#10B981' },
+  { id: 'warehouse_to_locker', label: 'Warehouse → Locker', desc: 'Drop off at our warehouse, we deliver to recipient\'s chosen locker', icon: Warehouse, color: '#7EA8C9' },
+  { id: 'dropbox_to_locker',   label: 'Dropbox → Locker',   desc: 'Drop package in any LocQar dropbox, routed to recipient\'s locker',  icon: Inbox,    color: '#B5A0D1' },
+  { id: 'locker_to_home',      label: 'Locker → Home',      desc: 'Recipient collects from locker then requests home delivery',        icon: HomeIcon,  color: '#81C995' },
 ];
 const PARCEL_SIZES = [
   { id: 'S', label: 'Small',   desc: 'Up to 2kg · fits in a small box',  dims: '20×15×10cm' },
@@ -1310,9 +1310,9 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                       onClick={() => { nav(item.id); if (item.subItems) toggleMenu(item.id); }}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                       style={{
-                        backgroundColor: isActive ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}14` : 'transparent',
-                        border: isActive ? `1px solid ${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}30` : '1px solid transparent',
-                        color: isActive ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.secondary,
+                        backgroundColor: isActive ? theme.accent.light : 'transparent',
+                        border: isActive ? `1px solid ${theme.accent.border}` : '1px solid transparent',
+                        color: isActive ? theme.accent.primary : theme.text.secondary,
                       }}
                     >
                       <div className="relative flex-shrink-0">
@@ -1336,8 +1336,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                             onClick={() => nav(item.id, sub)}
                             className="w-full text-left px-3 py-1.5 rounded-lg text-sm transition-all"
                             style={{
-                              color: activeSubMenu === sub && activeMenu === item.id ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.muted,
-                              backgroundColor: activeSubMenu === sub && activeMenu === item.id ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}14` : 'transparent',
+                              color: activeSubMenu === sub && activeMenu === item.id ? theme.accent.primary : theme.text.muted,
+                              backgroundColor: activeSubMenu === sub && activeMenu === item.id ? theme.accent.light : 'transparent',
                             }}
                           >
                             {sub}
@@ -1359,9 +1359,9 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           onClick={() => nav('account')}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
           style={{
-            backgroundColor: activeMenu === 'account' ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}14` : 'transparent',
-            border: activeMenu === 'account' ? `1px solid ${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}30` : '1px solid transparent',
-            color: activeMenu === 'account' ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.secondary,
+            backgroundColor: activeMenu === 'account' ? theme.accent.light : 'transparent',
+            border: activeMenu === 'account' ? `1px solid ${theme.accent.border}` : '1px solid transparent',
+            color: activeMenu === 'account' ? theme.accent.primary : theme.text.secondary,
           }}
         >
           <Settings size={18} />
@@ -1430,7 +1430,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                 {/* Filter pills */}
                 <div className="flex gap-1 p-2 border-b" style={{ borderColor: theme.border.primary }}>
                   {['all','package','sla','billing','system'].map(f => (
-                    <button key={f} onClick={() => setNotifFilter(f)} className="px-2.5 py-1 rounded-lg text-xs font-medium capitalize" style={{ backgroundColor: notifFilter === f ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}14` : 'transparent', color: notifFilter === f ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.muted }}>
+                    <button key={f} onClick={() => setNotifFilter(f)} className="px-2.5 py-1 rounded-lg text-xs font-medium capitalize" style={{ backgroundColor: notifFilter === f ? theme.accent.light : 'transparent', color: notifFilter === f ? theme.accent.primary : theme.text.muted }}>
                       {f === 'all' ? 'All' : f}
                     </button>
                   ))}
@@ -1503,8 +1503,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                 </div>
                 <div className="p-1.5 border-t" style={{ borderColor: theme.border.primary }}>
                   <button onClick={onLogout} className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-500/5 text-left">
-                    <LogOut size={15} style={{ color: '#EF4444' }} />
-                    <span className="text-sm" style={{ color: '#EF4444' }}>Sign out</span>
+                    <LogOut size={15} style={{ color: '#D48E8A' }} />
+                    <span className="text-sm" style={{ color: '#D48E8A' }}>Sign out</span>
                   </button>
                 </div>
               </div>
@@ -1529,7 +1529,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           <p className="text-sm mt-0.5" style={{ color: theme.text.muted }}>{account.plan} · {account.accountId}</p>
         </div>
         {pendingInv > 0 && (
-          <button onClick={() => nav('invoices')} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm" style={{ backgroundColor: '#D9770610', border: '1px solid #D9770640', color: '#D97706' }}>
+          <button onClick={() => nav('invoices')} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm" style={{ backgroundColor: '#D4AA5A10', border: '1px solid #D4AA5A40', color: '#D4AA5A' }}>
             <CreditCard size={14} /> Invoice due: <strong>GH₵ {pendingInv.toLocaleString()}</strong>
           </button>
         )}
@@ -1539,9 +1539,9 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { label: 'Total Shipments', value: kpis.total,                              color: '#818CF8', icon: Package,     sub: 'All time',        onClick: () => nav('shipments', 'All') },
-          { label: 'Active',          value: kpis.active,                             color: '#3B82F6', icon: Truck,       sub: 'In transit',      onClick: () => nav('shipments', 'In Transit') },
-          { label: 'In Lockers',      value: kpis.inLocker,                           color: '#10B981', icon: Grid3X3,    sub: 'Awaiting pickup', onClick: () => nav('shipments', 'In Lockers') },
-          { label: 'Total Value',     value: `GH₵ ${kpis.value.toLocaleString()}`,   color: '#D97706', icon: DollarSign, sub: 'Shipment value',  onClick: () => nav('invoices') },
+          { label: 'Active',          value: kpis.active,                             color: '#7EA8C9', icon: Truck,       sub: 'In transit',      onClick: () => nav('shipments', 'In Transit') },
+          { label: 'In Lockers',      value: kpis.inLocker,                           color: '#81C995', icon: Grid3X3,    sub: 'Awaiting pickup', onClick: () => nav('shipments', 'In Lockers') },
+          { label: 'Total Value',     value: `GH₵ ${kpis.value.toLocaleString()}`,   color: '#D4AA5A', icon: DollarSign, sub: 'Shipment value',  onClick: () => nav('invoices') },
         ].map(({ label, value, color, icon: Icon, sub, onClick }) => (
           <button key={label} onClick={onClick} className="p-4 rounded-2xl border text-left transition-all hover:shadow-md" style={card}>
             <div className="flex items-start justify-between mb-3">
@@ -1562,7 +1562,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         <div className="p-5 rounded-2xl border" style={card}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-sm" style={{ color: theme.text.primary }}>Shipment Volume</h3>
-            <span className="text-xs font-semibold" style={{ color: '#10B981' }}>Last 8 months</span>
+            <span className="text-xs font-semibold" style={{ color: '#81C995' }}>Last 8 months</span>
           </div>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={MONTHLY_DATA} barCategoryGap="30%">
@@ -1571,7 +1571,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
               <YAxis tick={{ fontSize: 11, fill: theme.text.muted }} axisLine={false} tickLine={false} width={30} />
               <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12, color: theme.text.primary, fontSize: 12 }} />
               <Bar dataKey="shipments" fill="#818CF8" radius={[4,4,0,0]} name="Shipments" />
-              <Bar dataKey="completed" fill="#10B981" radius={[4,4,0,0]} name="Completed" />
+              <Bar dataKey="completed" fill="#81C995" radius={[4,4,0,0]} name="Completed" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -1580,8 +1580,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         <div className="p-5 rounded-2xl border space-y-3.5" style={card}>
           <h3 className="font-semibold text-sm" style={{ color: theme.text.primary }}>Account Performance</h3>
           {[
-            { label: 'On-time delivery',   value: '94.2%', bar: 94, color: '#10B981' },
-            { label: 'Pickup rate',        value: '88.7%', bar: 89, color: '#3B82F6' },
+            { label: 'On-time delivery',   value: '94.2%', bar: 94, color: '#81C995' },
+            { label: 'Pickup rate',        value: '88.7%', bar: 89, color: '#7EA8C9' },
             { label: 'Locker utilization', value: '71.3%', bar: 71, color: '#818CF8' },
           ].map(({ label, value, bar, color }) => (
             <div key={label}>
@@ -1659,12 +1659,12 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         <div className="grid md:grid-cols-3">
           {account.terminals.map((t, i) => (
             <div key={t} className="flex items-center gap-3 p-4" style={{ borderRight: i < account.terminals.length - 1 ? `1px solid ${theme.border.primary}` : 'none' }}>
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#10B98120' }}>
-                <MapPin size={14} style={{ color: '#10B981' }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#81C99520' }}>
+                <MapPin size={14} style={{ color: '#81C995' }} />
               </div>
               <div>
                 <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{t}</p>
-                <p className="text-xs" style={{ color: '#10B981' }}>Active</p>
+                <p className="text-xs" style={{ color: '#81C995' }}>Active</p>
               </div>
             </div>
           ))}
@@ -1743,9 +1743,9 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-bold" style={{ color: theme.text.primary }}>{pkg.waybill}</span>
                         <button onClick={() => copyWaybill(pkg.waybill)} style={{ color: theme.icon.muted }}>
-                          {copiedWaybill === pkg.waybill ? <Check size={11} style={{ color: '#10B981' }} /> : <Copy size={11} />}
+                          {copiedWaybill === pkg.waybill ? <Check size={11} style={{ color: '#81C995' }} /> : <Copy size={11} />}
                         </button>
-                        {pkg.cod && <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: '#D9770615', color: '#D97706' }}>COD</span>}
+                        {pkg.cod && <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: '#D4AA5A15', color: '#D4AA5A' }}>COD</span>}
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -1802,8 +1802,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         <div className="grid grid-cols-3 gap-3">
           {[
             { label: 'In Transit',      value: dispatches.filter(d => d.status === 'in_transit').length,   color: '#818CF8', icon: Truck },
-            { label: 'Pkgs Dispatched', value: dispatches.reduce((s, d) => s + (d.packages || 0), 0),      color: '#3B82F6', icon: Package },
-            { label: 'Arrived Today',   value: dispatches.filter(d => d.status === 'arrived').length,      color: '#10B981', icon: CheckCircle2 },
+            { label: 'Pkgs Dispatched', value: dispatches.reduce((s, d) => s + (d.packages || 0), 0),      color: '#7EA8C9', icon: Package },
+            { label: 'Arrived Today',   value: dispatches.filter(d => d.status === 'arrived').length,      color: '#81C995', icon: CheckCircle2 },
           ].map(({ label, value, color, icon: Icon }) => (
             <div key={label} className="p-4 rounded-2xl border" style={card}>
               <div className="flex items-center gap-3">
@@ -1994,8 +1994,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         ].map(f => (
           <button key={f.id} onClick={() => setNotifFilter(f.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium border transition-all" style={{
             backgroundColor: notifFilter === f.id ? theme.accent.light : theme.bg.card,
-            borderColor: notifFilter === f.id ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}30` : theme.border.primary,
-            color: notifFilter === f.id ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.secondary,
+            borderColor: notifFilter === f.id ? theme.accent.border : theme.border.primary,
+            color: notifFilter === f.id ? theme.accent.primary : theme.text.secondary,
           }}>
             {f.label}
             <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: notifFilter === f.id ? theme.accent.primary : theme.bg.tertiary, color: notifFilter === f.id ? '#fff' : theme.text.muted }}>
@@ -2069,15 +2069,15 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         {/* Actual metrics */}
         <div className="p-5 rounded-2xl border space-y-3" style={card}>
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#10B98120' }}>
-              <Activity size={14} style={{ color: '#10B981' }} />
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#81C99520' }}>
+              <Activity size={14} style={{ color: '#81C995' }} />
             </div>
             <h3 className="font-semibold text-sm" style={{ color: theme.text.primary }}>Actual Performance</h3>
           </div>
           {[
-            { label: 'On-time delivery',   value: `${SLA_ACTUAL.onTime}%`,      bar: SLA_ACTUAL.onTime,      target: 95,  color: SLA_ACTUAL.onTime >= 95 ? '#10B981' : '#D97706' },
-            { label: 'Pickup rate',        value: `${SLA_ACTUAL.pickupRate}%`,  bar: SLA_ACTUAL.pickupRate,  target: 90,  color: SLA_ACTUAL.pickupRate >= 90 ? '#10B981' : '#D97706' },
-            { label: 'Platform uptime',    value: `${SLA_ACTUAL.uptime}%`,      bar: SLA_ACTUAL.uptime,      target: 99.5,color: '#10B981' },
+            { label: 'On-time delivery',   value: `${SLA_ACTUAL.onTime}%`,      bar: SLA_ACTUAL.onTime,      target: 95,  color: SLA_ACTUAL.onTime >= 95 ? '#81C995' : '#D4AA5A' },
+            { label: 'Pickup rate',        value: `${SLA_ACTUAL.pickupRate}%`,  bar: SLA_ACTUAL.pickupRate,  target: 90,  color: SLA_ACTUAL.pickupRate >= 90 ? '#81C995' : '#D4AA5A' },
+            { label: 'Platform uptime',    value: `${SLA_ACTUAL.uptime}%`,      bar: SLA_ACTUAL.uptime,      target: 99.5,color: '#81C995' },
           ].map(({ label, value, bar, color }) => (
             <div key={label}>
               <div className="flex items-center justify-between text-xs mb-1.5">
@@ -2091,7 +2091,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           ))}
           <div className="pt-2 border-t" style={{ borderColor: theme.border.primary }}>
             <p className="text-xs" style={{ color: theme.text.muted }}>Avg delivery time</p>
-            <p className="text-base font-bold mt-0.5" style={{ color: theme.text.primary }}>{SLA_ACTUAL.avgHours}h <span className="text-xs font-normal" style={{ color: '#10B981' }}>vs 24h target ✓</span></p>
+            <p className="text-base font-bold mt-0.5" style={{ color: theme.text.primary }}>{SLA_ACTUAL.avgHours}h <span className="text-xs font-normal" style={{ color: '#81C995' }}>vs 24h target ✓</span></p>
           </div>
         </div>
       </div>
@@ -2099,26 +2099,26 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
       {/* SLA Breaches */}
       <div className="rounded-2xl border overflow-hidden" style={card}>
         <div className="p-4 border-b flex items-center gap-2" style={{ borderColor: theme.border.primary }}>
-          <AlertTriangle size={16} style={{ color: '#D97706' }} />
+          <AlertTriangle size={16} style={{ color: '#D4AA5A' }} />
           <h3 className="font-semibold text-sm" style={{ color: theme.text.primary }}>Active Breaches</h3>
-          <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: '#D9770620', color: '#D97706' }}>{SLA_BREACHES.length}</span>
+          <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: '#D4AA5A20', color: '#D4AA5A' }}>{SLA_BREACHES.length}</span>
         </div>
         {SLA_BREACHES.length === 0 ? (
           <div className="text-center py-8">
-            <CheckCircle2 size={32} className="mx-auto mb-2" style={{ color: '#10B981' }} />
-            <p className="text-sm font-medium" style={{ color: '#10B981' }}>No active SLA breaches</p>
+            <CheckCircle2 size={32} className="mx-auto mb-2" style={{ color: '#81C995' }} />
+            <p className="text-sm font-medium" style={{ color: '#81C995' }}>No active SLA breaches</p>
           </div>
         ) : SLA_BREACHES.map((b, i) => (
           <div key={b.waybill} className="flex items-center gap-4 p-4" style={{ borderTop: i > 0 ? `1px solid ${theme.border.primary}` : 'none' }}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#D9770620' }}>
-              <Clock size={15} style={{ color: '#D97706' }} />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#D4AA5A20' }}>
+              <Clock size={15} style={{ color: '#D4AA5A' }} />
             </div>
             <div className="flex-1">
               <p className="text-sm font-mono font-bold" style={{ color: theme.text.primary }}>{b.waybill}</p>
               <p className="text-xs" style={{ color: theme.text.muted }}>{b.issue} · {b.terminal}</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs px-2 py-1 rounded-lg font-medium" style={{ backgroundColor: '#EF444420', color: '#EF4444' }}>+{b.days}d overdue</span>
+              <span className="text-xs px-2 py-1 rounded-lg font-medium" style={{ backgroundColor: '#D48E8A20', color: '#D48E8A' }}>+{b.days}d overdue</span>
               <button onClick={() => { setActiveMenu('support'); setTicketForm({ subject: `SLA Breach — ${b.waybill}`, category: 'delivery', priority: 'high', message: `Package ${b.waybill} at ${b.terminal} is ${b.days} day(s) overdue. Issue: ${b.issue}` }); }}
                 className="text-xs px-2.5 py-1 rounded-lg font-semibold"
                 style={{ backgroundColor: '#EF444415', color: '#EF4444' }}>
@@ -2140,13 +2140,13 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           { waybill: 'LQ-2024-00014', issue: 'Pickup overdue', terminal: 'West Hills Mall', days: 5, resolvedAt: '2026-01-28', resolution: 'Customer collected after reminder SMS' },
         ].map((b, i) => (
           <div key={b.waybill} className="flex items-center gap-4 p-4 border-b last:border-0" style={{ borderColor: theme.border.primary }}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#10B98120' }}>
-              <CheckCircle2 size={15} style={{ color: '#10B981' }} />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#81C99520' }}>
+              <CheckCircle2 size={15} style={{ color: '#81C995' }} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-mono font-bold" style={{ color: theme.text.primary }}>{b.waybill}</p>
               <p className="text-xs" style={{ color: theme.text.muted }}>{b.issue} · {b.terminal} · +{b.days}d overdue</p>
-              <p className="text-xs mt-0.5" style={{ color: '#10B981' }}>{b.resolution}</p>
+              <p className="text-xs mt-0.5" style={{ color: '#81C995' }}>{b.resolution}</p>
             </div>
             <span className="text-xs flex-shrink-0" style={{ color: theme.text.muted }}>Resolved {b.resolvedAt}</span>
           </div>
@@ -2190,8 +2190,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         {/* Summary cards */}
         <div className="grid md:grid-cols-3 gap-3">
           {[
-            { label: 'Outstanding', value: `GH₵ ${invoiceList.filter(i => i.status === 'pending').reduce((s, i) => s + i.amount, 0).toLocaleString()}`, color: '#D97706', sub: `${invoiceList.filter(i => i.status === 'pending').length} invoice(s) pending` },
-            { label: 'Paid (YTD)', value: `GH₵ ${invoiceList.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0).toLocaleString()}`, color: '#10B981', sub: `${invoiceList.filter(i => i.status === 'paid').length} invoices paid` },
+            { label: 'Outstanding', value: `GH₵ ${invoiceList.filter(i => i.status === 'pending').reduce((s, i) => s + i.amount, 0).toLocaleString()}`, color: '#D4AA5A', sub: `${invoiceList.filter(i => i.status === 'pending').length} invoice(s) pending` },
+            { label: 'Paid (YTD)', value: `GH₵ ${invoiceList.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0).toLocaleString()}`, color: '#81C995', sub: `${invoiceList.filter(i => i.status === 'paid').length} invoices paid` },
             { label: 'Rate / Shipment', value: `GH₵ ${account.ratePerShipment}`, color: '#818CF8', sub: account.plan },
           ].map(({ label, value, color, sub }) => (
             <div key={label} className="p-4 rounded-2xl border" style={card}>
@@ -2210,14 +2210,14 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           {invoiceList.map((inv, i) => (
             <div key={inv.id} className="flex items-center gap-4 p-4 border-b last:border-0" style={{ borderColor: theme.border.primary }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: inv.status === 'paid' ? '#10B98120' : '#D9770620' }}>
-                <FileText size={16} style={{ color: inv.status === 'paid' ? '#10B981' : '#D97706' }} />
+                style={{ backgroundColor: inv.status === 'paid' ? '#81C99520' : '#D4AA5A20' }}>
+                <FileText size={16} style={{ color: inv.status === 'paid' ? '#81C995' : '#D4AA5A' }} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold font-mono" style={{ color: theme.text.primary }}>{inv.id}</p>
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium capitalize"
-                    style={{ backgroundColor: inv.status === 'paid' ? '#10B98120' : '#D9770620', color: inv.status === 'paid' ? '#10B981' : '#D97706' }}>
+                    style={{ backgroundColor: inv.status === 'paid' ? '#81C99520' : '#D4AA5A20', color: inv.status === 'paid' ? '#81C995' : '#D4AA5A' }}>
                     {inv.status}
                   </span>
                 </div>
@@ -2495,15 +2495,15 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           </div>
           <div className="p-5 rounded-2xl border" style={card}>
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#10B98120' }}>
-                <MessageSquare size={17} style={{ color: '#10B981' }} />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#81C99520' }}>
+                <MessageSquare size={17} style={{ color: '#81C995' }} />
               </div>
               <div>
                 <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>24/7 Support</p>
                 <p className="text-xs" style={{ color: theme.text.muted }}>Average response: 2 hours</p>
               </div>
             </div>
-            <div className="text-sm px-4 py-2 rounded-xl text-center font-medium" style={{ backgroundColor: '#10B98120', color: '#10B981' }}>
+            <div className="text-sm px-4 py-2 rounded-xl text-center font-medium" style={{ backgroundColor: '#81C99520', color: '#81C995' }}>
               +233 30 200 0000
             </div>
           </div>
@@ -2532,7 +2532,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold font-mono" style={{ color: theme.text.primary }}>{t.id}</p>
                   <span className="text-xs px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: t.status === 'open' ? '#818CF815' : '#10B98115', color: t.status === 'open' ? '#818CF8' : '#10B981' }}>
+                    style={{ backgroundColor: t.status === 'open' ? '#818CF815' : '#81C99515', color: t.status === 'open' ? '#818CF8' : '#81C995' }}>
                     {t.status}
                   </span>
                   <span className="text-xs px-2 py-0.5 rounded-full"
@@ -2671,9 +2671,9 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'Avg / Month',   value: Math.round(MONTHLY_DATA.reduce((s, d) => s + d.shipments, 0) / MONTHLY_DATA.length), color: '#818CF8', suffix: ' shipments' },
-          { label: 'Completion Rate',value: `${Math.round(MONTHLY_DATA.reduce((s, d) => s + d.completed, 0) / MONTHLY_DATA.reduce((s, d) => s + d.shipments, 0) * 100)}%`, color: '#10B981', suffix: '' },
-          { label: 'YTD Shipments', value: MONTHLY_DATA.slice(5).reduce((s, d) => s + d.shipments, 0), color: '#3B82F6', suffix: ' total' },
-          { label: 'YTD Revenue',   value: `GH₵ ${(MONTHLY_DATA.slice(5).reduce((s, d) => s + d.shipments, 0) * account.ratePerShipment).toLocaleString()}`, color: '#D97706', suffix: '' },
+          { label: 'Completion Rate',value: `${Math.round(MONTHLY_DATA.reduce((s, d) => s + d.completed, 0) / MONTHLY_DATA.reduce((s, d) => s + d.shipments, 0) * 100)}%`, color: '#81C995', suffix: '' },
+          { label: 'YTD Shipments', value: MONTHLY_DATA.slice(5).reduce((s, d) => s + d.shipments, 0), color: '#7EA8C9', suffix: ' total' },
+          { label: 'YTD Revenue',   value: `GH₵ ${(MONTHLY_DATA.slice(5).reduce((s, d) => s + d.shipments, 0) * account.ratePerShipment).toLocaleString()}`, color: '#D4AA5A', suffix: '' },
         ].map(({ label, value, color, suffix }) => (
           <div key={label} className="p-4 rounded-2xl border" style={card}>
             <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: theme.text.muted }}>{label}</p>
@@ -2688,7 +2688,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           <h3 className="font-semibold text-sm" style={{ color: theme.text.primary }}>Monthly Shipment Volume</h3>
           <div className="flex items-center gap-4 text-xs">
             <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded" style={{ backgroundColor: '#818CF8' }} /> Total</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded" style={{ backgroundColor: '#10B981' }} /> Completed</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded" style={{ backgroundColor: '#81C995' }} /> Completed</span>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={180}>
@@ -2698,7 +2698,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
             <YAxis tick={{ fontSize: 12, fill: theme.text.muted }} axisLine={false} tickLine={false} width={30} />
             <Tooltip contentStyle={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}`, borderRadius: 12, color: theme.text.primary, fontSize: 12 }} />
             <Bar dataKey="shipments" fill="#818CF8" radius={[5,5,0,0]} name="Total Shipments" />
-            <Bar dataKey="completed" fill="#10B981" radius={[5,5,0,0]} name="Completed" />
+            <Bar dataKey="completed" fill="#81C995" radius={[5,5,0,0]} name="Completed" />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -2736,7 +2736,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                     <span className="font-semibold" style={{ color: theme.text.primary }}>{utilization}%</span>
                   </div>
                   <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
-                    <div className="h-full rounded-full" style={{ width: `${utilization}%`, backgroundColor: ['#818CF8','#3B82F6','#10B981'][i] || '#8B5CF6' }} />
+                    <div className="h-full rounded-full" style={{ width: `${utilization}%`, backgroundColor: ['#818CF8','#7EA8C9','#81C995'][i] || '#B5A0D1' }} />
                   </div>
                 </div>
               );
@@ -2744,7 +2744,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           </div>
           <div className="pt-3 mt-2 border-t text-xs" style={{ borderColor: theme.border.primary }}>
             <div className="flex items-center gap-2" style={{ color: theme.text.muted }}>
-              <Zap size={12} style={{ color: '#10B981' }} />
+              <Zap size={12} style={{ color: '#81C995' }} />
               <span>Busiest terminal: <strong style={{ color: theme.text.primary }}>{account.terminals[0]}</strong></span>
             </div>
           </div>
@@ -2772,7 +2772,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
             { label: 'Expired in Locker',   count: 3, color: '#EF4444' },
             { label: 'Failed Delivery',      count: 1, color: '#D97706' },
             { label: 'Overdue Pickup',       count: 2, color: '#8B5CF6' },
-            { label: 'Damaged in Transit',   count: 1, color: '#EF4444' },
+            { label: 'Damaged in Transit',   count: 1, color: '#D48E8A' },
           ].map(e => (
             <div key={e.label} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
@@ -2826,7 +2826,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
     const metrics = [
       { label: 'Pending Review', count: returns.filter(r => r.status === 'pending').length,    color: '#D97706', bg: '#D9770615', icon: PackageX },
       { label: 'In Progress',    count: returns.filter(r => ['approved','in_transit'].includes(r.status)).length, color: '#818CF8', bg: '#818CF815', icon: RotateCcw },
-      { label: 'Received',       count: returns.filter(r => r.status === 'received').length,   color: '#10B981', bg: '#10B98115', icon: ClipboardCheck },
+      { label: 'Received',       count: returns.filter(r => r.status === 'received').length,   color: '#81C995', bg: '#81C99515', icon: ClipboardCheck },
       { label: 'Total Value',    count: `GH₵ ${returns.reduce((s,r)=>s+r.value,0).toLocaleString()}`, color: '#8B5CF6', bg: '#8B5CF615', icon: DollarSign, isValue: true },
     ];
 
@@ -2946,7 +2946,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                             <>
                               <button onClick={() => handleApprove(ret)}
                                 className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg font-medium"
-                                style={{ backgroundColor: '#10B98115', color: '#10B981', border: '1px solid #10B98130' }}>
+                                style={{ backgroundColor: '#81C99515', color: '#81C995', border: '1px solid #81C99530' }}>
                                 <ThumbsUp size={11} /> Approve
                               </button>
                               <button onClick={() => { setRejectTarget(ret); setRejectNote(''); }}
@@ -2959,7 +2959,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                           {ret.status === 'in_transit' && (
                             <button onClick={() => handleMarkReceived(ret)}
                               className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg font-medium"
-                              style={{ backgroundColor: '#10B98115', color: '#10B981', border: '1px solid #10B98130' }}>
+                              style={{ backgroundColor: '#81C99515', color: '#81C995', border: '1px solid #81C99530' }}>
                               <ClipboardCheck size={11} /> Mark Received
                             </button>
                           )}
@@ -3029,10 +3029,10 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
 
                   {/* Return waybill */}
                   {ret.returnWaybill && (
-                    <div className="flex items-center gap-3 p-3.5 rounded-xl border" style={{ backgroundColor: '#10B98108', borderColor: '#10B98130' }}>
-                      <RotateCcw size={14} style={{ color: '#10B981', flexShrink: 0 }} />
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl border" style={{ backgroundColor: '#81C99508', borderColor: '#81C99530' }}>
+                      <RotateCcw size={14} style={{ color: '#81C995', flexShrink: 0 }} />
                       <div>
-                        <p className="text-xs font-semibold" style={{ color: '#10B981' }}>Return Waybill Issued</p>
+                        <p className="text-xs font-semibold" style={{ color: '#81C995' }}>Return Waybill Issued</p>
                         <p className="text-sm font-mono font-bold mt-0.5" style={{ color: theme.text.primary }}>{ret.returnWaybill}</p>
                       </div>
                     </div>
@@ -3268,7 +3268,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                 <h3 className="font-bold text-base" style={{ color: theme.text.primary }}>{profileForm.name || account.company}</h3>
                 <p className="text-sm" style={{ color: theme.text.muted }}>{account.accountId} · {account.plan}</p>
                 <span className="inline-flex items-center gap-1 text-xs mt-1 px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: '#10B98115', color: '#10B981' }}>
+                  style={{ backgroundColor: '#81C99515', color: '#81C995' }}>
                   <Shield size={10} /> Verified
                 </span>
               </div>
@@ -3277,9 +3277,9 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
               onClick={() => setEditingProfile(e => !e)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-all"
               style={{
-                borderColor: editingProfile ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}30` : theme.border.primary,
+                borderColor: editingProfile ? theme.accent.border : theme.border.primary,
                 backgroundColor: editingProfile ? theme.accent.light : theme.bg.card,
-                color: editingProfile ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.secondary,
+                color: editingProfile ? theme.accent.primary : theme.text.secondary,
               }}
             >
               {editingProfile ? <X size={13} /> : <FileText size={13} />}
@@ -3608,8 +3608,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           {/* ── Summary metrics ── */}
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: 'Outstanding Balance', value: `GH₵ ${outstanding.toLocaleString()}`, sub: outstanding > 0 ? `${invoiceList.filter(i=>i.status==='pending').length} invoice(s) due` : 'All paid', color: outstanding > 0 ? '#D97706' : '#10B981', bg: outstanding > 0 ? '#D9770610' : '#10B98110', icon: AlertTriangle },
-              { label: 'Paid This Year',       value: `GH₵ ${paidYTD.toLocaleString()}`,    sub: `${invoiceList.filter(i=>i.status==='paid'&&i.id.startsWith('INV-2026')).length} invoices settled`, color: '#10B981', bg: '#10B98110', icon: Check },
+              { label: 'Outstanding Balance', value: `GH₵ ${outstanding.toLocaleString()}`, sub: outstanding > 0 ? `${invoiceList.filter(i=>i.status==='pending').length} invoice(s) due` : 'All paid', color: outstanding > 0 ? '#D97706' : '#81C995', bg: outstanding > 0 ? '#D9770610' : '#81C99510', icon: AlertTriangle },
+              { label: 'Paid This Year',       value: `GH₵ ${paidYTD.toLocaleString()}`,    sub: `${invoiceList.filter(i=>i.status==='paid'&&i.id.startsWith('INV-2026')).length} invoices settled`, color: '#81C995', bg: '#81C99510', icon: Check },
               { label: 'Avg Monthly Spend',    value: `GH₵ ${avgMonthly.toLocaleString()}`,  sub: `GH₵ ${account.ratePerShipment}/shipment`, color: '#818CF8', bg: '#818CF810', icon: TrendingUp },
             ].map(({ label, value, sub, color, bg, icon: Icon }) => (
               <div key={label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
@@ -3675,8 +3675,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: inv.status === 'paid' ? '#10B98115' : '#D9770615' }}>
-                          <FileText size={12} style={{ color: inv.status === 'paid' ? '#10B981' : '#D97706' }} />
+                          style={{ backgroundColor: inv.status === 'paid' ? '#81C99515' : '#D9770615' }}>
+                          <FileText size={12} style={{ color: inv.status === 'paid' ? '#81C995' : '#D97706' }} />
                         </div>
                         <span className="font-medium text-xs" style={{ color: theme.text.primary }}>{inv.id}</span>
                       </div>
@@ -3686,7 +3686,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                     <td className="px-4 py-3.5 font-bold text-sm" style={{ color: theme.text.primary }}>GH₵ {inv.amount.toLocaleString()}</td>
                     <td className="px-4 py-3.5">
                       <span className="text-xs px-2.5 py-1 rounded-full font-medium"
-                        style={{ backgroundColor: inv.status === 'paid' ? '#10B98115' : '#D9770615', color: inv.status === 'paid' ? '#10B981' : '#D97706' }}>
+                        style={{ backgroundColor: inv.status === 'paid' ? '#81C99515' : '#D9770615', color: inv.status === 'paid' ? '#81C995' : '#D97706' }}>
                         {inv.status === 'paid' ? 'Paid' : 'Pending'}
                       </span>
                     </td>
@@ -3847,7 +3847,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                           {pf.momoNumber ? pf.momoNumber.slice(0, 4) + '•'.repeat(4) + pf.momoNumber.slice(-3) : 'No number set'} · {pf.momoName || account.company}
                         </p>
                       </div>
-                      <span className="ml-auto text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#10B98115', color: '#10B981' }}>Active</span>
+                      <span className="ml-auto text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#81C99515', color: '#81C995' }}>Active</span>
                     </div>
                     <div className="grid grid-cols-2 gap-x-8 gap-y-2 pt-4 border-t" style={{ borderColor: theme.border.primary }}>
                       {[
@@ -3879,7 +3879,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                           {pf.accountNo.slice(0,3)}{'•'.repeat(5)}{pf.accountNo.slice(-2)} · {pf.branch}
                         </p>
                       </div>
-                      <span className="ml-auto text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#10B98115', color: '#10B981' }}>Active</span>
+                      <span className="ml-auto text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#81C99515', color: '#81C995' }}>Active</span>
                     </div>
                     <div className="grid grid-cols-2 gap-x-8 gap-y-2 pt-4 border-t" style={{ borderColor: theme.border.primary }}>
                       {[
@@ -4124,8 +4124,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                           {k.status === 'active' && (
                             <button onClick={() => copyIntKey(k.id, k.full)} className="p-1.5 rounded-lg transition-all"
                               style={{
-                                backgroundColor: copiedIntKey === k.id ? '#10B98110' : theme.bg.tertiary,
-                                color: copiedIntKey === k.id ? '#10B981' : theme.icon.muted,
+                                backgroundColor: copiedIntKey === k.id ? '#81C99510' : theme.bg.tertiary,
+                                color: copiedIntKey === k.id ? '#81C995' : theme.icon.muted,
                               }}>
                               {copiedIntKey === k.id ? <Check size={11} /> : <Copy size={11} />}
                             </button>
@@ -4145,8 +4145,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                       <td className="px-4 py-3">
                         <span className="text-xs px-2.5 py-1 rounded-full font-medium"
                           style={{
-                            backgroundColor: k.status === 'active' ? '#10B98115' : '#EF444415',
-                            color: k.status === 'active' ? '#10B981' : '#EF4444',
+                            backgroundColor: k.status === 'active' ? '#81C99515' : '#EF444415',
+                            color: k.status === 'active' ? '#81C995' : '#EF4444',
                           }}>
                           {k.status === 'active' ? 'Active' : 'Revoked'}
                         </span>
@@ -4214,7 +4214,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                           <p className="text-xs mt-0.5" style={{ color: theme.text.muted }}>
                             Last delivery: {w.lastDelivery}
                             {w.successRate !== undefined && w.lastDelivery !== '—' && (
-                              <> · <span style={{ color: w.successRate >= 95 ? '#10B981' : '#D97706' }}>{w.successRate}% success</span></>
+                              <> · <span style={{ color: w.successRate >= 95 ? '#81C995' : '#D97706' }}>{w.successRate}% success</span></>
                             )}
                           </p>
                         </div>
@@ -4222,8 +4222,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-xs px-2.5 py-1 rounded-full font-medium"
                           style={{
-                            backgroundColor: w.status === 'active' ? '#10B98115' : '#D9770615',
-                            color: w.status === 'active' ? '#10B981' : '#D97706',
+                            backgroundColor: w.status === 'active' ? '#81C99515' : '#D9770615',
+                            color: w.status === 'active' ? '#81C995' : '#D97706',
                           }}>
                           {w.status === 'active' ? 'Active' : 'Paused'}
                         </span>
@@ -4282,8 +4282,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           <div className="p-5 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: twoFA ? '#10B98115' : theme.bg.secondary }}>
-                <Shield size={20} style={{ color: twoFA ? '#10B981' : theme.icon.muted }} />
+                style={{ backgroundColor: twoFA ? '#81C99515' : theme.bg.secondary }}>
+                <Shield size={20} style={{ color: twoFA ? '#81C995' : theme.icon.muted }} />
               </div>
               <div>
                 <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>Authenticator App</p>
@@ -4291,8 +4291,8 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
               </div>
               <span className="text-xs px-2.5 py-1 rounded-full font-medium"
                 style={{
-                  backgroundColor: twoFA ? '#10B98115' : theme.bg.secondary,
-                  color: twoFA ? '#10B981' : theme.text.muted,
+                  backgroundColor: twoFA ? '#81C99515' : theme.bg.secondary,
+                  color: twoFA ? '#81C995' : theme.text.muted,
                 }}>
                 {twoFA ? 'Enabled' : 'Disabled'}
               </span>
@@ -4322,7 +4322,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                     <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{session.device}</p>
                     {session.current && (
                       <span className="text-xs px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: '#10B98115', color: '#10B981' }}>Current</span>
+                        style={{ backgroundColor: '#81C99515', color: '#81C995' }}>Current</span>
                     )}
                   </div>
                   <p className="text-xs mt-0.5" style={{ color: theme.text.muted }}>
@@ -4417,9 +4417,9 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                     onClick={() => setSettingsTab(id)}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left"
                     style={{
-                      backgroundColor: isActive ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}14` : 'transparent',
-                      color: isActive ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.secondary,
-                      border: isActive ? `1px solid ${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}30` : '1px solid transparent',
+                      backgroundColor: isActive ? theme.accent.light : 'transparent',
+                      color: isActive ? theme.accent.primary : theme.text.secondary,
+                      border: isActive ? `1px solid ${theme.accent.border}` : '1px solid transparent',
                     }}
                   >
                     <Icon size={15} />
@@ -4461,18 +4461,18 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
             <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ backgroundColor: theme.bg.card, border: `1px solid ${theme.border.primary}` }}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#10B98115' }}>
-                  <Key size={18} style={{ color: '#10B981' }} />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#81C99515' }}>
+                  <Key size={18} style={{ color: '#81C995' }} />
                 </div>
                 <div>
                   <h3 className="font-bold" style={{ color: theme.text.primary }}>Key Created: {newKeyRevealed.name}</h3>
                   <p className="text-xs" style={{ color: theme.text.muted }}>Copy it now — this is the only time you'll see the full key</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: '#10B98130' }}>
+              <div className="flex items-center gap-2 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: '#81C99530' }}>
                 <code className="flex-1 text-xs font-mono break-all" style={{ color: theme.text.primary }}>{newKeyRevealed.key}</code>
                 <button onClick={() => { navigator.clipboard.writeText(newKeyRevealed.key).catch(() => {}); }}
-                  className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: '#10B98115', color: '#10B981' }}>
+                  className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: '#81C99515', color: '#81C995' }}>
                   <Copy size={13} />
                 </button>
               </div>
