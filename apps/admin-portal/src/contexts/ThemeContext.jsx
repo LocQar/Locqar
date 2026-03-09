@@ -75,10 +75,10 @@ export const themes = {
       muted: '#71717A'
     },
     accent: {
-      primary: '#4F46E5',
-      secondary: '#6366F1',
-      light: 'rgba(79,70,229,0.08)',
-      border: 'rgba(79,70,229,0.22)',
+      primary: '#DC2626',
+      secondary: '#EF4444',
+      light: 'rgba(220,38,38,0.08)',
+      border: 'rgba(220,38,38,0.22)',
       contrast: '#FFFFFF'
     },
     font: {
@@ -86,8 +86,8 @@ export const themes = {
       mono: "'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace"
     },
     icon: {
-      primary: '#3F3F46',
-      muted: '#71717A'
+      primary: '#18181B',
+      muted: '#52525B'
     },
     status: {
       success: '#059669',
