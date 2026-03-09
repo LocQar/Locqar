@@ -1310,7 +1310,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                       onClick={() => { nav(item.id); if (item.subItems) toggleMenu(item.id); }}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                       style={{
-                        backgroundColor: isActive ?  : 'transparent',
+                        backgroundColor: isActive ? `${theme.status.error}14` : 'transparent',
                         border: isActive ? `1px solid ${theme.status.error}30` : '1px solid transparent',
                         color: isActive ? theme.status.error : theme.text.secondary,
                       }}
@@ -1337,7 +1337,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                             className="w-full text-left px-3 py-1.5 rounded-lg text-sm transition-all"
                             style={{
                               color: activeSubMenu === sub && activeMenu === item.id ? theme.status.error : theme.text.muted,
-                              backgroundColor: activeSubMenu === sub && activeMenu === item.id ?  : 'transparent',
+                              backgroundColor: activeSubMenu === sub && activeMenu === item.id ? `${theme.status.error}14` : 'transparent',
                             }}
                           >
                             {sub}
@@ -1359,7 +1359,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
           onClick={() => nav('account')}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
           style={{
-            backgroundColor: activeMenu === 'account' ?  : 'transparent',
+            backgroundColor: activeMenu === 'account' ? `${theme.status.error}14` : 'transparent',
             border: activeMenu === 'account' ? `1px solid ${theme.status.error}30` : '1px solid transparent',
             color: activeMenu === 'account' ? theme.status.error : theme.text.secondary,
           }}
@@ -1430,7 +1430,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                 {/* Filter pills */}
                 <div className="flex gap-1 p-2 border-b" style={{ borderColor: theme.border.primary }}>
                   {['all','package','sla','billing','system'].map(f => (
-                    <button key={f} onClick={() => setNotifFilter(f)} className="px-2.5 py-1 rounded-lg text-xs font-medium capitalize" style={{ backgroundColor: notifFilter === f ?  : 'transparent', color: notifFilter === f ? theme.status.error : theme.text.muted }}>
+                    <button key={f} onClick={() => setNotifFilter(f)} className="px-2.5 py-1 rounded-lg text-xs font-medium capitalize" style={{ backgroundColor: notifFilter === f ? `${theme.status.error}14` : 'transparent', color: notifFilter === f ? theme.status.error : theme.text.muted }}>
                       {f === 'all' ? 'All' : f}
                     </button>
                   ))}
@@ -1994,7 +1994,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
         ].map(f => (
           <button key={f.id} onClick={() => setNotifFilter(f.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium border transition-all" style={{
             backgroundColor: notifFilter === f.id ? theme.accent.light : theme.bg.card,
-            borderColor: notifFilter === f.id ?  : theme.border.primary,
+            borderColor: notifFilter === f.id ? `${theme.status.error}30` : theme.border.primary,
             color: notifFilter === f.id ? theme.status.error : theme.text.secondary,
           }}>
             {f.label}
@@ -3277,7 +3277,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
               onClick={() => setEditingProfile(e => !e)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-all"
               style={{
-                borderColor: editingProfile ?  : theme.border.primary,
+                borderColor: editingProfile ? `${theme.status.error}30` : theme.border.primary,
                 backgroundColor: editingProfile ? theme.accent.light : theme.bg.card,
                 color: editingProfile ? theme.status.error : theme.text.secondary,
               }}
@@ -4417,7 +4417,7 @@ function EnterprisePortal({ currentUser, onLogout, themeName, setThemeName }) {
                     onClick={() => setSettingsTab(id)}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left"
                     style={{
-                      backgroundColor: isActive ?  : 'transparent',
+                      backgroundColor: isActive ? `${theme.status.error}14` : 'transparent',
                       color: isActive ? theme.status.error : theme.text.secondary,
                       border: isActive ? `1px solid ${theme.status.error}30` : '1px solid transparent',
                     }}

@@ -58,7 +58,7 @@ const LockerDrawer = ({ locker, onClose, onSave, theme }) => {
             <label className={lbl} style={{ color: theme.text.muted }}>Size</label>
             <div className="grid grid-cols-4 gap-2">
               {SIZE_LABELS.map(s => (
-                <button key={s} onClick={() => update('sizeLabel', s)} className="py-2.5 rounded-xl text-sm border text-center" style={{ backgroundColor: form.sizeLabel === s ? theme.accent.light : theme.bg.tertiary, color: form.sizeLabel === s ? theme.status.error : theme.text.secondary, borderColor: form.sizeLabel === s ?  : theme.border.primary }}>{s}</button>
+                <button key={s} onClick={() => update('sizeLabel', s)} className="py-2.5 rounded-xl text-sm border text-center" style={{ backgroundColor: form.sizeLabel === s ? theme.accent.light : theme.bg.tertiary, color: form.sizeLabel === s ? theme.status.error : theme.text.secondary, borderColor: form.sizeLabel === s ? `${theme.status.error}30` : theme.border.primary }}>{s}</button>
               ))}
             </div>
           </div>
