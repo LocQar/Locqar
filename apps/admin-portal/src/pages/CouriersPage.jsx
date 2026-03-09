@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Users2, UserCheck, UserX, QrCode, CreditCard, Phone, ToggleLeft, ToggleRight, Upload, Download, Package, Plus, Star, X, Trash2, Eye, Edit } from 'lucide-react';
+import { Search, Users2, UserCheck, UserX, QrCode, CreditCard, Phone, ToggleLeft, ToggleRight, Upload, Download, Package, Plus, Star, X, Trash2, Eye, Edit, LayoutGrid, List, ChevronRight } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { COURIER_STATUSES } from '../constants';
 import { couriersData, terminalsData } from '../constants/mockData';
@@ -138,6 +138,7 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
   const [viewCourier, setViewCourier] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const fileInputRef = React.useRef(null);
+  const [view, setView] = useState('list');
 
   const filteredCouriers = useMemo(() => {
     return couriers.filter(c => {
@@ -289,12 +290,65 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
           <option value="all">All Terminals</option>
           {terminals.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
+        <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
+          {[['grid', LayoutGrid], ['list', List]].map(([v, Icon]) => (
+            <button key={v} onClick={() => setView(v)}
+              className="p-1.5 rounded-lg transition-all"
+              title={v === 'grid' ? 'Grid view' : 'List view'}
+              style={{ backgroundColor: view === v ? theme.accent.primary : 'transparent', color: view === v ? theme.accent.contrast : theme.text.muted }}>
+              <Icon size={16} />
+            </button>
+          ))}
+        </div>
       </div>
 
       <p className="text-xs" style={{ color: theme.text.muted }}>{filteredCouriers.length} of {totalCouriers} couriers</p>
 
-      {/* Table */}
-      <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+      {/* Grid View */}
+      {view === 'grid' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredCouriers.map(courier => {
+            const statusInfo = COURIER_STATUSES[courier.status];
+            const assignedCount = packages.filter(p => p.courier?.id === courier.id).length;
+            return (
+              <div key={courier.id} onClick={() => setViewCourier(courier)} className="p-4 rounded-2xl border cursor-pointer group hover:border-opacity-80 transition-all space-y-3" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-base font-bold flex-shrink-0" style={{ backgroundColor: `${statusInfo?.color || theme.accent.primary}20`, color: statusInfo?.color || theme.accent.primary }}>{courier.name.charAt(0)}</div>
+                    <div>
+                      <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>{courier.name}</p>
+                      <p className="text-xs" style={{ color: theme.text.muted }}>{courier.vehicleType || '—'}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: `${statusInfo?.color}15`, color: statusInfo?.color }}>{statusInfo?.label}</span>
+                </div>
+                <div className="space-y-1.5 text-xs" style={{ color: theme.text.secondary }}>
+                  <p><span style={{ color: theme.text.muted }}>Terminal: </span>{courier.terminal || '—'}</p>
+                  <p><span style={{ color: theme.text.muted }}>Zone: </span>{courier.zone || '—'}</p>
+                  <p><span style={{ color: theme.text.muted }}>Phone: </span><span className="font-mono">{courier.phone}</span></p>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: theme.border.primary }}>
+                  <div className="flex items-center gap-1">
+                    <Package size={12} style={{ color: theme.accent.primary }} />
+                    <span className="text-xs font-semibold" style={{ color: theme.text.primary }}>{courier.totalDeliveries ?? 0}</span>
+                    <span className="text-xs" style={{ color: theme.text.muted }}>deliveries</span>
+                  </div>
+                  {courier.rating && <div className="flex items-center gap-1"><Star size={11} className="fill-amber-400 text-amber-400" /><span className="text-xs font-medium" style={{ color: theme.text.primary }}>{courier.rating}</span></div>}
+                </div>
+                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                  <button onClick={() => setViewCourier(courier)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="View"><Eye size={14} /></button>
+                  <button onClick={() => setDrawerCourier(courier)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.accent.primary }} title="Edit"><Edit size={14} /></button>
+                  <button onClick={() => setDeleteConfirm(courier)} className="p-1.5 rounded-lg hover:bg-white/5 text-red-400" title="Delete"><Trash2 size={14} /></button>
+                </div>
+              </div>
+            );
+          })}
+          {filteredCouriers.length === 0 && <p className="col-span-full text-center py-10 text-sm" style={{ color: theme.text.muted }}>No couriers found</p>}
+        </div>
+      )}
+
+      {/* List/Table View */}
+      {view === 'list' && <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -383,7 +437,7 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
             </tbody>
           </table>
         </div>
-      </div>
+      </div>}
 
       {/* Add / Edit Drawer */}
       {drawerCourier !== null && (

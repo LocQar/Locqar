@@ -128,9 +128,12 @@ export const NewVehicleDrawer = ({ isOpen, onClose }) => {
                     </div>
                 </div>
 
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex gap-3">
-                    <AlertCircle size={20} className="text-blue-500 shrink-0" />
-                    <p className="text-xs text-blue-500">
+                <div
+                    className="rounded-xl p-4 flex gap-3 border"
+                    style={{ backgroundColor: `${theme.status.info}12`, borderColor: `${theme.status.info}40` }}
+                >
+                    <AlertCircle size={20} className="shrink-0" style={{ color: theme.status.info }} />
+                    <p className="text-xs" style={{ color: theme.status.info }}>
                         Adding a vehicle will automatically add it to the driver assignment pool. Regular maintenance alerts will be sent based on the service date.
                     </p>
                 </div>

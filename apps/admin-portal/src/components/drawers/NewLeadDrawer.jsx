@@ -135,9 +135,9 @@ export const NewLeadDrawer = ({ isOpen, onClose, onSave, lead = null }) => {
               onChange={e => setForm({ ...form, name: e.target.value })}
               placeholder="e.g. John Mensah"
               className="w-full px-3 py-2.5 rounded-xl border text-sm"
-              style={{ ...inputStyle, borderColor: errors.name ? '#EF4444' : theme.border.primary }}
+              style={{ ...inputStyle, borderColor: errors.name ? theme.status.error : theme.border.primary }}
             />
-            {errors.name && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.name}</p>}
+            {errors.name && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.name}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -152,9 +152,9 @@ export const NewLeadDrawer = ({ isOpen, onClose, onSave, lead = null }) => {
                 onChange={e => setForm({ ...form, email: e.target.value })}
                 placeholder="john@example.com"
                 className="w-full px-3 py-2.5 rounded-xl border text-sm"
-                style={{ ...inputStyle, borderColor: errors.email ? '#EF4444' : theme.border.primary }}
+                style={{ ...inputStyle, borderColor: errors.email ? theme.status.error : theme.border.primary }}
               />
-              {errors.email && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.email}</p>}
+              {errors.email && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.email}</p>}
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block" style={{ color: theme.text.secondary }}>
@@ -182,9 +182,9 @@ export const NewLeadDrawer = ({ isOpen, onClose, onSave, lead = null }) => {
               onChange={e => setForm({ ...form, company: e.target.value })}
               placeholder="e.g. Accra Retail Group"
               className="w-full px-3 py-2.5 rounded-xl border text-sm"
-              style={{ ...inputStyle, borderColor: errors.company ? '#EF4444' : theme.border.primary }}
+              style={{ ...inputStyle, borderColor: errors.company ? theme.status.error : theme.border.primary }}
             />
-            {errors.company && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.company}</p>}
+            {errors.company && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.company}</p>}
           </div>
         </div>
 

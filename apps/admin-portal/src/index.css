@@ -9,7 +9,8 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #100E0C;
+  background-color: #100E0C; /* overridden per-theme by ThemeContext */
+  min-height: 100%;
 }
 
 body {
@@ -18,6 +19,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
 }
 
 /* Scrollbar styling */
@@ -39,8 +41,13 @@ body {
   background: rgba(255, 255, 255, 0.35);
 }
 
-/* Smooth transitions default */
-* {
+/* Smooth transitions default (avoid applying to all properties on all nodes) */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"] {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -154,4 +161,75 @@ textarea:focus-visible {
 /* Monospace utility */
 .font-mono {
   font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+}
+
+/* ======== LIGHT THEME OVERRIDES ======== */
+
+/* Page background */
+body.theme-light {
+  background-color: #F1F3F7;
+}
+
+/* Fix hover:bg-white/* utilities — invisible on light backgrounds */
+body.theme-light .hover\:bg-white\/5:hover,
+body.theme-light .hover\:bg-white\/10:hover,
+body.theme-light .hover\:bg-white\/\[0\.05\]:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Fix static bg-white/* overlays used as subtle backgrounds / row stripes */
+body.theme-light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+body.theme-light .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Scrollbar */
+body.theme-light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+}
+body.theme-light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.30);
+}
+
+/* Focus ring */
+body.theme-light button:focus-visible,
+body.theme-light a:focus-visible,
+body.theme-light input:focus-visible,
+body.theme-light select:focus-visible,
+body.theme-light textarea:focus-visible {
+  outline-color: rgba(0, 0, 0, 0.50);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.07);
+}
+
+/* Selection */
+body.theme-light ::selection {
+  background-color: rgba(26, 26, 46, 0.12);
+}
+
+/* Skeleton shimmer */
+body.theme-light .shimmer {
+  background: linear-gradient(90deg,
+    rgba(0, 0, 0, 0.04) 25%,
+    rgba(0, 0, 0, 0.09) 50%,
+    rgba(0, 0, 0, 0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

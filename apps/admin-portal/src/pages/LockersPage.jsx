@@ -124,7 +124,7 @@ export const LockersPage = ({
   const [drawer, setDrawer] = useState(null);
   const [viewLocker, setViewLocker] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [viewMode, setViewMode] = useState('list');
+  const [viewMode, setViewMode] = useState('grid');
   const [expandedTerminals, setExpandedTerminals] = useState({});
 
   const filteredLockers = useMemo(() => {
@@ -210,11 +210,14 @@ export const LockersPage = ({
           <div className="flex items-center justify-between">
             <p className="text-sm" style={{ color: theme.text.muted }}>{filteredLockers.length} of {lockers.length} lockers</p>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
+              <button onClick={() => setViewMode('grid')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'grid' ? theme.accent.primary : 'transparent', color: viewMode === 'grid' ? theme.accent.contrast : theme.text.muted }}>
+                <LayoutGrid size={13} /> Grid
+              </button>
               <button onClick={() => setViewMode('list')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'list' ? theme.accent.primary : 'transparent', color: viewMode === 'list' ? theme.accent.contrast : theme.text.muted }}>
                 <List size={13} /> List
               </button>
               <button onClick={() => setViewMode('terminal')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'terminal' ? theme.accent.primary : 'transparent', color: viewMode === 'terminal' ? theme.accent.contrast : theme.text.muted }}>
-                <LayoutGrid size={13} /> Terminal View
+                <Grid3X3 size={13} /> Terminal
               </button>
             </div>
           </div>
@@ -246,6 +249,40 @@ export const LockersPage = ({
               </div>
             </div>
           </div>
+
+          {/* Grid View */}
+          {viewMode === 'grid' && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              {filteredLockers.map(l => {
+                const STATUS_COLORS = { available: '#81C995', occupied: '#7EA8C9', reserved: '#D4AA5A', maintenance: '#D48E8A' };
+                const sc = STATUS_COLORS[l.status] || '#A8A29E';
+                return (
+                  <div key={l.id} onClick={() => setViewLocker(l)} className="p-3 rounded-xl border cursor-pointer group transition-all hover:scale-[1.02]" style={{ backgroundColor: `${sc}10`, borderColor: `${sc}40` }}>
+                    <div className="flex items-start justify-between mb-2">
+                      <span className="font-mono font-bold text-sm" style={{ color: sc }}>{l.id}</span>
+                      {l.package && <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ backgroundColor: theme.accent.primary }} title={l.package} />}
+                    </div>
+                    <p className="text-xs truncate" style={{ color: theme.text.muted }}>{l.terminal}</p>
+                    <p className="text-xs mt-0.5" style={{ color: theme.text.secondary }}>{l.sizeLabel}</p>
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-xs capitalize px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: `${sc}20`, color: sc }}>{l.status}</span>
+                      {l.opened === 1 && <DoorOpen size={11} style={{ color: '#D4AA5A' }} />}
+                    </div>
+                    <div className="flex items-center justify-end gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                      <button onClick={() => handleOpenLocker(l)} className="p-1 rounded hover:bg-white/10" style={{ color: theme.text.muted }} title="Remote Open"><DoorOpen size={11} /></button>
+                      {hasPermission(currentUser?.role, 'lockers.manage') && (
+                        <>
+                          <button onClick={() => setDrawer(l)} className="p-1 rounded hover:bg-white/10" style={{ color: theme.accent.primary }} title="Edit"><Edit size={11} /></button>
+                          <button onClick={() => setDeleteConfirm(l)} className="p-1 rounded hover:bg-white/10 text-red-400" title="Delete"><Trash2 size={11} /></button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              {filteredLockers.length === 0 && <p className="col-span-full text-center py-10 text-sm" style={{ color: theme.text.muted }}>No lockers found</p>}
+            </div>
+          )}
 
           {/* Terminal View */}
           {viewMode === 'terminal' && (

@@ -4,7 +4,7 @@ import {
   PackageX, MessageSquare, Save, Truck, MapPin, User, Phone,
   Package, Clock, AlertTriangle, Send, CheckCircle, Building2,
   Warehouse, Inbox, Home as HomeIcon, ChevronRight, Copy, Check,
-  Shield, Star,
+  Shield, Star, KeyRound, Loader2,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { StatusBadge, DeliveryMethodBadge, PackageStatusFlow } from '../ui';
@@ -37,43 +37,43 @@ const printLabel = (pkg) => {
 };
 
 // ── Timeline generator ───────────────────────────────────────────────────────
-const buildTimeline = (pkg) => {
+const buildTimeline = (pkg, palette) => {
   const created = pkg.createdAt || '2024-01-15 08:00';
   const courier = pkg.courier?.name;
 
-  const base = [{ color: '#818CF8', icon: Package, label: 'Order created', note: `Waybill ${pkg.waybill} issued`, time: created, done: true }];
+  const base = [{ color: palette.info, icon: Package, label: 'Order created', note: `Waybill ${pkg.waybill} issued`, time: created, done: true }];
 
   const byStatus = {
     pending:               [],
-    at_dropbox:            [{ color: '#B5A0D1', icon: Inbox,     label: 'Deposited at dropbox',       note: 'Awaiting collection', time: created, done: true }],
-    at_warehouse:          [{ color: '#7EA8C9', icon: Warehouse, label: 'Received at warehouse',       note: 'Package sorted & ready', time: created, done: true }],
+    at_dropbox:            [{ color: palette.secondary, icon: Inbox,     label: 'Deposited at dropbox',       note: 'Awaiting collection', time: created, done: true }],
+    at_warehouse:          [{ color: palette.info, icon: Warehouse, label: 'Received at warehouse',       note: 'Package sorted & ready', time: created, done: true }],
     in_transit_to_locker:  [
-      { color: '#7EA8C9', icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted & assigned to route', time: created, done: true },
-      { color: '#818CF8', icon: Truck,     label: 'Out for delivery',        note: courier ? `Courier: ${courier}` : 'En route to terminal', time: 'In progress', done: true, current: true },
+      { color: palette.info, icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted & assigned to route', time: created, done: true },
+      { color: palette.info, icon: Truck,     label: 'Out for delivery',        note: courier ? `Courier: ${courier}` : 'En route to terminal', time: 'In progress', done: true, current: true },
     ],
     delivered_to_locker:   [
-      { color: '#7EA8C9', icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted & assigned to route', time: created, done: true },
-      { color: '#818CF8', icon: Truck,     label: 'Out for delivery',        note: courier ? `Courier: ${courier}` : 'En route', time: created, done: true },
-      { color: '#81C995', icon: Grid3X3,   label: `Deposited in locker ${pkg.locker !== '-' ? pkg.locker : ''}`, note: `${pkg.destination} — awaiting pickup`, time: created, done: true, current: true },
+      { color: palette.info, icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted & assigned to route', time: created, done: true },
+      { color: palette.info, icon: Truck,     label: 'Out for delivery',        note: courier ? `Courier: ${courier}` : 'En route', time: created, done: true },
+      { color: palette.success, icon: Grid3X3,   label: `Deposited in locker ${pkg.locker !== '-' ? pkg.locker : ''}`, note: `${pkg.destination} — awaiting pickup`, time: created, done: true, current: true },
     ],
     in_transit_to_home:    [
-      { color: '#7EA8C9', icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted for home delivery', time: created, done: true },
-      { color: '#22D3EE', icon: Truck,     label: 'Out for home delivery',   note: courier ? `Courier: ${courier}` : 'En route', time: 'In progress', done: true, current: true },
+      { color: palette.info, icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted for home delivery', time: created, done: true },
+      { color: palette.info, icon: Truck,     label: 'Out for home delivery',   note: courier ? `Courier: ${courier}` : 'En route', time: 'In progress', done: true, current: true },
     ],
     delivered_to_home:     [
-      { color: '#7EA8C9', icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted for home delivery', time: created, done: true },
-      { color: '#22D3EE', icon: Truck,     label: 'Out for home delivery',   note: courier ? `Courier: ${courier}` : 'Delivered', time: created, done: true },
-      { color: '#81C995', icon: HomeIcon,  label: 'Delivered to home',       note: 'Successfully delivered', time: created, done: true, current: true },
+      { color: palette.info, icon: Warehouse, label: 'Received at warehouse',   note: 'Sorted for home delivery', time: created, done: true },
+      { color: palette.info, icon: Truck,     label: 'Out for home delivery',   note: courier ? `Courier: ${courier}` : 'Delivered', time: created, done: true },
+      { color: palette.success, icon: HomeIcon,  label: 'Delivered to home',       note: 'Successfully delivered', time: created, done: true, current: true },
     ],
     picked_up:             [
-      { color: '#7EA8C9', icon: Warehouse, label: 'Received at warehouse',   note: 'Package processed', time: created, done: true },
-      { color: '#818CF8', icon: Truck,     label: 'Delivered to locker',     note: `${pkg.destination}`, time: created, done: true },
-      { color: '#81C995', icon: CheckCircle2, label: 'Picked up by recipient', note: pkg.customer, time: created, done: true, current: true },
+      { color: palette.info, icon: Warehouse, label: 'Received at warehouse',   note: 'Package processed', time: created, done: true },
+      { color: palette.info, icon: Truck,     label: 'Delivered to locker',     note: `${pkg.destination}`, time: created, done: true },
+      { color: palette.success, icon: CheckCircle2, label: 'Picked up by recipient', note: pkg.customer, time: created, done: true, current: true },
     ],
     expired:               [
-      { color: '#7EA8C9', icon: Warehouse, label: 'Received at warehouse',   note: 'Package processed', time: created, done: true },
-      { color: '#818CF8', icon: Truck,     label: 'Delivered to locker',     note: `${pkg.destination}`, time: created, done: true },
-      { color: '#D48E8A', icon: AlertTriangle, label: 'Package expired',     note: 'Not collected within storage window', time: created, done: true, current: true },
+      { color: palette.info, icon: Warehouse, label: 'Received at warehouse',   note: 'Package processed', time: created, done: true },
+      { color: palette.info, icon: Truck,     label: 'Delivered to locker',     note: `${pkg.destination}`, time: created, done: true },
+      { color: palette.error, icon: AlertTriangle, label: 'Package expired',     note: 'Not collected within storage window', time: created, done: true, current: true },
     ],
   };
 
@@ -88,7 +88,6 @@ const buildNotifHistory = (pkg) => [
 ];
 
 const SIZES = ['Small', 'Medium', 'Large', 'Extra Large'];
-const CHAN_COLORS = { SMS: '#81C995', WhatsApp: '#81C995', Email: '#7EA8C9' };
 
 // ── Component ────────────────────────────────────────────────────────────────
 export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassign, onReturn, onMarkDelivered, onSave }) => {
@@ -99,6 +98,8 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
   const [msgText, setMsgText] = useState('');
   const [msgChannel, setMsgChannel] = useState('SMS');
   const [sentMsgs, setSentMsgs] = useState([]);
+  const [pinResending, setPinResending] = useState(false);
+  const [pinLastSent, setPinLastSent] = useState(null);
   const [form, setForm] = useState({
     customer: pkg?.customer ?? '',
     phone: pkg?.phone ?? '',
@@ -112,7 +113,14 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
 
   if (!pkg) return null;
 
-  const timeline = useMemo(() => buildTimeline(pkg), [pkg]);
+  const timelinePalette = useMemo(() => ({
+    info: theme.status.info,
+    success: theme.status.success,
+    error: theme.status.error,
+    secondary: theme.accent.secondary,
+  }), [theme]);
+  const chanColors = useMemo(() => ({ SMS: theme.status.success, WhatsApp: theme.status.success, Email: theme.status.info }), [theme]);
+  const timeline = useMemo(() => buildTimeline(pkg, timelinePalette), [pkg, timelinePalette]);
   const notifHistory = useMemo(() => buildNotifHistory(pkg), [pkg]);
 
   const lockerAddr = useMemo(() => {
@@ -144,6 +152,18 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
     setMsgText('');
   };
 
+  const handleResendPin = (channel) => {
+    setPinResending(true);
+    setTimeout(() => {
+      setPinResending(false);
+      setPinLastSent({ channel, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+      if (addToast) addToast({
+        type: 'success',
+        message: `Pickup PIN resent via ${channel} to ${channel === 'SMS' ? pkg.phone : (pkg.email || pkg.phone)}`,
+      });
+    }, 1200);
+  };
+
   const copyWaybill = () => {
     navigator.clipboard.writeText(pkg.waybill).catch(() => {});
     setCopiedWaybill(true);
@@ -155,9 +175,9 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
 
   // ── SLA urgency banner ──
   const slaBanner = pkg.status === 'delivered_to_locker' && (slaUrgent || slaWarning) ? (
-    <div className="mx-4 mt-3 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ backgroundColor: slaUrgent ? '#D48E8A15' : '#D4AA5A15', border: `1px solid ${slaUrgent ? '#D48E8A40' : '#D4AA5A40'}` }}>
-      <AlertTriangle size={13} style={{ color: slaUrgent ? '#D48E8A' : '#D4AA5A', flexShrink: 0 }} />
-      <p className="text-xs" style={{ color: slaUrgent ? '#D48E8A' : '#D4AA5A' }}>
+    <div className="mx-4 mt-3 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ backgroundColor: slaUrgent ? theme.status.error + '15' : theme.status.warning + '15', border: `1px solid ${slaUrgent ? theme.status.error + '40' : theme.status.warning + '40'}` }}>
+      <AlertTriangle size={13} style={{ color: slaUrgent ? theme.status.error : theme.status.warning, flexShrink: 0 }} />
+      <p className="text-xs" style={{ color: slaUrgent ? theme.status.error : theme.status.warning }}>
         {slaUrgent ? `Storage limit exceeded — ${pkg.daysInLocker} days in locker. Expiry risk.` : `${pkg.daysInLocker} days in locker — customer should pick up soon.`}
       </p>
     </div>
@@ -173,7 +193,7 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
           <div className="flex items-center gap-2 mt-0.5">
             <h2 className="font-bold font-mono" style={{ color: theme.text.primary }}>{pkg.waybill}</h2>
             <button onClick={copyWaybill} style={{ color: theme.icon.muted }}>
-              {copiedWaybill ? <Check size={13} style={{ color: '#81C995' }} /> : <Copy size={13} />}
+              {copiedWaybill ? <Check size={13} style={{ color: theme.status.success }} /> : <Copy size={13} />}
             </button>
           </div>
         </div>
@@ -206,7 +226,7 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
           <div className="flex items-center justify-between mb-3">
             <DeliveryMethodBadge method={pkg.deliveryMethod} />
             <div className="flex items-center gap-2">
-              {pkg.cod && <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: '#D4AA5A20', color: '#D4AA5A' }}>COD GH₵{pkg.value}</span>}
+              {pkg.cod && <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: theme.status.warning + '20', color: theme.status.warning }}>COD GH₵{pkg.value}</span>}
               <StatusBadge status={pkg.status} />
             </div>
           </div>
@@ -216,16 +236,16 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
 
       {/* ── Locker badge ── */}
       {!isEditing && pkg.locker && pkg.locker !== '-' && (
-        <div className="mx-4 mt-3 p-3 rounded-xl flex items-center justify-between" style={{ backgroundColor: '#81C99510', border: '1px solid #81C99530' }}>
+        <div className="mx-4 mt-3 p-3 rounded-xl flex items-center justify-between" style={{ backgroundColor: theme.status.success + '10', border: `1px solid ${theme.status.success + '30'}` }}>
           <div className="flex items-center gap-3">
-            <Grid3X3 size={18} style={{ color: '#81C995' }} />
+            <Grid3X3 size={18} style={{ color: theme.status.success }} />
             <div>
-              <p className="text-sm font-semibold" style={{ color: '#81C995' }}>Locker {pkg.locker}</p>
-              <p className="text-xs font-mono" style={{ color: '#81C995', opacity: 0.8 }}>{lockerAddr} · {pkg.destination}</p>
+              <p className="text-sm font-semibold" style={{ color: theme.status.success }}>Locker {pkg.locker}</p>
+              <p className="text-xs font-mono" style={{ color: theme.status.success, opacity: 0.8 }}>{lockerAddr} · {pkg.destination}</p>
             </div>
           </div>
           {pkg.daysInLocker > 0 && (
-            <div className="flex items-center gap-1 text-sm font-semibold" style={{ color: slaUrgent ? '#D48E8A' : slaWarning ? '#D4AA5A' : '#81C995' }}>
+            <div className="flex items-center gap-1 text-sm font-semibold" style={{ color: slaUrgent ? theme.status.error : slaWarning ? theme.status.warning : theme.status.success }}>
               <Timer size={14} /> {pkg.daysInLocker}d
             </div>
           )}
@@ -345,20 +365,95 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
               </div>
             </div>
 
+            {/* Pickup PIN — only when in locker */}
+            {pkg.status === 'delivered_to_locker' && (() => {
+              const pin = pkg.pickupPin || String(100000 + (pkg.id * 137 % 900000)).slice(0, 6);
+              const canSeePin = userRole === 'super_admin';
+              return (
+                <div className="p-4 rounded-2xl border" style={{ backgroundColor: theme.status.info + '08', borderColor: theme.status.info + '30' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>Pickup PIN</p>
+                    <div className="flex items-center gap-1.5">
+                      {!canSeePin && (
+                        <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: theme.status.warning + '15', color: theme.status.warning }}>
+                          Restricted
+                        </span>
+                      )}
+                      <KeyRound size={14} style={{ color: theme.status.info }} />
+                    </div>
+                  </div>
+
+                  {/* PIN digits */}
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    {pin.split('').map((digit, i) => (
+                      <div
+                        key={i}
+                        className="w-10 h-12 rounded-xl flex items-center justify-center font-mono font-bold text-xl border"
+                        style={{ backgroundColor: theme.bg.card, borderColor: theme.status.info + '40', color: theme.text.primary }}
+                      >
+                        {canSeePin ? digit : '•'}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Last sent notice */}
+                  {pinLastSent && (
+                    <p className="text-center text-xs mb-3" style={{ color: theme.status.success }}>
+                      PIN resent via {pinLastSent.channel} at {pinLastSent.time}
+                    </p>
+                  )}
+
+                  {/* Resend buttons */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleResendPin('SMS')}
+                      disabled={pinResending}
+                      className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium border transition-all"
+                      style={{ borderColor: theme.status.info + '40', color: theme.status.info, backgroundColor: theme.status.info + '10', opacity: pinResending ? 0.6 : 1 }}
+                    >
+                      {pinResending ? <Loader2 size={14} className="animate-spin" /> : <Phone size={14} />}
+                      Resend SMS
+                    </button>
+                    <button
+                      onClick={() => handleResendPin('Email')}
+                      disabled={pinResending}
+                      className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium border transition-all"
+                      style={{ borderColor: theme.status.info + '40', color: theme.status.info, backgroundColor: theme.status.info + '10', opacity: pinResending ? 0.6 : 1 }}
+                    >
+                      {pinResending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                      Resend Email
+                    </button>
+                  </div>
+
+                  {/* Contact info */}
+                  <div className="mt-3 pt-3 border-t grid grid-cols-2 gap-2" style={{ borderColor: theme.status.info + '20' }}>
+                    <div>
+                      <p className="text-xs" style={{ color: theme.text.muted }}>SMS to</p>
+                      <p className="text-xs font-medium font-mono mt-0.5" style={{ color: theme.text.secondary }}>{pkg.phone}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs" style={{ color: theme.text.muted }}>Email to</p>
+                      <p className="text-xs font-medium mt-0.5 truncate" style={{ color: theme.text.secondary }}>{pkg.email || '—'}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Courier */}
             {pkg.courier && (
               <div className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }}>
                 <p className="text-xs font-semibold uppercase mb-3" style={{ color: theme.text.muted }}>Assigned Courier</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm" style={{ backgroundColor: '#818CF820', color: '#818CF8' }}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm" style={{ backgroundColor: theme.status.info + '20', color: theme.status.info }}>
                     {pkg.courier.name.charAt(0)}
                   </div>
                   <div>
                     <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>{pkg.courier.name}</p>
                     <p className="text-xs" style={{ color: theme.text.muted }}>Courier ID #{pkg.courier.id}</p>
                   </div>
-                  <div className="ml-auto flex items-center gap-1" style={{ color: '#D4AA5A' }}>
-                    <Star size={12} fill="#D4AA5A" /> <span className="text-xs font-semibold">4.8</span>
+                  <div className="ml-auto flex items-center gap-1" style={{ color: theme.status.warning }}>
+                    <Star size={12} fill={theme.status.warning} /> <span className="text-xs font-semibold">4.8</span>
                   </div>
                 </div>
               </div>
@@ -367,13 +462,13 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
             {/* Actions */}
             {hasPermission(userRole, 'packages.update') && (
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={handleDelivered} className="flex flex-col items-center gap-2 p-3.5 rounded-xl" style={{ backgroundColor: '#81C99515', border: '1px solid #81C99530', color: '#81C995' }}>
+                <button onClick={handleDelivered} className="flex flex-col items-center gap-2 p-3.5 rounded-xl" style={{ backgroundColor: theme.status.success + '15', border: `1px solid ${theme.status.success + '30'}`, color: theme.status.success }}>
                   <CheckCircle2 size={20} /><span className="text-xs font-medium">Mark Delivered</span>
                 </button>
-                <button onClick={() => onReassign && onReassign(pkg)} className="flex flex-col items-center gap-2 p-3.5 rounded-xl" style={{ backgroundColor: '#D4AA5A15', border: '1px solid #D4AA5A30', color: '#D4AA5A' }}>
+                <button onClick={() => onReassign && onReassign(pkg)} className="flex flex-col items-center gap-2 p-3.5 rounded-xl" style={{ backgroundColor: theme.status.warning + '15', border: `1px solid ${theme.status.warning + '30'}`, color: theme.status.warning }}>
                   <RefreshCw size={20} /><span className="text-xs font-medium">Reassign</span>
                 </button>
-                <button onClick={() => onReturn && onReturn(pkg)} className="flex flex-col items-center gap-2 p-3.5 rounded-xl" style={{ backgroundColor: '#D48E8A15', border: '1px solid #D48E8A30', color: '#D48E8A' }}>
+                <button onClick={() => onReturn && onReturn(pkg)} className="flex flex-col items-center gap-2 p-3.5 rounded-xl" style={{ backgroundColor: theme.status.error + '15', border: `1px solid ${theme.status.error + '30'}`, color: theme.status.error }}>
                   <PackageX size={20} /><span className="text-xs font-medium">Return</span>
                 </button>
               </div>
@@ -430,7 +525,7 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
                 {/* Channel pills */}
                 <div className="flex gap-2 mb-3">
                   {['SMS', 'WhatsApp', 'Email'].map(ch => (
-                    <button key={ch} onClick={() => setMsgChannel(ch)} className="px-3 py-1 rounded-lg text-xs font-medium border" style={{ backgroundColor: msgChannel === ch ? `${CHAN_COLORS[ch]}20` : 'transparent', color: msgChannel === ch ? CHAN_COLORS[ch] : theme.text.muted, borderColor: msgChannel === ch ? `${CHAN_COLORS[ch]}40` : theme.border.primary }}>
+                    <button key={ch} onClick={() => setMsgChannel(ch)} className="px-3 py-1 rounded-lg text-xs font-medium border" style={{ backgroundColor: msgChannel === ch ? `${chanColors[ch]}20` : 'transparent', color: msgChannel === ch ? chanColors[ch] : theme.text.muted, borderColor: msgChannel === ch ? `${chanColors[ch]}40` : theme.border.primary }}>
                       {ch}
                     </button>
                   ))}
@@ -463,16 +558,16 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
               <div className="space-y-2">
                 {[...sentMsgs, ...notifHistory].map((m, i) => (
                   <div key={m.id || i} className="flex gap-3 p-3 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }}>
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${CHAN_COLORS[m.channel] || '#818CF8'}20` }}>
-                      <MessageSquare size={13} style={{ color: CHAN_COLORS[m.channel] || '#818CF8' }} />
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${chanColors[m.channel] || theme.status.info}20` }}>
+                      <MessageSquare size={13} style={{ color: chanColors[m.channel] || theme.status.info }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold" style={{ color: CHAN_COLORS[m.channel] || '#818CF8' }}>{m.channel}</span>
+                        <span className="text-xs font-semibold" style={{ color: chanColors[m.channel] || theme.status.info }}>{m.channel}</span>
                         <span className="text-xs" style={{ color: theme.text.muted }}>{m.sentAt}</span>
                       </div>
                       <p className="text-xs mt-0.5 leading-relaxed" style={{ color: theme.text.secondary }}>{m.msg}</p>
-                      <span className="inline-flex items-center gap-1 text-xs mt-1" style={{ color: m.status === 'read' ? '#81C995' : m.status === 'delivered' ? '#7EA8C9' : theme.text.muted }}>
+                      <span className="inline-flex items-center gap-1 text-xs mt-1" style={{ color: m.status === 'read' ? theme.status.success : m.status === 'delivered' ? theme.status.info : theme.text.muted }}>
                         <CheckCircle size={10} /> {m.status}
                       </span>
                     </div>
@@ -486,3 +581,5 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
     </div>
   );
 };
+
+

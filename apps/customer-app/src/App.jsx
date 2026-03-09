@@ -66,9 +66,11 @@ export default function App() {
   var [studentId, setStudentId] = useState('');
   var user = { name: 'Kwame Asante', phone: '24 XXX XXXX' };
   var pkgs = [
-    { id: 1, name: 'iPhone 15 Case', status: 'Ready', location: 'Osu Mall, Locker #12', fromPhone: '+233 24 XXX XXXX', toPhone: '+233 24 555 1234', time: '2h ago' },
-    { id: 2, name: 'Book Bundle', status: 'In transit', location: 'En route to Accra Mall', fromPhone: '+233 20 888 5678', toPhone: '+233 24 XXX XXXX', time: '1d ago' },
-    { id: 3, name: 'Nike Sneakers', status: 'Delivered', location: 'Junction Mall', fromPhone: '+233 24 XXX XXXX', toPhone: '+233 55 222 9012', time: '3d ago' }
+    { id: 1, name: 'iPhone 15 Case', status: 'Ready', location: 'Osu Mall, Locker #12', fromPhone: '+233 24 XXX XXXX', toPhone: '+233 24 555 1234', time: '26h ago', hoursInLocker: 26.5 },
+    { id: 4, name: 'Wireless Earbuds', status: 'Ready', location: 'Accra Mall, Locker #7', fromPhone: '+233 55 222 9012', toPhone: '+233 24 XXX XXXX', time: '8h ago', hoursInLocker: 8 },
+    { id: 2, name: 'Book Bundle', status: 'In transit', location: 'En route to Accra Mall', fromPhone: '+233 20 888 5678', toPhone: '+233 24 XXX XXXX', time: '1d ago', hoursInLocker: null },
+    { id: 5, name: 'Laptop Bag', status: 'In transit', location: 'En route to Osu Mall', fromPhone: '+233 24 XXX XXXX', toPhone: '+233 55 222 9012', time: '2h ago', hoursInLocker: null, dropCode: 'LQ-583920', pickupLocker: 'Osu Mall' },
+    { id: 3, name: 'Nike Sneakers', status: 'Delivered', location: 'Junction Mall', fromPhone: '+233 24 XXX XXXX', toPhone: '+233 55 222 9012', time: '3d ago', hoursInLocker: null, dropCode: 'LQ-294710', pickupLocker: 'Junction Mall' }
   ];
   var mainTabs = ['home', 'activity', 'account'];
 

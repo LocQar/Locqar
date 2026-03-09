@@ -96,7 +96,7 @@ export const NewPackageDrawer = ({ isOpen, onClose, addToast, onSubmit }) => {
 
   const inputStyle = (field) => ({
     backgroundColor: 'transparent',
-    borderColor: errors[field] ? '#D48E8A' : theme.border.primary,
+    borderColor: errors[field] ? theme.status.error : theme.border.primary,
     color: theme.text.primary,
   });
 
@@ -146,16 +146,16 @@ export const NewPackageDrawer = ({ isOpen, onClose, addToast, onSubmit }) => {
             <div>
               <label className={labelCls} style={{ color: theme.text.muted }}>Customer Name *</label>
               <input value={form.customer} onChange={e => update('customer', e.target.value)} placeholder="Full name" className="w-full px-3 py-2.5 rounded-xl border text-sm" style={inputStyle('customer')} />
-              {errors.customer && <p className="text-xs text-red-500 mt-1">{errors.customer}</p>}
+              {errors.customer && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.customer}</p>}
             </div>
             <div>
               <label className={labelCls} style={{ color: theme.text.muted }}>Phone Number *</label>
               <input value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+233..." className="w-full px-3 py-2.5 rounded-xl border text-sm" style={inputStyle('phone')} />
-              {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+              {errors.phone && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.phone}</p>}
               {pinnedInfo && (
-                <div className="flex items-center gap-2 mt-2 p-2.5 rounded-lg" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                  <MapPin size={14} className="text-emerald-500 shrink-0" />
-                  <p className="text-xs text-emerald-500">
+                <div className="flex items-center gap-2 mt-2 p-2.5 rounded-lg" style={{ backgroundColor: `${theme.status.success}12`, border: `1px solid ${theme.status.success}40` }}>
+                  <MapPin size={14} className="shrink-0" style={{ color: theme.status.success }} />
+                  <p className="text-xs" style={{ color: theme.status.success }}>
                     <span className="font-semibold">{pinnedInfo.customer}</span> has pinned locker: <span className="font-mono font-semibold">{pinnedInfo.pinnedAddress}</span> ({pinnedInfo.pinnedTerminal})
                   </p>
                 </div>
@@ -182,22 +182,22 @@ export const NewPackageDrawer = ({ isOpen, onClose, addToast, onSubmit }) => {
                     style={{
                       backgroundColor: form.size === s ? theme.accent.light : theme.bg.tertiary,
                       color: form.size === s ? theme.accent.primary : theme.text.secondary,
-                      borderColor: form.size === s ? theme.accent.border : errors.size ? '#D48E8A' : theme.border.primary,
+                      borderColor: form.size === s ? theme.accent.border : errors.size ? theme.status.error : theme.border.primary,
                     }}
                   >
                     {s}
                   </button>
                 ))}
               </div>
-              {errors.size && <p className="text-xs text-red-500 mt-1">{errors.size}</p>}
+              {errors.size && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.size}</p>}
             </div>
             <div>
               <label className={labelCls} style={{ color: theme.text.muted }}>Product / Service *</label>
-              <select value={form.product} onChange={e => update('product', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.product ? '#D48E8A' : theme.border.primary, color: theme.text.primary }}>
+              <select value={form.product} onChange={e => update('product', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.product ? theme.status.error : theme.border.primary, color: theme.text.primary }}>
                 <option value="">Select service</option>
                 {PRODUCTS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
-              {errors.product && <p className="text-xs text-red-500 mt-1">{errors.product}</p>}
+              {errors.product && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.product}</p>}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -235,7 +235,7 @@ export const NewPackageDrawer = ({ isOpen, onClose, addToast, onSubmit }) => {
                     className="w-full flex items-center gap-3 p-3 rounded-xl border text-left"
                     style={{
                       backgroundColor: form.deliveryMethod === m.id ? `${m.color}10` : theme.bg.tertiary,
-                      borderColor: form.deliveryMethod === m.id ? m.color : errors.deliveryMethod ? '#D48E8A' : theme.border.primary,
+                      borderColor: form.deliveryMethod === m.id ? m.color : errors.deliveryMethod ? theme.status.error : theme.border.primary,
                     }}
                   >
                     <div className="p-2 rounded-lg" style={{ backgroundColor: `${m.color}20` }}>
@@ -248,17 +248,17 @@ export const NewPackageDrawer = ({ isOpen, onClose, addToast, onSubmit }) => {
                   </button>
                 ))}
               </div>
-              {errors.deliveryMethod && <p className="text-xs text-red-500 mt-1">{errors.deliveryMethod}</p>}
+              {errors.deliveryMethod && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.deliveryMethod}</p>}
             </div>
             <div>
               <label className={labelCls} style={{ color: theme.text.muted }}>Destination Terminal *</label>
-              <select value={form.destination} onChange={e => update('destination', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.destination ? '#D48E8A' : theme.border.primary, color: theme.text.primary }}>
+              <select value={form.destination} onChange={e => update('destination', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.destination ? theme.status.error : theme.border.primary, color: theme.text.primary }}>
                 <option value="">Select terminal</option>
                 {terminalsData.filter(t => t.status === 'online').map(t => (
                   <option key={t.id} value={t.id}>{t.name} — {getTerminalAddress(t)}</option>
                 ))}
               </select>
-              {errors.destination && <p className="text-xs text-red-500 mt-1">{errors.destination}</p>}
+              {errors.destination && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.destination}</p>}
               {pinnedInfo && (
                 <p className="text-xs font-mono mt-1" style={{ color: theme.accent.primary }}>Auto-filled from pinned phone address</p>
               )}
@@ -311,8 +311,8 @@ export const NewPackageDrawer = ({ isOpen, onClose, addToast, onSubmit }) => {
                   <div><p className="text-xs" style={{ color: theme.text.muted }}>Service</p><p style={{ color: theme.text.primary }}>{form.product}</p></div>
                   {form.weight && <div><p className="text-xs" style={{ color: theme.text.muted }}>Weight</p><p style={{ color: theme.text.primary }}>{form.weight}kg</p></div>}
                   {form.value && <div><p className="text-xs" style={{ color: theme.text.muted }}>Value</p><p style={{ color: theme.text.primary }}>GH₵ {form.value}</p></div>}
-                  {form.cod && <div><p className="text-xs" style={{ color: theme.text.muted }}>COD</p><p className="text-amber-500 font-medium">Yes — GH₵ {form.value || '0'}</p></div>}
-                  {form.fragile && <div><p className="text-xs" style={{ color: theme.text.muted }}>Fragile</p><p className="text-red-500 font-medium">Yes</p></div>}
+                  {form.cod && <div><p className="text-xs" style={{ color: theme.text.muted }}>COD</p><p className="font-medium" style={{ color: theme.status.warning }}>Yes — GH₵ {form.value || '0'}</p></div>}
+                  {form.fragile && <div><p className="text-xs" style={{ color: theme.text.muted }}>Fragile</p><p className="font-medium" style={{ color: theme.status.error }}>Yes</p></div>}
                 </div>
               </div>
 

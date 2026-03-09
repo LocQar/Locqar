@@ -145,9 +145,9 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
               onChange={e => setForm({ ...form, title: e.target.value })}
               placeholder="e.g. Enterprise Logistics Solution"
               className="w-full px-3 py-2.5 rounded-xl border text-sm"
-              style={{ ...inputStyle, borderColor: errors.title ? '#EF4444' : theme.border.primary }}
+              style={{ ...inputStyle, borderColor: errors.title ? theme.status.error : theme.border.primary }}
             />
-            {errors.title && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.title}</p>}
+            {errors.title && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.title}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -161,9 +161,9 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
                 onChange={e => setForm({ ...form, company: e.target.value })}
                 placeholder="e.g. Tema Port Ltd"
                 className="w-full px-3 py-2.5 rounded-xl border text-sm"
-                style={{ ...inputStyle, borderColor: errors.company ? '#EF4444' : theme.border.primary }}
+                style={{ ...inputStyle, borderColor: errors.company ? theme.status.error : theme.border.primary }}
               />
-              {errors.company && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.company}</p>}
+              {errors.company && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.company}</p>}
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block" style={{ color: theme.text.secondary }}>
@@ -192,9 +192,9 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
                 onChange={e => setForm({ ...form, value: e.target.value })}
                 placeholder="0"
                 className="w-full px-3 py-2.5 rounded-xl border text-sm"
-                style={{ ...inputStyle, borderColor: errors.value ? '#EF4444' : theme.border.primary }}
+                style={{ ...inputStyle, borderColor: errors.value ? theme.status.error : theme.border.primary }}
               />
-              {errors.value && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.value}</p>}
+              {errors.value && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.value}</p>}
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block" style={{ color: theme.text.secondary }}>
@@ -293,7 +293,10 @@ export const NewDealDrawer = ({ isOpen, onClose, onSave, deal = null }) => {
           </div>
         </div>
 
-        <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 text-xs" style={{ color: '#10B981' }}>
+        <div
+          className="rounded-xl p-3 text-xs border"
+          style={{ backgroundColor: `${theme.status.success}12`, borderColor: `${theme.status.success}40`, color: theme.status.success }}
+        >
           <strong>Tip:</strong> Keep your deal values and probabilities up-to-date for accurate forecasting.
         </div>
       </div>

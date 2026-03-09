@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { UserPlus, Search, ArrowUpRight, ArrowDownRight, Edit, Key, Trash2, Users2, X, Eye, Phone, Mail, Star, CheckCircle, XCircle } from 'lucide-react';
+import { UserPlus, Search, ArrowUpRight, ArrowDownRight, Edit, Key, Trash2, Users2, X, Eye, Phone, Mail, Star, CheckCircle, XCircle, LayoutGrid, List, ChevronRight } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { RoleBadge, StatusBadge } from '../components/ui/Badge';
 import { hasPermission, ROLES } from '../constants';
@@ -133,6 +133,7 @@ export const StaffPage = ({
   const [drawer, setDrawer] = useState(null);
   const [viewStaff, setViewStaff] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [view, setView] = useState('list');
 
   const filteredStaff = useMemo(() => {
     let list = staff.filter(s => {
@@ -220,12 +221,67 @@ export const StaffPage = ({
                 </button>
               ))}
             </div>
+            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
+              {[['grid', LayoutGrid], ['list', List]].map(([v, Icon]) => (
+                <button key={v} onClick={() => setView(v)}
+                  className="p-1.5 rounded-lg transition-all"
+                  title={v === 'grid' ? 'Grid view' : 'List view'}
+                  style={{ backgroundColor: view === v ? theme.accent.primary : 'transparent', color: view === v ? theme.accent.contrast : theme.text.muted }}>
+                  <Icon size={16} />
+                </button>
+              ))}
+            </div>
           </div>
 
           <p className="text-xs" style={{ color: theme.text.muted }}>{filteredStaff.length} of {staff.length} staff</p>
 
-          {/* Table */}
-          <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+          {/* Grid View */}
+          {view === 'grid' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredStaff.map(s => (
+                <div key={s.id} onClick={() => setViewStaff(s)} className="p-4 rounded-2xl border cursor-pointer group hover:border-opacity-80 transition-all space-y-3" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-base font-bold flex-shrink-0" style={{ backgroundColor: ROLES[s.role.toLowerCase()]?.color ? `${ROLES[s.role.toLowerCase()]?.color}20` : theme.bg.tertiary, color: ROLES[s.role.toLowerCase()]?.color || theme.accent.primary }}>{s.name.charAt(0)}</div>
+                      <div>
+                        <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>{s.name}</p>
+                        <p className="text-xs" style={{ color: theme.text.muted }}>{s.title ?? s.role}</p>
+                      </div>
+                    </div>
+                    <StatusBadge status={s.status} />
+                  </div>
+                  <div className="space-y-1 text-xs" style={{ color: theme.text.secondary }}>
+                    {s.department && <p><span style={{ color: theme.text.muted }}>Dept: </span>{s.department}</p>}
+                    <p><span style={{ color: theme.text.muted }}>Terminal: </span>{s.terminal || '—'}</p>
+                    <p><span style={{ color: theme.text.muted }}>Email: </span><span className="truncate">{s.email}</span></p>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: theme.border.primary }}>
+                    <RoleBadge role={s.role} />
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-12 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: theme.border.primary }}>
+                        <div className="h-full rounded-full" style={{ width: `${s.performance}%`, backgroundColor: s.performance > 90 ? '#81C995' : s.performance > 75 ? '#D4AA5A' : '#D48E8A' }} />
+                      </div>
+                      <span className="text-xs" style={{ color: theme.text.muted }}>{s.performance}%</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                    <button onClick={() => setViewStaff(s)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="View"><Eye size={14} /></button>
+                    {hasPermission(currentUser?.role, 'staff.manage') && (
+                      <>
+                        <button onClick={() => setDrawer(s)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.accent.primary }} title="Edit"><Edit size={14} /></button>
+                        <button onClick={() => handleResetPassword(s)} className="p-1.5 rounded-lg hover:bg-white/5 text-amber-400" title="Reset Password"><Key size={14} /></button>
+                        <button onClick={() => setDeleteConfirm(s)} className="p-1.5 rounded-lg hover:bg-white/5 text-red-400" title="Remove"><Trash2 size={14} /></button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {filteredStaff.length === 0 && <p className="col-span-full text-center py-10 text-sm" style={{ color: theme.text.muted }}>No staff found</p>}
+            </div>
+          )}
+
+          {/* List/Table View */}
+          {view === 'list' && <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -288,7 +344,7 @@ export const StaffPage = ({
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>}
         </>
       )}
 

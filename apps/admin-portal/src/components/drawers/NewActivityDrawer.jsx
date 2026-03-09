@@ -171,9 +171,9 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave, activity = null }) 
                 'e.g. Meeting notes'
               }
               className="w-full px-3 py-2.5 rounded-xl border text-sm"
-              style={{ ...inputStyle, borderColor: errors.subject ? '#EF4444' : theme.border.primary }}
+              style={{ ...inputStyle, borderColor: errors.subject ? theme.status.error : theme.border.primary }}
             />
-            {errors.subject && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.subject}</p>}
+            {errors.subject && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.subject}</p>}
           </div>
 
           <div>
@@ -235,9 +235,9 @@ export const NewActivityDrawer = ({ isOpen, onClose, onSave, activity = null }) 
                 value={form.dueDate}
                 onChange={e => setForm({ ...form, dueDate: e.target.value })}
                 className="w-full px-3 py-2.5 rounded-xl border text-sm"
-                style={{ ...inputStyle, borderColor: errors.dueDate ? '#EF4444' : theme.border.primary }}
+                style={{ ...inputStyle, borderColor: errors.dueDate ? theme.status.error : theme.border.primary }}
               />
-              {errors.dueDate && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors.dueDate}</p>}
+              {errors.dueDate && <p className="text-xs mt-1" style={{ color: theme.status.error }}>{errors.dueDate}</p>}
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block" style={{ color: theme.text.secondary }}>

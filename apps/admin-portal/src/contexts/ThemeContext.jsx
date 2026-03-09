@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // ============ THEMES ============
 export const themes = {
@@ -114,6 +114,12 @@ const ThemeContext = createContext();
 export const ThemeProvider = ({ children }) => {
   const [themeName, setThemeName] = useState('dark');
   const theme = themes[themeName];
+
+  useEffect(() => {
+    document.body.classList.toggle('theme-light', themeName === 'light');
+    document.body.classList.toggle('theme-dark', themeName !== 'light');
+    document.body.style.backgroundColor = theme.bg.primary;
+  }, [themeName, theme.bg.primary]);
 
   const toggleTheme = () => {
     setThemeName(prev => prev === 'dark' ? 'light' : 'dark');

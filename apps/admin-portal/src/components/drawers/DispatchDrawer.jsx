@@ -66,11 +66,11 @@ export const DispatchDrawer = ({ isOpen, onClose, onViewFull }) => {
           <p className="text-xs" style={{ color: theme.text.muted }}>Pending</p>
         </div>
         <div className="p-3 rounded-xl text-center" style={{ backgroundColor: theme.bg.tertiary }}>
-          <p className="text-lg font-bold" style={{ color: '#7EA8C9' }}>{inTransitCount}</p>
+          <p className="text-lg font-bold" style={{ color: theme.status.info }}>{inTransitCount}</p>
           <p className="text-xs" style={{ color: theme.text.muted }}>In Transit</p>
         </div>
         <div className="p-3 rounded-xl text-center" style={{ backgroundColor: theme.bg.tertiary }}>
-          <p className="text-lg font-bold" style={{ color: '#81C995' }}>{activeDrivers.length}</p>
+          <p className="text-lg font-bold" style={{ color: theme.status.success }}>{activeDrivers.length}</p>
           <p className="text-xs" style={{ color: theme.text.muted }}>Active Drivers</p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export const DispatchDrawer = ({ isOpen, onClose, onViewFull }) => {
 
         {pendingPackages.length === 0 ? (
           <div className="p-8 text-center">
-            <CheckCircle2 size={32} className="mx-auto mb-2 text-emerald-500" />
+            <CheckCircle2 size={32} className="mx-auto mb-2" style={{ color: theme.status.success }} />
             <p className="font-medium" style={{ color: theme.text.primary }}>All caught up!</p>
             <p className="text-sm mt-1" style={{ color: theme.text.muted }}>No pending packages to dispatch</p>
           </div>
@@ -146,7 +146,7 @@ export const DispatchDrawer = ({ isOpen, onClose, onViewFull }) => {
 
         {selectedDriver && (
           <div className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: '#81C995', color: '#1C1917' }}>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: theme.status.success, color: theme.bg.primary }}>
               {selectedDriver.name.charAt(0)}
             </div>
             <div className="flex-1">
@@ -154,7 +154,7 @@ export const DispatchDrawer = ({ isOpen, onClose, onViewFull }) => {
               <p className="text-xs" style={{ color: theme.text.muted }}>{selectedDriver.vehicle}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm font-medium" style={{ color: '#D4AA5A' }}>★ {selectedDriver.rating}</p>
+              <p className="text-sm font-medium" style={{ color: theme.status.warning }}>★ {selectedDriver.rating}</p>
               <p className="text-xs" style={{ color: theme.text.muted }}>{selectedDriver.zone}</p>
             </div>
           </div>

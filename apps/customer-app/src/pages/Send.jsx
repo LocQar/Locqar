@@ -5,16 +5,31 @@ import Toast from "../components/Toast";
 import QRCode from "../utils/qrcode";
 import { contacts, initLockers } from "../data/mockData";
 import PhotoUpload from "../components/PhotoUpload";
-import { ArrowLeft, ArrowRight, Check, X, Users, ChevronDown, Shield, Zap, Copy, Clock, Info, Navigation } from "../components/Icons";
+import { ArrowLeft, ArrowRight, Check, X, Users, ChevronDown, Shield, Zap, Copy, Clock, Info, Navigation, MapPin, Lock } from "../components/Icons";
+
+// Mock registered users — phone (without +233 prefix) → profile
+var registeredUsers = {
+  '24 555 1234': { name: 'Ama Mensah', locker: 'Osu Mall', lockerCode: 'ACC-LQ203', emoji: '\u{1F469}\u{1F3FE}' },
+  '20 888 5678': { name: 'Kofi Boateng', locker: 'Accra Mall', lockerCode: 'ACC-LQ410', emoji: '\u{1F468}\u{1F3FE}' },
+  '55 222 9012': { name: 'Abena Owusu', locker: 'Shell Airport', lockerCode: 'ACC-LQ305', emoji: '\u{1F469}\u{1F3FE}\u{200D}\u{1F4BC}' },
+};
+
+function lookupRecipient(phone) {
+  var norm = phone.replace(/\s/g, '');
+  for (var k in registeredUsers) {
+    if (k.replace(/\s/g, '') === norm) return registeredUsers[k];
+  }
+  return null;
+}
 
 export default function Send(props) {
   var sd = props.savedData || {};
-  var hasSD = sd.toPhone || sd.sz || sd.lk;
+  var hasSD = sd.toPhone || sd.sz || sd.pickupLk;
   var [st, sS] = useState(props.confirmed ? 4 : hasSD ? 3 : 1);
   var [toPhone, setToPhone] = useState(sd.toPhone || (props.prefill && props.prefill.contact ? props.prefill.contact.phone.replace('+233 ', '') : ''));
   var [toName, setToName] = useState(sd.toName || (props.prefill && props.prefill.contact ? props.prefill.contact.name : ''));
   var [sz, sSz] = useState(sd.sz || null);
-  var [lk, sLk] = useState(sd.lk || null);
+  var [pickupLk, setPickupLk] = useState(sd.pickupLk || null);
   var [showContacts, setShowContacts] = useState(false);
   var [searchQ, setSearchQ] = useState('');
   var [sendSuccess, setSendSuccess] = useState(false);
@@ -27,31 +42,34 @@ export default function Send(props) {
   var [reqPayment, setReqPayment] = useState(sd.reqPayment || false);
   var [reqAmount, setReqAmount] = useState(sd.reqAmount || '');
   var [packagePhotos, setPackagePhotos] = useState(sd.packagePhotos || []);
-  var szs = [{ id: 's', e: '\u{1F4C4}', l: 'Small', d: 'Documents, accessories', p: 8 }, { id: 'm', e: '\u{1F4E6}', l: 'Medium', d: 'Shoes, electronics', p: 12 }, { id: 'l', e: '\u{1F4E6}', l: 'Large', d: 'Clothing, bulky items', p: 18 }];
+  var szs = [{ id: 's', e: '\u{1F4C4}', l: 'Small', d: 'Documents, accessories' }, { id: 'm', e: '\u{1F4E6}', l: 'Medium', d: 'Shoes, electronics' }, { id: 'l', e: '\u{1F4E6}', l: 'Large', d: 'Clothing, bulky items' }];
   var lks = initLockers.slice(0, 3).map(function (l) { return { n: l.name, d: l.dist + ' km', a: l.avail, e: l.emoji, t: '~' + Math.round(parseFloat(l.dist) * 4) + ' min' }; });
   var filteredContacts = searchQ ? contacts.filter(function (c) { return c.name.toLowerCase().indexOf(searchQ.toLowerCase()) >= 0 || c.phone.indexOf(searchQ) >= 0; }) : contacts;
   var phoneValid = toPhone.replace(/\s/g, '').length >= 9;
-  var canContinue = (st === 1 && phoneValid) || (st === 2 && sz);
+  var recipient = phoneValid ? lookupRecipient(toPhone) : null;
+  // For registered users, pickup locker is always their registered locker (auto-selected)
+  var effectivePickupLk = recipient ? recipient.locker : pickupLk;
+  var canContinue = (st === 1 && phoneValid) || (st === 2 && sz) || (st === 3 && effectivePickupLk);
   var selSzObj = szs.find(function (s) { return s.id === sz; });
 
   var goToPayment = function () {
     var payItems = [
-      { e: '\u{1F4E6}', l: selSzObj ? selSzObj.l + ' package' : 'Package', v: 'GH\u20B5' + (selSzObj ? selSzObj.p : 0) },
+      { e: '\u{1F4E6}', l: selSzObj ? selSzObj.l + ' package' : 'Package', v: 'GH\u20B515' },
       { e: '\u{1F4E5}', l: 'To: ' + (toName || '+233 ' + toPhone), v: '' },
-      { e: '\u{1F4CD}', l: 'Locker: ' + lk, v: '' }
+      { e: '\u{1F4CD}', l: 'Pickup: ' + effectivePickupLk, v: '' },
     ];
     if (scheduleMode === 'later' && schedDate) payItems.push({ e: '\u{1F4C5}', l: 'Scheduled: ' + schedDate + (schedTime ? ' ' + schedTime : ''), v: '' });
     if (reqPayment && reqAmount) payItems.push({ e: '\u{1F4B8}', l: 'Collect from recipient', v: 'GH\u20B5' + reqAmount });
     if (props.onNav) {
       props.onNav('payment', {
-        amount: (selSzObj ? selSzObj.p : 0) + '',
+        amount: '15',
         label: 'Send to ' + (toName || '+233 ' + toPhone),
         icon: '\u{1F4E4}',
         items: payItems,
         backTo: 'send',
         onSuccessNav: 'send',
         onSuccessData: { confirmed: true },
-        sendData: { toPhone: toPhone, toName: toName, sz: sz, lk: lk, scheduleMode: scheduleMode, schedDate: schedDate, schedTime: schedTime, reqPayment: reqPayment, reqAmount: reqAmount, packagePhotos: packagePhotos }
+        sendData: { toPhone: toPhone, toName: toName, sz: sz, pickupLk: effectivePickupLk, scheduleMode: scheduleMode, schedDate: schedDate, schedTime: schedTime, reqPayment: reqPayment, reqAmount: reqAmount, packagePhotos: packagePhotos }
       });
     }
   };
@@ -79,7 +97,6 @@ export default function Send(props) {
         {st === 1 && (
           <div className="fu">
             <p style={{ fontSize: 14, fontWeight: 500, color: T.sec, marginBottom: 14, fontFamily: ff }}>Who are you sending to?</p>
-            {/* Send Again -- recent contacts */}
             {contacts.filter(function (c) { return c.recent; }).length > 0 && (
               <div style={{ marginBottom: 14 }}>
                 <p style={{ fontSize: 9, fontWeight: 700, color: T.muted, letterSpacing: '0.1em', marginBottom: 8, fontFamily: ff }}>SEND AGAIN</p>
@@ -103,7 +120,26 @@ export default function Send(props) {
                 {toPhone && <button onClick={function () { setToPhone(''); setToName(''); }} className="tap" style={{ width: 24, height: 24, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.border }}><X style={{ width: 11, height: 11, color: T.sec }} /></button>}
               </div>
             </div>
-            {toName && <div className="flex items-center gap-2 fi" style={{ borderRadius: 10, padding: '8px 12px', background: T.okBg, marginBottom: 10, border: '1px solid ' + T.ok + '22' }}><div style={{ width: 16, height: 16, borderRadius: 8, background: T.ok, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check style={{ width: 10, height: 10, color: '#fff', strokeWidth: 3 }} /></div><span style={{ fontSize: 13, fontWeight: 600, color: T.okDark, fontFamily: ff }}>{toName}</span></div>}
+            {recipient ? (
+              <div className="fu" style={{ borderRadius: 14, padding: '12px 14px', background: T.okBg, marginBottom: 10, border: '1px solid ' + T.ok + '30' }}>
+                <div className="flex items-center gap-3">
+                  <span style={{ fontSize: 22 }}>{recipient.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span style={{ fontSize: 13, fontWeight: 800, color: T.okDark, fontFamily: ff }}>{recipient.name}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 5, background: T.ok, color: '#fff', fontFamily: ff }}>REGISTERED</span>
+                    </div>
+                    <div className="flex items-center gap-1.5" style={{ marginTop: 3 }}>
+                      <MapPin style={{ width: 11, height: 11, color: T.okDark }} />
+                      <span style={{ fontSize: 12, color: T.okDark, fontFamily: ff }}>{recipient.locker} · <span style={{ fontFamily: mf, fontWeight: 600 }}>{recipient.lockerCode}</span></span>
+                    </div>
+                  </div>
+                  <Check style={{ width: 16, height: 16, color: T.ok, flexShrink: 0 }} />
+                </div>
+              </div>
+            ) : toName ? (
+              <div className="flex items-center gap-2 fi" style={{ borderRadius: 10, padding: '8px 12px', background: T.okBg, marginBottom: 10, border: '1px solid ' + T.ok + '22' }}><div style={{ width: 16, height: 16, borderRadius: 8, background: T.ok, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check style={{ width: 10, height: 10, color: '#fff', strokeWidth: 3 }} /></div><span style={{ fontSize: 13, fontWeight: 600, color: T.okDark, fontFamily: ff }}>{toName}</span></div>
+            ) : null}
             <button onClick={function () { setShowContacts(!showContacts); }} className="tap" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 14, background: '#fff', border: '1.5px solid ' + T.border }}>
               <Users style={{ width: 15, height: 15, color: T.sec }} /><span className="flex-1 text-left" style={{ fontWeight: 600, fontSize: 13, fontFamily: ff }}>Choose from contacts</span>
               <ChevronDown style={{ width: 14, height: 14, color: T.muted, transform: showContacts ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }} />
@@ -136,35 +172,58 @@ export default function Send(props) {
                 <button key={s.id} onClick={function () { sSz(s.id); }} className="tap" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, background: sel ? T.text : '#fff', color: sel ? '#fff' : T.text, transition: 'all .2s', marginBottom: 8, border: sel ? 'none' : '1.5px solid ' + T.border, boxShadow: sel ? '0 4px 14px rgba(0,0,0,0.15)' : T.shadow }}>
                   <div style={{ width: 42, height: 42, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, background: sel ? 'rgba(255,255,255,0.12)' : T.fill }}>{s.e}</div>
                   <div className="flex-1 text-left"><p style={{ fontWeight: 700, fontSize: 14, fontFamily: ff }}>{s.l}</p><p style={{ fontSize: 12, opacity: 0.5, fontFamily: ff }}>{s.d}</p></div>
-                  <p style={{ fontWeight: 800, fontSize: 16, fontFamily: mf }}>{'GH\u20B5' + s.p}</p>
                 </button>
               );
             })}
-
-            {/* Package Photo Upload */}
             <PhotoUpload photos={packagePhotos} onPhotosChange={setPackagePhotos} maxPhotos={3} />
           </div>
         )}
 
         {st === 3 && (
           <div className="fu">
-            <p style={{ fontSize: 14, fontWeight: 500, color: T.sec, marginBottom: 8, fontFamily: ff }}>Where should they pick up?</p>
-            <div className="flex items-center gap-2.5 fi" style={{ borderRadius: 12, padding: '10px 12px', background: T.blueBg, marginBottom: 14, border: '1px solid ' + T.blue + '22' }}>
-              <Info style={{ width: 13, height: 13, flexShrink: 0, color: T.blue }} /><p style={{ fontSize: 12, color: T.blue, fontFamily: ff }}>Recipient gets SMS with locker location and code.</p>
-            </div>
-            {lks.map(function (l, i) {
-              var sel = lk === l.n;
-              return (
-                <button key={i} onClick={function () { sLk(l.n); }} className="tap" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, background: sel ? T.text : '#fff', color: sel ? '#fff' : T.text, transition: 'all .2s', marginBottom: 8, border: sel ? 'none' : '1.5px solid ' + T.border, boxShadow: sel ? '0 4px 14px rgba(0,0,0,0.15)' : T.shadow }}>
-                  <div style={{ width: 42, height: 42, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, background: sel ? 'rgba(255,255,255,0.12)' : T.fill }}>{l.e}</div>
-                  <div className="flex-1 text-left"><p style={{ fontWeight: 700, fontSize: 14, fontFamily: ff }}>{l.n}</p><p style={{ fontSize: 12, opacity: 0.5, fontFamily: ff }}>{l.d + ' · ' + l.t}</p></div>
-                  <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 8px', borderRadius: 8, background: sel ? 'rgba(255,255,255,0.15)' : T.okBg, color: sel ? '#fff' : T.okDark, fontFamily: ff }}>{l.a + ' free'}</span>
-                </button>
-              );
-            })}
+            <p style={{ fontSize: 14, fontWeight: 500, color: T.sec, marginBottom: 4, fontFamily: ff }}>Where should the recipient pick up?</p>
+            <p style={{ fontSize: 12, color: T.muted, fontFamily: ff, marginBottom: 14 }}>The pickup locker determines the delivery route and price.</p>
+
+            {recipient ? (
+              /* Registered user — pickup locker auto-set from their profile */
+              <>
+                <div className="flex items-center gap-2.5" style={{ borderRadius: 12, padding: '10px 12px', background: T.okBg, marginBottom: 14, border: '1px solid ' + T.ok + '28' }}>
+                  <MapPin style={{ width: 13, height: 13, flexShrink: 0, color: T.okDark }} />
+                  <p style={{ fontSize: 12, color: T.okDark, fontFamily: ff }}>
+                    Pickup locker auto-set from <span style={{ fontWeight: 700 }}>{recipient.name}</span>'s registered address.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3" style={{ padding: '14px 16px', borderRadius: 16, background: T.okBg, border: '1.5px solid ' + T.ok + '33' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, background: '#fff', border: '1px solid ' + T.ok + '22', flexShrink: 0 }}>🏪</div>
+                  <div className="flex-1 min-w-0">
+                    <p style={{ fontWeight: 700, fontSize: 15, fontFamily: ff, color: T.okDark }}>{recipient.locker}</p>
+                    <p style={{ fontSize: 11, fontFamily: mf, fontWeight: 600, color: T.okDark, opacity: 0.7, marginTop: 2 }}>{recipient.lockerCode}</p>
+                  </div>
+                  <Lock style={{ width: 14, height: 14, color: T.okDark, flexShrink: 0 }} />
+                </div>
+              </>
+            ) : (
+              /* Unregistered — manual selection */
+              <>
+                <div className="flex items-center gap-2.5" style={{ borderRadius: 12, padding: '10px 12px', background: T.warnBg, marginBottom: 14, border: '1px solid ' + T.warn + '22' }}>
+                  <Info style={{ width: 13, height: 13, flexShrink: 0, color: T.warn }} />
+                  <p style={{ fontSize: 12, color: T.warn, fontFamily: ff }}>Recipient is not registered. Select which locker they will collect from.</p>
+                </div>
+                {lks.map(function (l, i) {
+                  var sel = pickupLk === l.n;
+                  return (
+                    <button key={i} onClick={function () { setPickupLk(l.n); }} className="tap" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, background: sel ? T.accent : '#fff', color: sel ? '#fff' : T.text, transition: 'all .2s', marginBottom: 8, border: sel ? 'none' : '1.5px solid ' + T.border, boxShadow: sel ? '0 4px 14px ' + T.accent + '33' : T.shadow }}>
+                      <div style={{ width: 42, height: 42, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, background: sel ? 'rgba(255,255,255,0.12)' : T.fill }}>{l.e}</div>
+                      <div className="flex-1 text-left"><p style={{ fontWeight: 700, fontSize: 14, fontFamily: ff }}>{l.n}</p><p style={{ fontSize: 12, opacity: 0.5, fontFamily: ff }}>{l.d + ' · ' + l.t}</p></div>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 8px', borderRadius: 8, background: sel ? 'rgba(255,255,255,0.15)' : T.okBg, color: sel ? '#fff' : T.okDark, fontFamily: ff }}>{l.a + ' free'}</span>
+                    </button>
+                  );
+                })}
+              </>
+            )}
 
             {/* Delivery scheduling */}
-            <div style={{ marginTop: 8 }}>
+            <div style={{ marginTop: 20 }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: T.muted, letterSpacing: '0.08em', marginBottom: 8, fontFamily: ff }}>WHEN TO SEND</p>
               <div className="flex gap-2" style={{ marginBottom: scheduleMode === 'later' ? 10 : 0 }}>
                 <button onClick={function () { setScheduleMode('now'); }} className="tap flex-1" style={{ padding: '12px 0', borderRadius: 12, fontWeight: 700, fontSize: 13, background: scheduleMode === 'now' ? T.text : '#fff', color: scheduleMode === 'now' ? '#fff' : T.text, fontFamily: ff, border: scheduleMode === 'now' ? 'none' : '1.5px solid ' + T.border, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, boxShadow: scheduleMode === 'now' ? '0 4px 12px rgba(0,0,0,0.12)' : T.shadow }}><Zap style={{ width: 14, height: 14 }} />Now</button>
@@ -231,7 +290,7 @@ export default function Send(props) {
               <div style={{ position: 'absolute', top: -20, right: -15, width: 80, height: 80, borderRadius: '50%', background: T.ok + '08' }} />
               <div className="pop" style={{ fontSize: 44, marginBottom: 10 }}>{'\u{1F389}'}</div>
               <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.03em', fontFamily: ff, marginBottom: 6 }}>Package Confirmed!</h2>
-              <p style={{ fontSize: 13, color: T.okDark, fontFamily: ff }}>Drop it off to complete the delivery</p>
+              <p style={{ fontSize: 13, color: T.okDark, fontFamily: ff }}>Drop off at any LocQar locker near you</p>
             </div>
 
             {/* Payment request notice */}
@@ -262,8 +321,6 @@ export default function Send(props) {
                 <div className="flex-1" style={{ borderRadius: 14, padding: '14px 16px', fontSize: 26, fontWeight: 800, letterSpacing: '0.15em', background: T.fill, textAlign: 'center', fontFamily: mf, border: '1.5px solid ' + T.border }}>{dropCode}</div>
                 <button onClick={function () { if (navigator.clipboard) navigator.clipboard.writeText(dropCode); setCodeCopied(true); setTimeout(function () { setCodeCopied(false); }, 2000); }} className="tap" style={{ width: 50, height: 54, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: codeCopied ? T.okBg : T.fill, border: '1px solid ' + (codeCopied ? T.ok + '33' : T.border), transition: 'all .2s' }}>{codeCopied ? <Check style={{ width: 18, height: 18, color: T.ok }} /> : <Copy style={{ width: 18, height: 18, color: T.sec }} />}</button>
               </div>
-
-              {/* QR toggle */}
               <button onClick={function () { setShowDropQR(!showDropQR); }} className="tap flex items-center justify-between w-full" style={{ borderRadius: 12, padding: '10px 12px', background: T.fill, border: '1px solid ' + T.border }}>
                 <div className="flex items-center gap-2"><Zap style={{ width: 13, height: 13, color: T.accent }} /><span style={{ fontSize: 12, fontWeight: 700, color: T.text, fontFamily: ff }}>Locker QR Code</span></div>
                 <ChevronDown style={{ width: 14, height: 14, color: T.muted, transform: showDropQR ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }} />
@@ -271,21 +328,21 @@ export default function Send(props) {
               {showDropQR && (
                 <div className="fu flex flex-col items-center" style={{ paddingTop: 14 }}>
                   <QRCode data={dropCode} size={160} radius={18} padding={16} />
-                  <p style={{ fontSize: 11, color: T.sec, marginTop: 10, fontFamily: ff, textAlign: 'center' }}>Scan this at the locker to open and drop off</p>
+                  <p style={{ fontSize: 11, color: T.sec, marginTop: 10, fontFamily: ff, textAlign: 'center' }}>Scan at any LocQar locker to drop off</p>
                 </div>
               )}
             </div>
 
-            {/* Drop-off summary */}
+            {/* Summary */}
             <div style={{ borderRadius: 20, padding: 16, background: '#fff', border: '1.5px solid ' + T.border, boxShadow: T.shadow, marginBottom: 12 }}>
-              <h3 style={{ fontWeight: 700, fontSize: 13, marginBottom: 10, fontFamily: ff, letterSpacing: '-0.01em' }}>Drop-off Summary</h3>
+              <h3 style={{ fontWeight: 700, fontSize: 13, marginBottom: 10, fontFamily: ff, letterSpacing: '-0.01em' }}>Delivery Summary</h3>
               {[
-                { icon: '\u{1F4CD}', label: 'Locker', value: lk },
-                { icon: '\u{1F4E5}', label: 'Recipient', value: toName || ('+233 ' + toPhone), mono: !toName },
+                { icon: '\u{1F9D1}', label: 'Recipient', value: toName || ('+233 ' + toPhone), mono: !toName },
+                { icon: '\u{1F4CD}', label: 'Pickup Locker', value: effectivePickupLk + (recipient ? ' (auto)' : '') },
                 { icon: '\u{1F4E6}', label: 'Size', value: (szs.find(function (s) { return s.id === sz; }) || {}).l || '' },
                 scheduleMode === 'later' && schedDate ? { icon: '\u{1F4C5}', label: 'Scheduled', value: schedDate + (schedTime ? ' at ' + schedTime : '') } : null,
                 reqPayment && reqAmount ? { icon: '\u{1F4B8}', label: 'Collect on Pickup', value: 'GH\u20B5' + reqAmount, mono: true } : null,
-                { icon: '\u{1F4B0}', label: 'Total', value: 'GH\u20B5' + ((szs.find(function (s) { return s.id === sz; }) || {}).p || 0), mono: true }
+                { icon: '\u{1F4B0}', label: 'Total', value: 'GH\u20B515', mono: true }
               ].filter(Boolean).map(function (r, i) {
                 return <div key={i} className="flex items-center gap-3" style={{ borderRadius: 12, padding: '10px 12px', background: T.fill, marginBottom: 6 }}><span style={{ fontSize: 14 }}>{r.icon}</span><div className="flex-1"><p style={{ fontSize: 10, color: T.sec, fontFamily: ff, letterSpacing: '0.04em' }}>{r.label.toUpperCase()}</p><p style={{ fontWeight: 600, fontSize: 13, fontFamily: r.mono ? mf : ff }}>{r.value}</p></div></div>;
               })}
@@ -295,10 +352,10 @@ export default function Send(props) {
             <div style={{ borderRadius: 20, padding: 16, background: T.blueBg, border: '1px solid ' + T.blue + '22', marginBottom: 12 }}>
               <div className="flex items-center gap-2" style={{ marginBottom: 10 }}><Info style={{ width: 13, height: 13, color: T.blue }} /><p style={{ fontSize: 10, fontWeight: 700, color: T.blue, letterSpacing: '0.06em', fontFamily: ff }}>HOW TO DROP OFF</p></div>
               {[
-                { n: '1', t: 'Go to ' + (lk || 'the locker location') },
+                { n: '1', t: 'Go to any LocQar locker near you' },
                 { n: '2', t: 'Scan the QR code or enter the code above' },
                 { n: '3', t: 'Place your package inside & close the door' },
-                { n: '4', t: 'Recipient will be notified via SMS' }
+                { n: '4', t: 'Recipient will be notified via SMS to collect at ' + (effectivePickupLk || 'their locker') }
               ].map(function (s, i) {
                 return (
                   <div key={i} className="flex items-start gap-3" style={{ marginBottom: i < 3 ? 8 : 0 }}>
@@ -311,18 +368,18 @@ export default function Send(props) {
 
             {/* Action buttons */}
             <div className="flex gap-3">
-              <button onClick={function () { props.onBack(); }} className="tap flex-1" style={{ padding: '14px 0', borderRadius: 16, fontWeight: 700, fontSize: 14, background: T.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: ff, boxShadow: T.shadowMd }}><Navigation style={{ width: 16, height: 16 }} />Get Directions</button>
+              <button onClick={function () { props.onBack(); }} className="tap flex-1" style={{ padding: '14px 0', borderRadius: 16, fontWeight: 700, fontSize: 14, background: T.gradient, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: ff, boxShadow: T.shadowMd }}><Navigation style={{ width: 16, height: 16 }} />Find a Locker</button>
               <button onClick={function () { props.onBack(); }} className="tap" style={{ padding: '14px 22px', borderRadius: 16, fontWeight: 700, fontSize: 14, background: '#fff', color: T.text, fontFamily: ff, border: '1.5px solid ' + T.border, boxShadow: T.shadow }}>Done</button>
             </div>
           </div>
         )}
       </div>
       {st < 4 && <div className="glass fixed bottom-0 left-0 right-0" style={{ padding: 16, borderTop: '1px solid ' + T.border }}>
-        {st === 3 && lk ? (
+        {st === 3 && canContinue ? (
           <div>
             <div className="flex items-center justify-between" style={{ marginBottom: 12, padding: '10px 14px', background: T.fill, borderRadius: 12 }}>
               <span style={{ fontSize: 12, color: T.sec, fontFamily: ff }}>To <span style={{ fontWeight: 700, color: T.text, fontFamily: mf }}>{'+233 ' + toPhone}</span></span>
-              <span style={{ fontWeight: 800, fontSize: 20, fontFamily: mf, letterSpacing: '-0.02em' }}>{'GH\u20B5' + ((szs.find(function (s) { return s.id === sz; }) || {}).p || 0)}</span>
+              <span style={{ fontWeight: 800, fontSize: 20, fontFamily: mf, letterSpacing: '-0.02em' }}>GH&#x20B5;15</span>
             </div>
             <button onClick={goToPayment} className="tap" style={{ width: '100%', padding: '14px 0', borderRadius: 16, fontWeight: 700, fontSize: 15, color: '#fff', background: T.gradientAccent, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: ff, boxShadow: '0 6px 20px rgba(225,29,72,0.25)' }}>Confirm & Pay<ArrowRight style={{ width: 16, height: 16 }} /></button>
           </div>

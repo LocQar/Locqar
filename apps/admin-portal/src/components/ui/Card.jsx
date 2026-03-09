@@ -12,15 +12,20 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
       style={{
         backgroundColor: theme.bg.card,
         borderColor: theme.border.primary,
+        boxShadow: theme.name === 'light'
+          ? '0 1px 3px rgba(0,0,0,0.08), 0 10px 24px rgba(0,0,0,0.06)'
+          : '0 1px 0 rgba(255,255,255,0.03), 0 10px 24px rgba(0,0,0,0.10)',
       }}
       onMouseEnter={e => {
         e.currentTarget.style.borderColor = theme.accent.border;
-        e.currentTarget.style.boxShadow = `0 0 0 1px ${theme.accent.border}, 0 8px 24px rgba(0,0,0,0.18)`;
+        e.currentTarget.style.boxShadow = `0 0 0 1px ${theme.accent.border}, 0 14px 34px rgba(0,0,0,0.12)`;
         e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.borderColor = theme.border.primary;
-        e.currentTarget.style.boxShadow = 'none';
+        e.currentTarget.style.boxShadow = theme.name === 'light'
+          ? '0 1px 3px rgba(0,0,0,0.08), 0 10px 24px rgba(0,0,0,0.06)'
+          : '0 1px 0 rgba(255,255,255,0.03), 0 10px 24px rgba(0,0,0,0.10)';
         e.currentTarget.style.transform = 'translateY(0)';
       }}
     >

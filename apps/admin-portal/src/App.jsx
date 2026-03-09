@@ -866,6 +866,60 @@ function LocQarERPInner() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [metrics, setMetrics] = useState({ totalPackages: 1847, inLockers: 892, inTransit: 234, pendingPickup: 156, revenue: 48200 });
+  const shortcutLabel = useMemo(() => {
+    if (typeof navigator === 'undefined') return 'Ctrl+K';
+    return /Mac|iPhone|iPad|iPod/i.test(navigator.platform) ? 'Cmd+K' : 'Ctrl+K';
+  }, []);
+  const pageMeta = useMemo(() => {
+    const map = {
+      dashboard: { title: 'Operations Overview', subtitle: 'Live health of package flow, lockers, terminals, and revenue.' },
+      packages: { title: 'Package Operations', subtitle: 'Track package lifecycle, exceptions, and delivery outcomes.' },
+      dispatch: { title: 'Dispatch Control', subtitle: 'Plan routes, assign drivers, and resolve failed runs.' },
+      notifications: { title: 'Customer Messaging', subtitle: 'Manage outbound templates, alerts, and communication history.' },
+      fleet: { title: 'Fleet & Vehicle Health', subtitle: 'Monitor vehicle readiness and courier assignment capacity.' },
+      sla: { title: 'SLA Monitor', subtitle: 'Detect service breaches and apply escalation policies quickly.' },
+      lockers: { title: 'Locker Inventory', subtitle: 'Capacity, maintenance, and operational readiness of lockers.' },
+      dropboxes: { title: 'Dropbox Operations', subtitle: 'Collection activity, agents, and package flow across drop points.' },
+      terminals: { title: 'Terminal Network', subtitle: 'Performance, status, and coverage across physical locations.' },
+      customers: { title: 'CRM Hub', subtitle: 'Customers, subscribers, B2B partners, and support workflows.' },
+      staff: { title: 'Staff Management', subtitle: 'Team roles, performance, and workforce visibility.' },
+      couriers: { title: 'Courier Performance', subtitle: 'Track courier productivity, reliability, and workload balance.' },
+      hris: { title: 'HRIS', subtitle: 'Onboarding, offboarding, and alumni workforce records.' },
+      accounting: { title: 'Accounting', subtitle: 'Transactions, invoices, and reconciliation operations.' },
+      payroll: { title: 'Payroll', subtitle: 'Compensation cycles, payouts, and payroll records.' },
+      portal: { title: 'Business Portal', subtitle: 'Partner onboarding, shipments, billing, and API usage.' },
+      selfservice: { title: 'Partner Self-Service', subtitle: 'Simulate partner-facing journey and service tools.' },
+      pricing: { title: 'Pricing Engine', subtitle: 'Control delivery rates, surcharges, and commercial tiers.' },
+      crm: { title: 'CRM Pipeline', subtitle: 'Manage leads, contacts, activities, and conversion stages.' },
+      analytics: { title: 'Analytics', subtitle: 'Business trends and operational performance insights.' },
+      audit: { title: 'Audit & Compliance', subtitle: 'Trace actions, risk events, and compliance history.' },
+      settings: { title: 'Platform Settings', subtitle: 'Global system configuration and access controls.' },
+    };
+    return map[activeMenu] || { title: 'Admin Portal', subtitle: 'Manage end-to-end locker and business operations.' };
+  }, [activeMenu]);
+  const contextStats = useMemo(() => {
+    if (activeMenu === 'packages') return [
+      { label: 'Records', value: packagesData.length },
+      { label: 'Selected', value: selectedItems.length },
+    ];
+    if (activeMenu === 'dispatch') return [
+      { label: 'Selected', value: selectedDispatchItems.length },
+      { label: 'Sort', value: dispatchSort.field },
+    ];
+    if (activeMenu === 'lockers') return [
+      { label: 'Lockers', value: lockersData.length },
+      { label: 'Terminals', value: terminalsData.length },
+    ];
+    if (activeMenu === 'customers') return [
+      { label: 'Selected Subs', value: selectedSubscribers.length },
+      { label: 'View', value: activeSubMenu || 'All Customers' },
+    ];
+    if (activeMenu === 'staff') return [
+      { label: 'Staff', value: staffData.length },
+      { label: 'Teams', value: teamsData.length },
+    ];
+    return [];
+  }, [activeMenu, packagesData.length, selectedItems.length, selectedDispatchItems.length, dispatchSort.field, lockersData.length, terminalsData.length, selectedSubscribers.length, activeSubMenu]);
 
   const addToast = useCallback((toast) => {
     const id = Date.now();
@@ -1370,21 +1424,31 @@ function LocQarERPInner() {
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: theme.bg.primary, fontFamily: theme.font.primary }}>
+    <div className="min-h-screen flex relative overflow-hidden" style={{ backgroundColor: theme.bg.primary, fontFamily: theme.font.primary }}>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl opacity-30"
+        style={{ background: `radial-gradient(circle, ${theme.accent.primary}35 0%, transparent 70%)` }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-20 -left-20 w-80 h-80 rounded-full blur-3xl opacity-20"
+        style={{ background: `radial-gradient(circle, ${theme.status.info}35 0%, transparent 70%)` }}
+      />
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap'); * { font-family: 'Sora', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; } ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: ${theme.border.secondary}; border-radius: 3px; } .font-mono { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace !important; } @keyframes slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } } .animate-slide-in { animation: slide-in 0.3s ease-out; }`}</style>
 
       {(!isMobile || mobileSidebarOpen) && (
         <Sidebar isCollapsed={sidebarCollapsed} setIsCollapsed={setSidebarCollapsed} activeMenu={activeMenu} setActiveMenu={setActiveMenu} activeSubMenu={activeSubMenu} setActiveSubMenu={setActiveSubMenu} theme={theme} userRole={currentUser.role} isMobile={isMobile} onCloseMobile={() => setMobileSidebarOpen(false)} customRoles={customRoles} />
       )}
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 border-b px-4 md:px-6 flex items-center justify-between sticky top-0 z-30" style={{ backgroundColor: theme.bg.secondary, borderColor: theme.border.primary }}>
+      <div className="flex-1 flex flex-col overflow-hidden relative z-10">
+        <header className="h-16 border-b px-4 md:px-6 flex items-center justify-between sticky top-0 z-30" style={{ backgroundColor: theme.bg.secondary, borderColor: theme.border.primary, backdropFilter: 'blur(12px)' }}>
           <div className="flex items-center gap-3">
             {isMobile && <button onClick={() => setMobileSidebarOpen(true)} className="p-2 rounded-lg" style={{ color: theme.icon.primary }}><Menu size={20} /></button>}
-            <button onClick={() => setShowSearch(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl border w-48 md:w-96" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }}>
+            <button onClick={() => setShowSearch(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl border w-52 md:w-[28rem] transition-all duration-150" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }} aria-label="Open global search">
               <Search size={16} style={{ color: theme.icon.muted }} />
-              <span className="text-sm hidden md:inline" style={{ color: theme.text.muted }}>Search...</span>
-              <kbd className="ml-auto px-1.5 py-0.5 rounded text-xs hidden md:inline" style={{ backgroundColor: theme.bg.secondary, color: theme.text.muted }}>⌘K</kbd>
+              <span className="text-sm hidden md:inline" style={{ color: theme.text.muted }}>Search packages, lockers, customers...</span>
+              <kbd className="ml-auto px-1.5 py-0.5 rounded text-xs hidden md:inline" style={{ backgroundColor: theme.bg.secondary, color: theme.text.muted }}>{shortcutLabel}</kbd>
             </button>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
@@ -1483,9 +1547,27 @@ function LocQarERPInner() {
           activeSubMenu={activeSubMenu}
           onNavigate={(menuId, subMenu) => { setActiveMenu(menuId); setActiveSubMenu(subMenu); }}
         />
+        <section className="px-4 md:px-6 pt-2 pb-3 border-b" style={{ borderColor: theme.border.primary, backgroundColor: theme.bg.secondary }}>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div>
+              <h1 className="text-sm md:text-base font-semibold" style={{ color: theme.text.primary }}>{pageMeta.title}</h1>
+              <p className="text-xs md:text-sm" style={{ color: theme.text.muted }}>{pageMeta.subtitle}</p>
+            </div>
+            {contextStats.length > 0 && (
+              <div className="flex items-center gap-2">
+                {contextStats.map((stat) => (
+                  <div key={stat.label} className="px-2.5 py-1 rounded-lg border text-xs" style={{ borderColor: theme.border.primary, color: theme.text.secondary, backgroundColor: theme.bg.tertiary }}>
+                    <span style={{ color: theme.text.muted }}>{stat.label}:</span>{' '}
+                    <span className="font-semibold" style={{ color: theme.text.primary }}>{stat.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto px-2 md:px-3">
           {/* Dashboard */}
           {activeMenu === 'dashboard' && (
             <DashboardPage

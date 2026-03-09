@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
     Truck, Wrench, Fuel, AlertTriangle, Search, Filter,
     MoreVertical, Calendar, CheckCircle2, AlertCircle,
-    ChevronRight, MapPin, Gauge, Upload, Download
+    ChevronRight, MapPin, Gauge, Upload, Download,
+    LayoutGrid, List
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { MetricCard, StatusBadge } from '../components/ui';
@@ -15,6 +16,7 @@ export const FleetPage = ({ addToast }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showNewVehicle, setShowNewVehicle] = useState(false);
     const [vehicles, setVehicles] = useState(vehiclesData);
+    const [view, setView] = useState('grid');
     const fileInputRef = React.useRef(null);
 
     // CSV Export
@@ -211,9 +213,20 @@ export const FleetPage = ({ addToast }) => {
                                 <button className="p-2 rounded-xl border hover:bg-white/5" style={{ borderColor: theme.border.primary, color: theme.icon.primary }}>
                                     <Filter size={18} />
                                 </button>
+                                <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
+                                    {[['grid', LayoutGrid], ['list', List]].map(([v, Icon]) => (
+                                        <button key={v} onClick={() => setView(v)}
+                                            className="p-1.5 rounded-lg transition-all"
+                                            title={v === 'grid' ? 'Grid view' : 'List view'}
+                                            style={{ backgroundColor: view === v ? theme.accent.primary : 'transparent', color: view === v ? theme.accent.contrast : theme.text.muted }}>
+                                            <Icon size={16} />
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
-                            {/* Vehicle List */}
+                            {/* Grid View */}
+                            {view === 'grid' && (
                             <div className="grid gap-4">
                                 {filteredVehicles.map(vehicle => (
                                     <div
@@ -257,6 +270,50 @@ export const FleetPage = ({ addToast }) => {
                                     </div>
                                 ))}
                             </div>
+                            )}
+
+                            {/* List View */}
+                            {view === 'list' && (
+                            <div className="rounded-2xl border overflow-hidden" style={{ borderColor: theme.border.primary }}>
+                                <div className="grid text-xs font-semibold uppercase px-4 py-3"
+                                    style={{ gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr auto', backgroundColor: theme.bg.tertiary, color: theme.text.muted, borderBottom: `1px solid ${theme.border.primary}` }}>
+                                    <span>Plate / Model</span>
+                                    <span>Type</span>
+                                    <span>Driver</span>
+                                    <span>Status</span>
+                                    <span>Mileage</span>
+                                    <span>Fuel</span>
+                                    <span>Next Service</span>
+                                </div>
+                                {filteredVehicles.map((vehicle, i) => (
+                                    <div key={vehicle.id} className="grid items-center px-4 py-3 cursor-pointer group hover:bg-white/5 transition-colors"
+                                        style={{ gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr auto', backgroundColor: theme.bg.card, borderBottom: i < filteredVehicles.length - 1 ? `1px solid ${theme.border.primary}` : 'none' }}>
+                                        <div>
+                                            <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>{vehicle.plate}</p>
+                                            <p className="text-xs" style={{ color: theme.text.muted }}>{vehicle.model}</p>
+                                        </div>
+                                        <span className="text-sm capitalize" style={{ color: theme.text.secondary }}>{vehicle.type}</span>
+                                        <span className="text-sm" style={{ color: theme.text.secondary }}>{vehicle.driver || '—'}</span>
+                                        <StatusBadge status={vehicle.status} />
+                                        <div className="flex items-center gap-1.5">
+                                            <Gauge size={13} style={{ color: theme.text.muted }} />
+                                            <span className="text-sm font-mono" style={{ color: theme.text.secondary }}>{vehicle.mileage.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <Fuel size={13} style={{ color: vehicle.fuelLevel < 30 ? '#D48E8A' : theme.text.muted }} />
+                                            <span className="text-sm" style={{ color: vehicle.fuelLevel < 30 ? '#D48E8A' : theme.text.secondary }}>{vehicle.fuelLevel}%</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs" style={{ color: theme.text.muted }}>{vehicle.nextService}</span>
+                                            <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: theme.text.muted }} />
+                                        </div>
+                                    </div>
+                                ))}
+                                {filteredVehicles.length === 0 && (
+                                    <p className="p-8 text-center text-sm" style={{ color: theme.text.muted }}>No vehicles found</p>
+                                )}
+                            </div>
+                            )}
                         </div>
                     )}
 

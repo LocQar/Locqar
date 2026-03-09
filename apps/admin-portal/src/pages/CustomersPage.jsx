@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Search, Briefcase, Users, Download, Eye, Edit, Trash2, Mail, Phone, MapPin, Package, DollarSign, Calendar, TrendingUp, Filter, X, Building2, AlertCircle, Clock, CheckCircle, Tag, GraduationCap, CreditCard, Shield, Star, BarChart3, UserCheck, MessageSquare, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { Plus, Search, Briefcase, Users, Download, Eye, Edit, Trash2, Mail, Phone, MapPin, Package, DollarSign, Calendar, TrendingUp, Filter, X, Building2, AlertCircle, Clock, CheckCircle, Tag, GraduationCap, CreditCard, Shield, Star, BarChart3, UserCheck, MessageSquare, ChevronDown, ChevronUp, ExternalLink, LayoutGrid, List, ChevronRight } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { StatusBadge, TableSkeleton, MetricCard, Pagination, EmptyState } from '../components/ui';
 import { customersData, partnersData, TIERS, subscriberGrowthData, subscriberChurnData } from '../constants/mockData';
@@ -30,6 +30,7 @@ export const CustomersPage = ({
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showCustomerDrawer, setShowCustomerDrawer] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [customerView, setCustomerView] = useState('list');
 
   // Subscribers local state
   const [subPage, setSubPage] = useState(1);
@@ -181,6 +182,16 @@ export const CustomersPage = ({
               <button onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>
                 <Filter size={16} />Filters
               </button>
+              <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
+                {[['grid', LayoutGrid], ['list', List]].map(([v, Icon]) => (
+                  <button key={v} onClick={() => setCustomerView(v)}
+                    className="p-1.5 rounded-lg transition-all"
+                    title={v === 'grid' ? 'Grid view' : 'List view'}
+                    style={{ backgroundColor: customerView === v ? theme.accent.primary : 'transparent', color: customerView === v ? theme.accent.contrast : theme.text.muted }}>
+                    <Icon size={16} />
+                  </button>
+                ))}
+              </div>
             </div>
             {showFilters && (
               <div className="flex flex-col md:flex-row gap-3 p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
@@ -209,8 +220,53 @@ export const CustomersPage = ({
 
           <p className="text-xs mb-3" style={{ color: theme.text.muted }}>{filteredCustomersLocal.length} customers found</p>
 
-          {/* Customers Table */}
-          <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+          {/* Grid View */}
+          {customerView === 'grid' && !loading && (
+            paginatedCustomers.length === 0 ? (
+              <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                <EmptyState icon={Users} title="No customers found" description="No customers match your search criteria" theme={theme} />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {paginatedCustomers.map(customer => (
+                  <div key={customer.id} onClick={() => handleViewCustomer(customer)} className="p-4 rounded-2xl border cursor-pointer group hover:border-opacity-80 transition-all space-y-3" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: customer.type === 'b2b' ? '#B5A0D1' : '#7EA8C9', color: '#1C1917' }}>
+                          {customer.type === 'b2b' ? <Briefcase size={16} /> : <Users size={16} />}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-sm" style={{ color: theme.text.primary }}>{customer.name}</p>
+                          <span className="text-xs px-2 py-0.5 rounded-lg font-medium" style={{ backgroundColor: customer.type === 'b2b' ? '#B5A0D110' : '#7EA8C910', color: customer.type === 'b2b' ? '#B5A0D1' : '#7EA8C9' }}>{customer.type === 'b2b' ? 'B2B' : 'Individual'}</span>
+                        </div>
+                      </div>
+                      <StatusBadge status={customer.status} />
+                    </div>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex items-center gap-2"><Mail size={11} style={{ color: theme.text.muted }} /><span className="truncate" style={{ color: theme.text.secondary }}>{customer.email}</span></div>
+                      <div className="flex items-center gap-2"><Phone size={11} style={{ color: theme.text.muted }} /><span style={{ color: theme.text.secondary }}>{customer.phone}</span></div>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: theme.border.primary }}>
+                      <div><span className="text-xs" style={{ color: theme.text.muted }}>Orders: </span><span className="text-sm font-semibold" style={{ color: theme.text.primary }}>{customer.totalOrders}</span></div>
+                      <span className="text-sm font-semibold" style={{ color: theme.text.primary }}>GH₵ {customer.totalSpent.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                      <button onClick={() => handleViewCustomer(customer)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="View"><Eye size={14} /></button>
+                      {hasPermission(currentUser?.role, 'customers.manage') && (
+                        <>
+                          <button className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.accent.primary }} title="Edit"><Edit size={14} /></button>
+                          <button onClick={() => handleDeleteCustomer(customer)} className="p-1.5 rounded-lg hover:bg-white/5 text-red-400" title="Delete"><Trash2 size={14} /></button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+
+          {/* Customers Table (list view) */}
+          {customerView === 'list' && <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
             {loading ? <TableSkeleton rows={10} /> : paginatedCustomers.length === 0 ? (
               <EmptyState icon={Users} title="No customers found" description="No customers match your search criteria" theme={theme} />
             ) : (
@@ -272,7 +328,7 @@ export const CustomersPage = ({
                 </table>
               </div>
             )}
-          </div>
+          </div>}
           {totalPages > 1 && <div className="mt-6"><Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} theme={theme} /></div>}
 
           {/* Customer Detail Drawer */}
