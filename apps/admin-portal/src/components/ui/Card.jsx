@@ -82,7 +82,7 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => 
         : 'cursor-pointer hover:-translate-y-0.5 active:translate-y-0'
         }`}
       style={{
-        backgroundColor: theme.bg.tertiary,
+        backgroundColor: theme.bg.card,
         borderColor: theme.border.primary,
       }}
       onMouseEnter={e => {
@@ -95,7 +95,7 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => 
       onMouseLeave={e => {
         if (!disabled) {
           e.currentTarget.style.borderColor = theme.border.primary;
-          e.currentTarget.style.backgroundColor = theme.bg.tertiary;
+          e.currentTarget.style.backgroundColor = theme.bg.card;
           e.currentTarget.style.boxShadow = 'none';
         }
       }}
