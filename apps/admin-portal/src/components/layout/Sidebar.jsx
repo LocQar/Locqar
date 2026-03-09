@@ -92,7 +92,7 @@ export const Sidebar = ({
                         onClick={() => handleMenuClick(item)}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150"
                         style={{
-                          backgroundColor: activeMenu === item.id ? `${theme.status.error}12` : 'transparent',
+                          backgroundColor: activeMenu === item.id ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}12` : 'transparent',
                           border: activeMenu === item.id ? `1px solid ${theme.status.error}35` : '1px solid transparent',
                           color: activeMenu === item.id ? theme.status.error : theme.text.primary,
                           boxShadow: activeMenu === item.id ? `0 6px 14px rgba(0,0,0,0.08)` : 'none',
@@ -119,8 +119,8 @@ export const Sidebar = ({
                               onClick={() => handleSubMenuClick(item, sub)}
                               className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors duration-150"
                               style={{
-                                color: activeSubMenu === sub ? theme.status.error : theme.text.muted,
-                                backgroundColor: activeSubMenu === sub ? `${theme.status.error}10` : 'transparent',
+                                color: activeSubMenu === sub ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.muted,
+                                backgroundColor: activeSubMenu === sub ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}10` : 'transparent',
                                 fontWeight: activeSubMenu === sub ? 600 : 500,
                               }}
                             >
@@ -143,7 +143,7 @@ export const Sidebar = ({
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl"
             style={{
               color: activeMenu === 'settings' ? theme.status.error : theme.text.primary,
-              backgroundColor: activeMenu === 'settings' ? `${theme.status.error}12` : 'transparent'
+              backgroundColor: activeMenu === 'settings' ? `${(theme.name === 'light' ? theme.status.error : theme.accent.primary)}12` : 'transparent'
             }}
           >
             <Settings size={20} />

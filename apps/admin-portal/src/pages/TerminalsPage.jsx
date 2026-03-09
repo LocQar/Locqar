@@ -318,7 +318,7 @@ export const TerminalsPage = ({
             {[['all', 'All'], ['online', 'Online'], ['maintenance', 'Maintenance']].map(([val, label]) => (
               <button key={val} onClick={() => setTerminalStatusFilter(val)}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{ backgroundColor: terminalStatusFilter === val ? theme.status.error : 'transparent', color: terminalStatusFilter === val ? '#fff' : theme.text.muted }}>
+                style={{ backgroundColor: terminalStatusFilter === val ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: terminalStatusFilter === val ? '#fff' : theme.text.muted }}>
                 {label}
               </button>
             ))}
@@ -329,7 +329,7 @@ export const TerminalsPage = ({
               <button key={v} onClick={() => setView(v)}
                 className="p-1.5 rounded-lg transition-all"
                 title={v === 'grid' ? 'Grid view' : 'List view'}
-                style={{ backgroundColor: view === v ? theme.status.error : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
+                style={{ backgroundColor: view === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
                 <Icon size={16} />
               </button>
             ))}

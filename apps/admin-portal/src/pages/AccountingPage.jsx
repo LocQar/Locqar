@@ -281,7 +281,7 @@ export const AccountingPage = ({
             </div>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
               {[['all', 'All'], ['completed', 'Completed'], ['pending', 'Pending']].map(([v, l]) => (
-                <button key={v} onClick={() => setTxnStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: txnStatusFilter === v ? theme.status.error : 'transparent', color: txnStatusFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
+                <button key={v} onClick={() => setTxnStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: txnStatusFilter === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: txnStatusFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
               ))}
             </div>
             <button onClick={() => setShowNewTxn(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>
@@ -297,7 +297,7 @@ export const AccountingPage = ({
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
                     {[['id', 'TXN ID'], ['date', 'Date', 'hidden md:table-cell'], ['description', 'Description', 'hidden lg:table-cell'], ['customer', 'Customer'], ['amount', 'Amount']].map(([field, label, hide]) => (
-                      <th key={field} onClick={() => sortTxnFn(field)} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: txnSort.field === field ? theme.status.error : theme.text.muted }}>
+                      <th key={field} onClick={() => sortTxnFn(field)} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: txnSort.field === field ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.text.muted }}>
                         <span className="flex items-center gap-1">{label}{txnSort.field === field && (txnSort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}</span>
                       </th>
                     ))}
@@ -344,7 +344,7 @@ export const AccountingPage = ({
             </div>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
               {[['all', 'All'], ['paid', 'Paid'], ['pending', 'Pending'], ['overdue', 'Overdue']].map(([v, l]) => (
-                <button key={v} onClick={() => setInvStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: invStatusFilter === v ? theme.status.error : 'transparent', color: invStatusFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
+                <button key={v} onClick={() => setInvStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: invStatusFilter === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: invStatusFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
               ))}
             </div>
             <button onClick={() => { setEditInvoice(null); setShowInvDrawer(true); }} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}>

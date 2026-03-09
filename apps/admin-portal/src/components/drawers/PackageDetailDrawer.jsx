@@ -264,7 +264,7 @@ export const PackageDetailDrawer = ({ pkg, onClose, userRole, addToast, onReassi
               onClick={() => setActiveTab(tab)}
               className="px-4 py-2 rounded-t-xl text-sm capitalize border-b-2 transition-all"
               style={{
-                borderBottomColor: activeTab === tab ? theme.status.error : 'transparent',
+                borderBottomColor: activeTab === tab ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent',
                 color: activeTab === tab ? theme.accent.primary : theme.text.muted,
                 fontWeight: activeTab === tab ? 600 : 400,
               }}

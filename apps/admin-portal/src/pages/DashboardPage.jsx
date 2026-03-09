@@ -130,9 +130,9 @@ export const DashboardPage = ({
             onClick={() => setShowTerminalGrid(s => !s)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             style={{
-              backgroundColor: showTerminalGrid ? theme.status.error : 'transparent',
+              backgroundColor: showTerminalGrid ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent',
               color: showTerminalGrid ? '#fff' : theme.text.secondary,
-              border: `1px solid ${showTerminalGrid ? theme.status.error : theme.border.primary}`,
+              border: `1px solid ${showTerminalGrid ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : theme.border.primary}`,
             }}
           >
             <Grid3X3 size={16} /> Terminals
@@ -232,7 +232,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={Scan}
             label="Scan"
-            color="#EF4444"
+            color={theme.name === 'light' ? '#EF4444' : '#3B82F6'}
             disabled={!hasPermission(currentUser.role, "packages.scan")}
             onClick={() => setShowScanModal(true)}
           />
@@ -273,7 +273,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={AlertTriangle}
             label="Report Issue"
-            color="#EF4444"
+            color={theme.name === 'light' ? '#EF4444' : '#F87171'}
             onClick={() =>
               addToast({ type: "warning", message: "Issue report form" })
             }

@@ -61,7 +61,7 @@ export const Pagination = ({
             onClick={() => onPageChange(page)}
             className="w-8 h-8 rounded-lg text-sm"
             style={{
-              backgroundColor: currentPage === page ? theme.status.error : 'transparent',
+              backgroundColor: currentPage === page ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent',
               color: currentPage === page ? theme.accent.contrast : theme.text.secondary
             }}
           >

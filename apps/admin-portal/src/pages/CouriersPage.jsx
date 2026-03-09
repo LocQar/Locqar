@@ -283,7 +283,7 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
         </div>
         <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
           {[['all', 'All'], ['1', 'Active'], ['0', 'Disabled']].map(([val, label]) => (
-            <button key={val} onClick={() => setStatusFilter(val)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: statusFilter === val ? theme.status.error : 'transparent', color: statusFilter === val ? '#fff' : theme.text.muted }}>{label}</button>
+            <button key={val} onClick={() => setStatusFilter(val)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: statusFilter === val ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: statusFilter === val ? '#fff' : theme.text.muted }}>{label}</button>
           ))}
         </div>
         <select value={terminalFilter} onChange={e => setTerminalFilter(e.target.value)} className="px-3 py-2 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary, color: theme.text.primary }}>
@@ -295,7 +295,7 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
             <button key={v} onClick={() => setView(v)}
               className="p-1.5 rounded-lg transition-all"
               title={v === 'grid' ? 'Grid view' : 'List view'}
-              style={{ backgroundColor: view === v ? theme.status.error : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
+              style={{ backgroundColor: view === v ? (theme.name === 'light' ? theme.status.error : theme.accent.primary) : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
               <Icon size={16} />
             </button>
           ))}
