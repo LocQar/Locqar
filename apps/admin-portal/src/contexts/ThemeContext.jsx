@@ -70,9 +70,9 @@ export const themes = {
       focus: '#4F46E5'
     },
     text: {
-      primary: '#0F172A',
-      secondary: '#334155',
-      muted: '#64748B'
+      primary: '#18181B',
+      secondary: '#3F3F46',
+      muted: '#71717A'
     },
     accent: {
       primary: '#4F46E5',    // indigo-600 — vibrant, modern primary action
@@ -86,8 +86,8 @@ export const themes = {
       mono: "'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace"
     },
     icon: {
-      primary: '#334155',
-      muted: '#64748B'
+      primary: '#3F3F46',
+      muted: '#71717A'
     },
     status: {
       success: '#059669',    // emerald-600 — vibrant green
