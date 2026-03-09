@@ -59,12 +59,12 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
             className="p-2.5 rounded-xl shrink-0 transition-all duration-200"
             style={{
               background: theme.name === 'light'
-                ? theme.bg.tertiary
+                ? `linear-gradient(135deg, ${theme.accent.primary}14, ${theme.accent.primary}08)`
                 : `linear-gradient(135deg, ${theme.accent.primary}28, ${theme.accent.primary}10)`,
-              border: `1px solid ${theme.name === 'light' ? theme.border.secondary : theme.accent.border}`,
+              border: `1px solid ${theme.name === 'light' ? `${theme.accent.primary}28` : theme.accent.border}`,
             }}
           >
-            <Icon size={20} style={{ color: theme.name === 'light' ? theme.text.secondary : theme.accent.primary }} />
+            <Icon size={20} style={{ color: theme.accent.primary }} />
           </div>
         </div>
       )}
@@ -74,6 +74,9 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
 
 export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => {
   const { theme } = useTheme();
+  const isLight = theme.name === 'light';
+  const restBg = isLight ? theme.bg.secondary : theme.bg.tertiary;
+  const restShadow = isLight ? '0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.06)' : 'none';
 
   return (
     <button
@@ -84,21 +87,24 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => 
         : 'cursor-pointer hover:-translate-y-0.5 active:translate-y-0'
         }`}
       style={{
-        backgroundColor: theme.bg.tertiary,
+        backgroundColor: restBg,
         borderColor: theme.border.primary,
+        boxShadow: restShadow,
       }}
       onMouseEnter={e => {
         if (!disabled) {
           e.currentTarget.style.borderColor = theme.accent.border;
-          e.currentTarget.style.backgroundColor = theme.accent.light;
-          e.currentTarget.style.boxShadow = `0 4px 12px rgba(0,0,0,0.12)`;
+          e.currentTarget.style.backgroundColor = isLight ? `${theme.accent.primary}08` : theme.accent.light;
+          e.currentTarget.style.boxShadow = isLight
+            ? `0 0 0 1px ${theme.accent.border}, 0 4px 16px rgba(79,70,229,0.12)`
+            : `0 4px 12px rgba(0,0,0,0.16)`;
         }
       }}
       onMouseLeave={e => {
         if (!disabled) {
           e.currentTarget.style.borderColor = theme.border.primary;
-          e.currentTarget.style.backgroundColor = theme.bg.tertiary;
-          e.currentTarget.style.boxShadow = 'none';
+          e.currentTarget.style.backgroundColor = restBg;
+          e.currentTarget.style.boxShadow = restShadow;
         }
       }}
     >
@@ -111,10 +117,12 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => 
         </span>
       )}
       <div
-        className="p-2.5 rounded-lg"
+        className="p-2.5 rounded-xl"
         style={{
-          background: `linear-gradient(135deg, ${theme.accent.primary}22, ${theme.accent.primary}0a)`,
-          border: `1px solid ${theme.accent.border}`,
+          background: isLight
+            ? `linear-gradient(135deg, ${theme.accent.primary}18, ${theme.accent.primary}0c)`
+            : `linear-gradient(135deg, ${theme.accent.primary}22, ${theme.accent.primary}0a)`,
+          border: `1px solid ${isLight ? `${theme.accent.primary}30` : theme.accent.border}`,
         }}
       >
         <Icon size={18} style={{ color: theme.accent.primary }} />

@@ -366,11 +366,11 @@ export const DashboardPage = ({
               <div
                 className="p-3 rounded-xl shrink-0"
                 style={{
-                  backgroundColor: theme.bg.tertiary,
-                  border: `1px solid ${theme.border.secondary}`,
+                  background: `linear-gradient(135deg, ${m.color}${theme.name === 'light' ? '18' : '22'}, ${m.color}${theme.name === 'light' ? '0c' : '10'})`,
+                  border: `1px solid ${m.color}${theme.name === 'light' ? '35' : '28'}`,
                 }}
               >
-                <m.icon size={22} style={{ color: theme.text.primary }} />
+                <m.icon size={22} style={{ color: m.color }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm leading-snug" style={{ color: theme.text.primary }}>
