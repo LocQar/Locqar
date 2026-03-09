@@ -232,7 +232,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={Scan}
             label="Scan"
-            color="#3B82F6"
+            color="#EF4444"
             disabled={!hasPermission(currentUser.role, "packages.scan")}
             onClick={() => setShowScanModal(true)}
           />
