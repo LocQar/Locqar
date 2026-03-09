@@ -75,10 +75,10 @@ export const themes = {
       muted: '#71717A'
     },
     accent: {
-      primary: '#DC2626',
-      secondary: '#EF4444',
-      light: 'rgba(220,38,38,0.08)',
-      border: 'rgba(220,38,38,0.22)',
+      primary: '#18181B',
+      secondary: '#27272A',
+      light: 'rgba(24,24,27,0.07)',
+      border: 'rgba(24,24,27,0.20)',
       contrast: '#FFFFFF'
     },
     font: {
