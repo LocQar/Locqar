@@ -466,7 +466,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
         {['Outgoing', 'Route Planning', 'Driver Assignment'].map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
-            style={{ backgroundColor: activeTab === tab ? theme.accent.primary : 'transparent', color: activeTab === tab ? theme.accent.contrast : theme.text.muted }}>
+            style={{ backgroundColor: activeTab === tab ? theme.status.error : 'transparent', color: activeTab === tab ? '#fff' : theme.text.muted }}>
             {tab}
           </button>
         ))}
@@ -501,7 +501,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
             </div>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
               {[['all', 'All'], ['ready', 'Ready'], ['assigned', 'Assigned'], ['in_transit', 'In Transit'], ['delivered', 'Delivered']].map(([v, l]) => (
-                <button key={v} onClick={() => { setFilter(v); setPage(1); }} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: filter === v ? theme.accent.primary : 'transparent', color: filter === v ? theme.accent.contrast : theme.text.muted }}>
+                <button key={v} onClick={() => { setFilter(v); setPage(1); }} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: filter === v ? theme.status.error : 'transparent', color: filter === v ? '#fff' : theme.text.muted }}>
                   {l}
                 </button>
               ))}
@@ -725,7 +725,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
               {/* Route Tabs */}
               <div className="flex gap-1 p-1 rounded-xl mb-5 w-fit" style={{ backgroundColor: theme.bg.tertiary }}>
                 {['stops', 'packages', 'timeline'].map(t => (
-                  <button key={t} onClick={() => setRouteTab(t)} className="px-4 py-1.5 rounded-lg text-sm capitalize font-medium" style={{ backgroundColor: routeTab === t ? theme.accent.primary : 'transparent', color: routeTab === t ? theme.accent.contrast : theme.text.muted }}>
+                  <button key={t} onClick={() => setRouteTab(t)} className="px-4 py-1.5 rounded-lg text-sm capitalize font-medium" style={{ backgroundColor: routeTab === t ? theme.status.error : 'transparent', color: routeTab === t ? '#fff' : theme.text.muted }}>
                     {t}
                   </button>
                 ))}

@@ -226,7 +226,7 @@ export const StaffPage = ({
                 <button key={v} onClick={() => setView(v)}
                   className="p-1.5 rounded-lg transition-all"
                   title={v === 'grid' ? 'Grid view' : 'List view'}
-                  style={{ backgroundColor: view === v ? theme.accent.primary : 'transparent', color: view === v ? theme.accent.contrast : theme.text.muted }}>
+                  style={{ backgroundColor: view === v ? theme.status.error : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
                   <Icon size={16} />
                 </button>
               ))}
@@ -287,7 +287,7 @@ export const StaffPage = ({
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
                     {[['name', 'Staff'], ['title', 'Title', 'hidden md:table-cell'], ['role', 'Role'], ['team', 'Team', 'hidden md:table-cell'], ['terminal', 'Terminal', 'hidden lg:table-cell'], ['performance', 'Performance', 'hidden lg:table-cell'], ['status', 'Status']].map(([field, label, hide]) => (
-                      <th key={field} onClick={() => sortFn(field)} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: sort.field === field ? theme.accent.primary : theme.text.muted }}>
+                      <th key={field} onClick={() => sortFn(field)} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: sort.field === field ? theme.status.error : theme.text.muted }}>
                         <span className="flex items-center gap-1">{label}{sort.field === field && (sort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}</span>
                       </th>
                     ))}

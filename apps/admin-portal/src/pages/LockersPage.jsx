@@ -58,7 +58,7 @@ const LockerDrawer = ({ locker, onClose, onSave, theme }) => {
             <label className={lbl} style={{ color: theme.text.muted }}>Size</label>
             <div className="grid grid-cols-4 gap-2">
               {SIZE_LABELS.map(s => (
-                <button key={s} onClick={() => update('sizeLabel', s)} className="py-2.5 rounded-xl text-sm border text-center" style={{ backgroundColor: form.sizeLabel === s ? theme.accent.light : theme.bg.tertiary, color: form.sizeLabel === s ? theme.accent.primary : theme.text.secondary, borderColor: form.sizeLabel === s ? theme.accent.border : theme.border.primary }}>{s}</button>
+                <button key={s} onClick={() => update('sizeLabel', s)} className="py-2.5 rounded-xl text-sm border text-center" style={{ backgroundColor: form.sizeLabel === s ? theme.accent.light : theme.bg.tertiary, color: form.sizeLabel === s ? theme.status.error : theme.text.secondary, borderColor: form.sizeLabel === s ?  : theme.border.primary }}>{s}</button>
               ))}
             </div>
           </div>
@@ -210,13 +210,13 @@ export const LockersPage = ({
           <div className="flex items-center justify-between">
             <p className="text-sm" style={{ color: theme.text.muted }}>{filteredLockers.length} of {lockers.length} lockers</p>
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
-              <button onClick={() => setViewMode('grid')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'grid' ? theme.accent.primary : 'transparent', color: viewMode === 'grid' ? theme.accent.contrast : theme.text.muted }}>
+              <button onClick={() => setViewMode('grid')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'grid' ? theme.status.error : 'transparent', color: viewMode === 'grid' ? '#fff' : theme.text.muted }}>
                 <LayoutGrid size={13} /> Grid
               </button>
-              <button onClick={() => setViewMode('list')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'list' ? theme.accent.primary : 'transparent', color: viewMode === 'list' ? theme.accent.contrast : theme.text.muted }}>
+              <button onClick={() => setViewMode('list')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'list' ? theme.status.error : 'transparent', color: viewMode === 'list' ? '#fff' : theme.text.muted }}>
                 <List size={13} /> List
               </button>
-              <button onClick={() => setViewMode('terminal')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'terminal' ? theme.accent.primary : 'transparent', color: viewMode === 'terminal' ? theme.accent.contrast : theme.text.muted }}>
+              <button onClick={() => setViewMode('terminal')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: viewMode === 'terminal' ? theme.status.error : 'transparent', color: viewMode === 'terminal' ? '#fff' : theme.text.muted }}>
                 <Grid3X3 size={13} /> Terminal
               </button>
             </div>
@@ -232,19 +232,19 @@ export const LockersPage = ({
               </div>
               <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                 {[['all', 'All'], ['available', 'Available'], ['occupied', 'Occupied'], ['reserved', 'Reserved'], ['maintenance', 'Maint.']].map(([v, l]) => (
-                  <button key={v} onClick={() => setStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: statusFilter === v ? theme.accent.primary : 'transparent', color: statusFilter === v ? theme.accent.contrast : theme.text.muted }}>{l}</button>
+                  <button key={v} onClick={() => setStatusFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: statusFilter === v ? theme.status.error : 'transparent', color: statusFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
                 ))}
               </div>
             </div>
             <div className="flex flex-wrap gap-3">
               <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                 {[['all', 'All Terminals'], ...terminalsData.map(t => [t.name, t.name.split(' ')[0]])].map(([v, l]) => (
-                  <button key={v} onClick={() => setTerminalFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap" style={{ backgroundColor: terminalFilter === v ? theme.accent.primary : 'transparent', color: terminalFilter === v ? theme.accent.contrast : theme.text.muted }}>{l}</button>
+                  <button key={v} onClick={() => setTerminalFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap" style={{ backgroundColor: terminalFilter === v ? theme.status.error : 'transparent', color: terminalFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
                 ))}
               </div>
               <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                 {[['all', 'All Sizes'], ...SIZE_LABELS.map(s => [s, s])].map(([v, l]) => (
-                  <button key={v} onClick={() => setSizeFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: sizeFilter === v ? theme.accent.primary : 'transparent', color: sizeFilter === v ? theme.accent.contrast : theme.text.muted }}>{l}</button>
+                  <button key={v} onClick={() => setSizeFilter(v)} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: sizeFilter === v ? theme.status.error : 'transparent', color: sizeFilter === v ? '#fff' : theme.text.muted }}>{l}</button>
                 ))}
               </div>
             </div>
@@ -408,7 +408,7 @@ export const LockersPage = ({
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
                     {[['id', 'ID'], ['doorNo', 'Door #', 'hidden sm:table-cell'], ['terminal', 'Terminal'], ['sizeLabel', 'Size', 'hidden md:table-cell'], ['status', 'Status'], ['doorState', 'Door', 'hidden lg:table-cell'], ['package', 'Package', 'hidden lg:table-cell'], ['temp', 'Temp', 'hidden md:table-cell'], ['battery', 'Battery', 'hidden md:table-cell']].map(([field, label, hide]) => (
-                      <th key={field} onClick={() => sortFn(field)} className={`text-left p-3 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: sort.field === field ? theme.accent.primary : theme.text.muted }}>
+                      <th key={field} onClick={() => sortFn(field)} className={`text-left p-3 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: sort.field === field ? theme.status.error : theme.text.muted }}>
                         <span className="flex items-center gap-1">{label}{sort.field === field && (sort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}</span>
                       </th>
                     ))}

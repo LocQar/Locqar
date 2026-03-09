@@ -1023,11 +1023,11 @@ export const CRMPage = ({
             </button>
           )}
           <button onClick={() => setDealView('kanban')} className={`px-3 py-1.5 rounded-lg text-sm ${dealView === 'kanban' ? 'font-medium' : ''}`}
-            style={{ backgroundColor: dealView === 'kanban' ? theme.accent.light : 'transparent', color: dealView === 'kanban' ? theme.accent.primary : theme.text.secondary }}>
+            style={{ backgroundColor: dealView === 'kanban' ?  : 'transparent', color: dealView === 'kanban' ? theme.status.error : theme.text.secondary }}>
             Board
           </button>
           <button onClick={() => setDealView('list')} className={`px-3 py-1.5 rounded-lg text-sm ${dealView === 'list' ? 'font-medium' : ''}`}
-            style={{ backgroundColor: dealView === 'list' ? theme.accent.light : 'transparent', color: dealView === 'list' ? theme.accent.primary : theme.text.secondary }}>
+            style={{ backgroundColor: dealView === 'list' ?  : 'transparent', color: dealView === 'list' ? theme.status.error : theme.text.secondary }}>
             List
           </button>
         </div>

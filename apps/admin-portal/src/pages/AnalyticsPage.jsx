@@ -69,7 +69,7 @@ export const AnalyticsPage = ({ loading, setShowExport }) => {
           {/* Date Range Filter */}
           <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
             {DATE_RANGES.map(r => (
-              <button key={r.key} onClick={() => setDateRange(r.key)} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ backgroundColor: dateRange === r.key ? theme.accent.primary : 'transparent', color: dateRange === r.key ? theme.accent.contrast : theme.text.muted }}>
+              <button key={r.key} onClick={() => setDateRange(r.key)} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ backgroundColor: dateRange === r.key ? theme.status.error : 'transparent', color: dateRange === r.key ? '#fff' : theme.text.muted }}>
                 {r.label}
               </button>
             ))}

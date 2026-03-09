@@ -313,7 +313,7 @@ export const PartnerPortalPage = ({
           {/* Status Quick Filters */}
           <div className="flex flex-wrap gap-2">
             {[['all', 'All', portalShipmentsData.length], ['delivered_to_locker', 'In Locker', portalShipmentsData.filter(p => p.status === 'delivered_to_locker').length], ['in_transit_to_locker', 'In Transit', portalShipmentsData.filter(p => p.status.includes('transit')).length], ['pending', 'Pending', portalShipmentsData.filter(p => p.status === 'pending' || p.status === 'at_warehouse').length], ['picked_up', 'Picked Up', portalShipmentsData.filter(p => p.status === 'picked_up').length], ['expired', 'Expired', portalShipmentsData.filter(p => p.status === 'expired').length]].map(([k, l, c]) => (
-              <button key={k} className="px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: k === 'all' ? theme.accent.light : 'transparent', color: k === 'all' ? theme.accent.primary : theme.text.muted, border: k === 'all' ? `1px solid ${theme.accent.border}` : '1px solid transparent' }}>{l} <span className="ml-1 font-mono">({c})</span></button>
+              <button key={k} className="px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: k === 'all' ?  : 'transparent', color: k === 'all' ? theme.status.error : theme.text.muted, border: k === 'all' ? `1px solid ${theme.status.error}30` : '1px solid transparent' }}>{l} <span className="ml-1 font-mono">({c})</span></button>
             ))}
           </div>
 
@@ -397,7 +397,7 @@ export const PartnerPortalPage = ({
                     </div>
                   </div>
                   <div className="border-t p-3" style={{ borderColor: theme.border.primary }}>
-                    <button onClick={() => addToast({ type: 'info', message: `Reserving locker at ${t.name}` })} className="w-full py-2 rounded-xl text-sm" style={{ backgroundColor: t.available > 0 ? theme.accent.light : 'transparent', color: t.available > 0 ? theme.accent.primary : theme.text.muted, border: `1px solid ${t.available > 0 ? theme.accent.border : theme.border.primary}` }} disabled={t.available === 0}>{t.available > 0 ? 'Reserve Locker' : 'No Lockers Available'}</button>
+                    <button onClick={() => addToast({ type: 'info', message: `Reserving locker at ${t.name}` })} className="w-full py-2 rounded-xl text-sm" style={{ backgroundColor: t.available > 0 ?  : 'transparent', color: t.available > 0 ? theme.status.error : theme.text.muted, border: `1px solid ${t.available > 0 ?  : theme.border.primary}` }} disabled={t.available === 0}>{t.available > 0 ? 'Reserve Locker' : 'No Lockers Available'}</button>
                   </div>
                 </div>
               );

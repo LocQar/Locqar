@@ -187,7 +187,7 @@ export const CustomersPage = ({
                   <button key={v} onClick={() => setCustomerView(v)}
                     className="p-1.5 rounded-lg transition-all"
                     title={v === 'grid' ? 'Grid view' : 'List view'}
-                    style={{ backgroundColor: customerView === v ? theme.accent.primary : 'transparent', color: customerView === v ? theme.accent.contrast : theme.text.muted }}>
+                    style={{ backgroundColor: customerView === v ? theme.status.error : 'transparent', color: customerView === v ? '#fff' : theme.text.muted }}>
                     <Icon size={16} />
                   </button>
                 ))}

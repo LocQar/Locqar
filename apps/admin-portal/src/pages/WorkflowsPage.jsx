@@ -531,8 +531,8 @@ export const WorkflowsPage = ({ addToast }) => {
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '8px 14px', borderRadius: 8, border: 'none',
-                background: isActive ? theme.accent.primary : 'transparent',
-                color: isActive ? theme.accent.contrast : theme.text.secondary,
+                background: isActive ? theme.status.error : 'transparent',
+                color: isActive ? '#fff' : theme.text.secondary,
                 cursor: 'pointer', fontSize: 12, fontWeight: 500,
                 whiteSpace: 'nowrap', transition: 'all 0.15s ease',
               }}

@@ -184,8 +184,8 @@ export const FleetPage = ({ addToast }) => {
                             onClick={() => setActiveTab(tab.toLowerCase())}
                             className="px-6 py-3 text-sm font-medium border-b-2 transition-colors"
                             style={{
-                                borderColor: activeTab === tab.toLowerCase() ? theme.accent.primary : 'transparent',
-                                color: activeTab === tab.toLowerCase() ? theme.accent.primary : theme.text.secondary
+                                borderColor: activeTab === tab.toLowerCase() ? theme.status.error : 'transparent',
+                                color: activeTab === tab.toLowerCase() ? theme.status.error : theme.text.secondary
                             }}
                         >
                             {tab}
@@ -218,7 +218,7 @@ export const FleetPage = ({ addToast }) => {
                                         <button key={v} onClick={() => setView(v)}
                                             className="p-1.5 rounded-lg transition-all"
                                             title={v === 'grid' ? 'Grid view' : 'List view'}
-                                            style={{ backgroundColor: view === v ? theme.accent.primary : 'transparent', color: view === v ? theme.accent.contrast : theme.text.muted }}>
+                                            style={{ backgroundColor: view === v ? theme.status.error : 'transparent', color: view === v ? '#fff' : theme.text.muted }}>
                                             <Icon size={16} />
                                         </button>
                                     ))}

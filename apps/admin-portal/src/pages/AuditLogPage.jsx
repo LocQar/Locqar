@@ -144,7 +144,7 @@ export const AuditLogPage = ({ setShowExport }) => {
         </div>
         <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
           {[['all', 'All'], ['info', 'Info'], ['warning', 'Warning'], ['critical', 'Critical']].map(([val, label]) => (
-            <button key={val} onClick={() => { setSeverityFilter(val); setCurrentPage(1); }} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ backgroundColor: severityFilter === val ? theme.accent.primary : 'transparent', color: severityFilter === val ? theme.accent.contrast : theme.text.muted }}>
+            <button key={val} onClick={() => { setSeverityFilter(val); setCurrentPage(1); }} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ backgroundColor: severityFilter === val ? theme.status.error : 'transparent', color: severityFilter === val ? '#fff' : theme.text.muted }}>
               {label}
             </button>
           ))}

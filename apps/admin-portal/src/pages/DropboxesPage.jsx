@@ -230,7 +230,7 @@ export const DropboxesPage = ({
               </div>
               <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                 {[['all', 'All'], ['overdue', 'Overdue'], ['in_progress', 'In Progress'], ['scheduled', 'Scheduled'], ['completed', 'Completed']].map(([val, label]) => (
-                  <button key={val} onClick={() => setCollectionStatusFilter(val)} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap" style={{ backgroundColor: collectionStatusFilter === val ? theme.accent.primary : 'transparent', color: collectionStatusFilter === val ? theme.accent.contrast : theme.text.muted }}>{label}</button>
+                  <button key={val} onClick={() => setCollectionStatusFilter(val)} className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap" style={{ backgroundColor: collectionStatusFilter === val ? theme.status.error : 'transparent', color: collectionStatusFilter === val ? '#fff' : theme.text.muted }}>{label}</button>
                 ))}
               </div>
             </div>
@@ -246,7 +246,7 @@ export const DropboxesPage = ({
               <thead>
                 <tr style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
                   {[['id', 'Collection'], ['dropboxName', 'Dropbox'], ['agent', 'Agent', 'hidden md:table-cell'], ['vehicle', 'Vehicle', 'hidden lg:table-cell'], ['packages', 'Packages'], ['priority', 'Priority', 'hidden md:table-cell'], ['status', 'Status'], ['eta', 'ETA', 'hidden md:table-cell']].map(([field, label, hide]) => (
-                    <th key={field} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: collectionSort.field === field ? theme.accent.primary : theme.text.muted }} onClick={() => setCollectionSort(prev => ({ field, dir: prev.field === field && prev.dir === 'asc' ? 'desc' : 'asc' }))}>
+                    <th key={field} className={`text-left p-4 text-xs font-semibold uppercase cursor-pointer select-none ${hide || ''}`} style={{ color: collectionSort.field === field ? theme.status.error : theme.text.muted }} onClick={() => setCollectionSort(prev => ({ field, dir: prev.field === field && prev.dir === 'asc' ? 'desc' : 'asc' }))}>
                       <span className="flex items-center gap-1">{label}{collectionSort.field === field && (collectionSort.dir === 'asc' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}</span>
                     </th>
                   ))}
