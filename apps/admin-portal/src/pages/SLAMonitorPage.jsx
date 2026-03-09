@@ -118,12 +118,13 @@ export const SLAMonitorPage = ({ activeSubMenu, loading, setShowExport, addToast
     }
   };
 
+  const op = theme.name === 'light' ? '28' : '10';
   const getSeverityBadge = (severity) => {
     const colors = {
-      on_track: { bg: '#81C99510', text: '#81C995' },
-      warning: { bg: '#D4AA5A10', text: '#D4AA5A' },
-      critical: { bg: '#D48E8A10', text: '#D48E8A' },
-      breached: { bg: '#7c3aed10', text: '#7c3aed' },
+      on_track: { bg: `#81C995${op}`, text: '#81C995' },
+      warning: { bg: `#D4AA5A${op}`, text: '#D4AA5A' },
+      critical: { bg: `#D48E8A${op}`, text: '#D48E8A' },
+      breached: { bg: `#7c3aed${op}`, text: '#7c3aed' },
     };
     const color = colors[severity] || { bg: theme.bg.card, text: theme.text.muted };
     return <span className="px-2 py-1 rounded-lg text-xs font-medium capitalize" style={{ backgroundColor: color.bg, color: color.text }}>{severity.replace('_', ' ')}</span>;
@@ -131,10 +132,10 @@ export const SLAMonitorPage = ({ activeSubMenu, loading, setShowExport, addToast
 
   const getPriorityBadge = (priority) => {
     const colors = {
-      Critical: { bg: '#7c3aed10', text: '#7c3aed' },
-      High: { bg: '#D48E8A10', text: '#D48E8A' },
-      Medium: { bg: '#D4AA5A10', text: '#D4AA5A' },
-      Low: { bg: '#81C99510', text: '#81C995' },
+      Critical: { bg: `#7c3aed${op}`, text: '#7c3aed' },
+      High: { bg: `#D48E8A${op}`, text: '#D48E8A' },
+      Medium: { bg: `#D4AA5A${op}`, text: '#D4AA5A' },
+      Low: { bg: `#81C995${op}`, text: '#81C995' },
     };
     const color = colors[priority] || { bg: theme.bg.card, text: theme.text.muted };
     return <span className="px-2 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: color.bg, color: color.text }}>{priority}</span>;
@@ -142,9 +143,9 @@ export const SLAMonitorPage = ({ activeSubMenu, loading, setShowExport, addToast
 
   const getStatusBadge = (status) => {
     const colors = {
-      Investigating: { bg: '#D4AA5A10', text: '#D4AA5A' },
-      Resolved: { bg: '#81C99510', text: '#81C995' },
-      Closed: { bg: '#64748b10', text: '#64748b' },
+      Investigating: { bg: `#D4AA5A${op}`, text: '#D4AA5A' },
+      Resolved: { bg: `#81C995${op}`, text: '#81C995' },
+      Closed: { bg: `#64748b${op}`, text: '#64748b' },
     };
     const color = colors[status] || { bg: theme.bg.card, text: theme.text.muted };
     return <span className="px-2 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: color.bg, color: color.text }}>{status}</span>;

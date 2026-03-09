@@ -57,28 +57,28 @@ export const themes = {
   light: {
     name: 'light',
     bg: {
-      primary: '#F1F3F7',    // page background — clean neutral grey
-      secondary: '#FFFFFF',  // sidebar + header — white stands out from grey page
-      tertiary: '#E8EBF1',   // nested sections, slightly deeper
-      card: '#FFFFFF',       // cards — white on grey page = clear hierarchy
-      hover: '#E4E7EE',
-      input: '#EEF0F5'       // grey inputs visible inside white card forms
+      primary: '#F0F2F7',
+      secondary: '#FFFFFF',
+      tertiary: '#E6E9F2',
+      card: '#FFFFFF',
+      hover: '#E0E4EE',
+      input: '#ECEEF5'
     },
     border: {
-      primary: 'rgba(0,0,0,0.09)',
-      secondary: 'rgba(0,0,0,0.16)',
-      focus: '#1A1A2E'
+      primary: 'rgba(0,0,0,0.08)',
+      secondary: 'rgba(0,0,0,0.14)',
+      focus: '#4F46E5'
     },
     text: {
-      primary: '#0D1117',
-      secondary: '#374151',
-      muted: '#5C6370'       // was #6B7280 — slightly darker for better contrast on white
+      primary: '#0F172A',
+      secondary: '#334155',
+      muted: '#64748B'
     },
     accent: {
-      primary: '#1A1A2E',    // deep navy — more distinguishable than pure black
-      secondary: '#374151',
-      light: 'rgba(26,26,46,0.07)',
-      border: 'rgba(26,26,46,0.22)',
+      primary: '#4F46E5',    // indigo-600 — vibrant, modern primary action
+      secondary: '#6366F1',  // indigo-500
+      light: 'rgba(79,70,229,0.08)',
+      border: 'rgba(79,70,229,0.22)',
       contrast: '#FFFFFF'
     },
     font: {
@@ -86,24 +86,24 @@ export const themes = {
       mono: "'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace"
     },
     icon: {
-      primary: '#374151',
-      muted: '#6B7280'
+      primary: '#334155',
+      muted: '#64748B'
     },
     status: {
-      success: '#15803D',    // darker green for better contrast on white (was #16A34A ~4.5:1, now ~6:1)
-      warning: '#B45309',    // darker amber — was #D97706 at 3.2:1, now ~5.0:1
-      error: '#B91C1C',      // darker red — was #DC2626 at 4.0:1, now ~5.8:1
-      info: '#1D4ED8'        // darker blue — was #2563EB at 4.7:1, now ~7.0:1
+      success: '#059669',    // emerald-600 — vibrant green
+      warning: '#D97706',    // amber-600 — bright amber
+      error: '#DC2626',      // red-600 — vivid red
+      info: '#2563EB'        // blue-600 — bright blue
     },
     chart: {
-      green: '#16A34A',
-      blue: '#2563EB',
-      amber: '#D97706',
-      coral: '#DC2626',
-      violet: '#7C3AED',
-      teal: '#0891B2',
-      stone: '#6B7280',
-      series: ['#2563EB', '#16A34A', '#D97706', '#DC2626', '#7C3AED', '#0891B2', '#6B7280']
+      green: '#10B981',
+      blue: '#3B82F6',
+      amber: '#F59E0B',
+      coral: '#EF4444',
+      violet: '#8B5CF6',
+      teal: '#06B6D4',
+      stone: '#94A3B8',
+      series: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#94A3B8']
     }
   }
 };

@@ -72,14 +72,14 @@ const fmt = (n) => `GH₵ ${Number(n).toLocaleString('en-GH', { minimumFractionD
 
 const TYPE_ICONS  = { staff: UserCheck, courier: Package, driver: Truck };
 const TYPE_COLORS = {
-  staff:   { bg: '#3B82F615', text: '#3B82F6' },
-  courier: { bg: '#F59E0B15', text: '#D97706' },
-  driver:  { bg: '#10B98115', text: '#059669' },
+  staff:   { bg: '#3B82F628', text: '#3B82F6' },
+  courier: { bg: '#F59E0B28', text: '#D97706' },
+  driver:  { bg: '#10B98128', text: '#059669' },
 };
 const STATUS_COLORS = {
-  draft:    { bg: '#F59E0B15', text: '#D97706' },
-  approved: { bg: '#3B82F615', text: '#3B82F6' },
-  paid:     { bg: '#10B98115', text: '#059669' },
+  draft:    { bg: '#F59E0B28', text: '#D97706' },
+  approved: { bg: '#3B82F628', text: '#3B82F6' },
+  paid:     { bg: '#10B98128', text: '#059669' },
 };
 
 const LIVE_COURIER_DELIVERIES = { 1: 87, 2: 65, 3: 0, 4: 92, 5: 83, 6: 0 };

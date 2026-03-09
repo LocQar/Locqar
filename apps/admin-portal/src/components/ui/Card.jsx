@@ -33,7 +33,7 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
       {change && isUp && (
         <div
           className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
-          style={{ background: `linear-gradient(90deg, ${theme.accent.primary}90, transparent)` }}
+          style={{ background: `linear-gradient(90deg, ${theme.accent.primary}${theme.name === 'light' ? '50' : '90'}, transparent)` }}
         />
       )}
       {loading ? (
@@ -58,11 +58,13 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
           <div
             className="p-2.5 rounded-xl shrink-0 transition-all duration-200"
             style={{
-              background: `linear-gradient(135deg, ${theme.accent.primary}28, ${theme.accent.primary}10)`,
-              border: `1px solid ${theme.accent.border}`,
+              background: theme.name === 'light'
+                ? theme.bg.tertiary
+                : `linear-gradient(135deg, ${theme.accent.primary}28, ${theme.accent.primary}10)`,
+              border: `1px solid ${theme.name === 'light' ? theme.border.secondary : theme.accent.border}`,
             }}
           >
-            <Icon size={20} style={{ color: theme.accent.primary }} />
+            <Icon size={20} style={{ color: theme.name === 'light' ? theme.text.secondary : theme.accent.primary }} />
           </div>
         </div>
       )}

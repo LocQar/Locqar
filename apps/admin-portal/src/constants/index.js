@@ -13,19 +13,19 @@ export const DELIVERY_METHODS = {
     id: 'warehouse_to_locker',
     label: 'Warehouse \u2192 Locker',
     icon: Warehouse,
-    color: '#7EA8C9'
+    color: '#3B82F6'
   },
   dropbox_to_locker: {
     id: 'dropbox_to_locker',
     label: 'Dropbox \u2192 Locker',
     icon: Inbox,
-    color: '#B5A0D1'
+    color: '#8B5CF6'
   },
   locker_to_home: {
     id: 'locker_to_home',
     label: 'Locker \u2192 Home',
     icon: Home,
-    color: '#81C995'
+    color: '#10B981'
   },
 };
 

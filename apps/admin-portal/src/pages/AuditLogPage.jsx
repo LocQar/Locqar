@@ -39,9 +39,9 @@ const CATEGORIES = {
 };
 
 const SEVERITIES = {
-  info: { label: 'Info', color: '#7EA8C9', bg: 'rgba(126,168,201,0.1)' },
-  warning: { label: 'Warning', color: '#D4AA5A', bg: 'rgba(212,170,90,0.1)' },
-  critical: { label: 'Critical', color: '#D48E8A', bg: 'rgba(212,142,138,0.1)' },
+  info: { label: 'Info', color: '#7EA8C9', bg: 'rgba(126,168,201,0.18)' },
+  warning: { label: 'Warning', color: '#D4AA5A', bg: 'rgba(212,170,90,0.18)' },
+  critical: { label: 'Critical', color: '#D48E8A', bg: 'rgba(212,142,138,0.18)' },
 };
 
 export const AuditLogPage = ({ setShowExport }) => {

@@ -16,14 +16,14 @@ export const ROLES = {
     id: 'super_admin',
     name: 'Super Admin',
     level: 100,
-    color: '#7EA8C9',
+    color: '#3B82F6',
     permissions: ['*']
   },
   ADMIN: {
     id: 'admin',
     name: 'Administrator',
     level: 80,
-    color: '#D4AA5A',
+    color: '#D97706',
     permissions: [
       'dashboard.*', 'packages.*', 'lockers.*', 'dropbox.*', 'terminals.*',
       'customers.*', 'staff.*', 'reports.*', 'dispatch.*', 'accounting.*',
@@ -34,7 +34,7 @@ export const ROLES = {
     id: 'manager',
     name: 'Branch Manager',
     level: 60,
-    color: '#81C995',
+    color: '#10B981',
     permissions: [
       'dashboard.view', 'packages.*', 'dropbox.*', 'lockers.*', 'terminals.view',
       'customers.*', 'staff.view', 'reports.view', 'dispatch.*',
@@ -45,14 +45,14 @@ export const ROLES = {
     id: 'agent',
     name: 'Field Agent',
     level: 40,
-    color: '#B5A0D1',
+    color: '#8B5CF6',
     permissions: ['dashboard.view', 'packages.view', 'packages.scan', 'packages.receive', 'dropbox.view', 'dropbox.collect', 'lockers.view', 'lockers.open', 'dispatch.view']
   },
   SUPPORT: {
     id: 'support',
     name: 'Support',
     level: 30,
-    color: '#D48E8A',
+    color: '#EF4444',
     permissions: [
       'dashboard.view', 'packages.view', 'packages.track', 'customers.*', 'tickets.*',
       'crm.view',           // View CRM data
@@ -65,7 +65,7 @@ export const ROLES = {
     id: 'viewer',
     name: 'View Only',
     level: 10,
-    color: '#A8A29E',
+    color: '#64748B',
     permissions: ['dashboard.view', 'packages.view', 'lockers.view']
   },
 };

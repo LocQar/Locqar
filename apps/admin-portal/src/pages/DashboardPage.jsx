@@ -150,13 +150,13 @@ export const DashboardPage = ({
       {alerts.length > 0 && (
         <div className="space-y-2">
           {alerts.map(alert => (
-            <div key={alert.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border" style={{ backgroundColor: `${alert.color}08`, borderColor: `${alert.color}30` }}>
+            <div key={alert.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border" style={{ backgroundColor: `${alert.color}${theme.name === 'light' ? '14' : '08'}`, borderColor: `${alert.color}${theme.name === 'light' ? '45' : '30'}` }}>
               <alert.icon size={15} style={{ color: alert.color, flexShrink: 0 }} />
               <p className="flex-1 text-sm" style={{ color: alert.color }}>{alert.label}</p>
               <button
                 onClick={() => { setActiveMenu(alert.action); if (alert.sub) setActiveSubMenu(alert.sub); }}
                 className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg"
-                style={{ backgroundColor: `${alert.color}15`, color: alert.color }}
+                style={{ backgroundColor: `${alert.color}${theme.name === 'light' ? '22' : '15'}`, color: alert.color }}
               >
                 View <ChevronRight size={11} />
               </button>

@@ -58,9 +58,9 @@ const INITIAL_PARTNERS = [
 ];
 
 const TIER_META = {
-  gold: { label: 'Gold', color: '#D4AA5A', bg: 'rgba(212,170,90,0.1)' },
-  silver: { label: 'Silver', color: '#a3a3a3', bg: 'rgba(163,163,163,0.1)' },
-  bronze: { label: 'Bronze', color: '#cd7c32', bg: 'rgba(205,124,50,0.1)' },
+  gold: { label: 'Gold', color: '#D4AA5A', bg: 'rgba(212,170,90,0.18)' },
+  silver: { label: 'Silver', color: '#a3a3a3', bg: 'rgba(163,163,163,0.18)' },
+  bronze: { label: 'Bronze', color: '#cd7c32', bg: 'rgba(205,124,50,0.18)' },
 };
 
 const IC = "w-full px-3 py-2 rounded-xl border text-sm mt-1";
