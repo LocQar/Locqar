@@ -232,21 +232,21 @@ export const DashboardPage = ({
           <QuickAction
             icon={Scan}
             label="Scan"
-            theme={theme}
+            color="#3B82F6"
             disabled={!hasPermission(currentUser.role, "packages.scan")}
             onClick={() => setShowScanModal(true)}
           />
           <QuickAction
             icon={Plus}
             label="New Package"
-            theme={theme}
+            color="#10B981"
             disabled={!hasPermission(currentUser.role, "packages.receive")}
             onClick={() => setShowNewPackage(true)}
           />
           <QuickAction
             icon={Truck}
             label="Dispatch"
-            theme={theme}
+            color="#D97706"
             disabled={!hasPermission(currentUser.role, "packages.dispatch")}
             onClick={() => setShowDispatchDrawer(true)}
             badge="12"
@@ -254,7 +254,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={Route}
             label="Route Plan"
-            theme={theme}
+            color="#8B5CF6"
             disabled={!hasPermission(currentUser.role, "packages.dispatch")}
             onClick={() => {
               setActiveMenu("dispatch");
@@ -264,7 +264,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={Home}
             label="Home Delivery"
-            theme={theme}
+            color="#06B6D4"
             disabled={!hasPermission(currentUser.role, "packages.dispatch")}
             onClick={() =>
               addToast({ type: "info", message: "Home delivery queue" })
@@ -273,7 +273,7 @@ export const DashboardPage = ({
           <QuickAction
             icon={AlertTriangle}
             label="Report Issue"
-            theme={theme}
+            color="#EF4444"
             onClick={() =>
               addToast({ type: "warning", message: "Issue report form" })
             }
@@ -281,13 +281,13 @@ export const DashboardPage = ({
           <QuickAction
             icon={Grid3X3}
             label="Lockers"
-            theme={theme}
+            color="#6366F1"
             onClick={() => setActiveMenu("lockers")}
           />
           <QuickAction
             icon={Users}
             label="Customers"
-            theme={theme}
+            color="#F59E0B"
             onClick={() => setActiveMenu("customers")}
           />
         </div>

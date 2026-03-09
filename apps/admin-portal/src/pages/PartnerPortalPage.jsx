@@ -111,12 +111,12 @@ export const PartnerPortalPage = ({
           <div className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
             <h3 className="text-sm font-semibold mb-4" style={{ color: theme.text.muted }}>Quick Actions</h3>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-              <QuickAction icon={Plus} label="Ship Package" theme={theme} onClick={() => setActiveSubMenu('Ship Now')} />
-              <QuickAction icon={FileDown} label="Bulk Upload" theme={theme} onClick={() => setActiveSubMenu('Ship Now')} badge="CSV" />
-              <QuickAction icon={Search} label="Track" theme={theme} onClick={() => setActiveSubMenu('Track Packages')} />
-              <QuickAction icon={Grid3X3} label="Locker Map" theme={theme} onClick={() => setActiveSubMenu('Locker Map')} />
-              <QuickAction icon={Receipt} label="Invoices" theme={theme} onClick={() => setActiveSubMenu('My Billing')} />
-              <QuickAction icon={Command} label="API Console" theme={theme} onClick={() => setActiveSubMenu('API Console')} />
+              <QuickAction icon={Plus} label="Ship Package" color="#10B981" onClick={() => setActiveSubMenu('Ship Now')} />
+              <QuickAction icon={FileDown} label="Bulk Upload" color="#8B5CF6" onClick={() => setActiveSubMenu('Ship Now')} badge="CSV" />
+              <QuickAction icon={Search} label="Track" color="#3B82F6" onClick={() => setActiveSubMenu('Track Packages')} />
+              <QuickAction icon={Grid3X3} label="Locker Map" color="#06B6D4" onClick={() => setActiveSubMenu('Locker Map')} />
+              <QuickAction icon={Receipt} label="Invoices" color="#D97706" onClick={() => setActiveSubMenu('My Billing')} />
+              <QuickAction icon={Command} label="API Console" color="#6366F1" onClick={() => setActiveSubMenu('API Console')} />
             </div>
           </div>
 

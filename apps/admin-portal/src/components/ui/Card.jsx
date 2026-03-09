@@ -72,9 +72,10 @@ export const MetricCard = ({ title, value, change, changeType, icon: Icon, subti
   );
 };
 
-export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => {
+export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge, color }) => {
   const { theme } = useTheme();
   const isLight = theme.name === 'light';
+  const c = color || theme.accent.primary;
   const restBg = isLight ? theme.bg.secondary : theme.bg.tertiary;
   const restShadow = isLight ? '0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.06)' : 'none';
 
@@ -93,10 +94,10 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => 
       }}
       onMouseEnter={e => {
         if (!disabled) {
-          e.currentTarget.style.borderColor = theme.accent.border;
-          e.currentTarget.style.backgroundColor = isLight ? `${theme.accent.primary}08` : theme.accent.light;
+          e.currentTarget.style.borderColor = `${c}50`;
+          e.currentTarget.style.backgroundColor = isLight ? `${c}08` : `${c}14`;
           e.currentTarget.style.boxShadow = isLight
-            ? `0 0 0 1px ${theme.accent.border}, 0 4px 16px rgba(79,70,229,0.12)`
+            ? `0 0 0 1px ${c}40, 0 4px 16px ${c}18`
             : `0 4px 12px rgba(0,0,0,0.16)`;
         }
       }}
@@ -111,7 +112,7 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => 
       {badge && (
         <span
           className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 rounded-full text-xs flex items-center justify-center font-semibold px-1"
-          style={{ backgroundColor: theme.accent.primary, color: theme.accent.contrast }}
+          style={{ backgroundColor: c, color: '#fff' }}
         >
           {badge}
         </span>
@@ -120,12 +121,12 @@ export const QuickAction = ({ icon: Icon, label, disabled, onClick, badge }) => 
         className="p-2.5 rounded-xl"
         style={{
           background: isLight
-            ? `linear-gradient(135deg, ${theme.accent.primary}18, ${theme.accent.primary}0c)`
-            : `linear-gradient(135deg, ${theme.accent.primary}22, ${theme.accent.primary}0a)`,
-          border: `1px solid ${isLight ? `${theme.accent.primary}30` : theme.accent.border}`,
+            ? `linear-gradient(135deg, ${c}18, ${c}0c)`
+            : `linear-gradient(135deg, ${c}22, ${c}0a)`,
+          border: `1px solid ${c}${isLight ? '30' : '28'}`,
         }}
       >
-        <Icon size={18} style={{ color: theme.accent.primary }} />
+        <Icon size={18} style={{ color: c }} />
       </div>
       <span className="text-xs font-medium leading-tight text-center" style={{ color: theme.text.secondary }}>{label}</span>
     </button>
