@@ -29,7 +29,7 @@ export const DropboxesPage = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3" style={{ color: theme.text.primary }}>
-            <Inbox size={28} style={{ color: '#B5A0D1' }} /> Dropbox Management
+            <Inbox size={28} style={{ color: '#8B5CF6' }} /> Dropbox Management
           </h1>
           <p style={{ color: theme.text.muted }}>{activeSubMenu || 'Overview'} • {dropboxesData.filter(d => d.status === 'active').length} active dropboxes</p>
         </div>
@@ -54,19 +54,19 @@ export const DropboxesPage = ({
 
           {/* Alerts Banner */}
           {dropboxesData.some(d => d.alerts.length > 0) && (
-            <div className="p-4 rounded-2xl border flex items-start gap-4" style={{ backgroundColor: 'rgba(212,142,138,0.05)', borderColor: 'rgba(212,142,138,0.2)' }}>
+            <div className="p-4 rounded-2xl border flex items-start gap-4" style={{ backgroundColor: 'rgba(239,68,68,0.05)', borderColor: 'rgba(239,68,68,0.2)' }}>
               <AlertTriangle size={24} className="text-red-500 mt-0.5 shrink-0" />
               <div className="flex-1">
                 <p className="font-semibold text-red-500 mb-1">Attention Required</p>
                 <div className="flex flex-wrap gap-2">
                   {dropboxesData.filter(d => d.status === 'full').map(d => (
-                    <span key={d.id} className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: 'rgba(212,142,138,0.1)', color: '#D48E8A' }}>🔴 {d.name} is FULL — collection overdue</span>
+                    <span key={d.id} className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#EF4444' }}>🔴 {d.name} is FULL — collection overdue</span>
                   ))}
                   {dropboxesData.filter(d => d.alerts.includes('near_full') && d.status !== 'full').map(d => (
-                    <span key={d.id} className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: 'rgba(212,170,90,0.1)', color: '#D4AA5A' }}>🟡 {d.name} at {Math.round(d.currentFill / d.capacity * 100)}% — schedule collection</span>
+                    <span key={d.id} className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: 'rgba(217,119,6,0.1)', color: '#D97706' }}>🟡 {d.name} at {Math.round(d.currentFill / d.capacity * 100)}% — schedule collection</span>
                   ))}
                   {dropboxesData.filter(d => d.alerts.includes('collection_due')).map(d => (
-                    <span key={d.id} className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: 'rgba(126,168,201,0.1)', color: '#7EA8C9' }}>🔵 {d.name} collection due soon</span>
+                    <span key={d.id} className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: 'rgba(59,130,246,0.1)', color: '#3B82F6' }}>🔵 {d.name} collection due soon</span>
                   ))}
                 </div>
               </div>
@@ -79,7 +79,7 @@ export const DropboxesPage = ({
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold" style={{ color: theme.text.primary }}>Fill Levels Today</h3>
               <div className="flex gap-3">
-                {[{ l: 'Achimota', c: theme.accent.primary }, { l: 'Osu', c: '#B5A0D1' }, { l: 'Tema', c: '#D48E8A' }].map(i => (
+                {[{ l: 'Achimota', c: theme.accent.primary }, { l: 'Osu', c: '#8B5CF6' }, { l: 'Tema', c: '#EF4444' }].map(i => (
                   <span key={i.l} className="flex items-center gap-1 text-xs" style={{ color: theme.text.muted }}><span className="w-2 h-2 rounded-full" style={{ backgroundColor: i.c }} />{i.l}</span>
                 ))}
               </div>
@@ -101,15 +101,15 @@ export const DropboxesPage = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {dropboxesData.map(dbx => {
               const fillPercent = Math.round((dbx.currentFill / dbx.capacity) * 100);
-              const fillColor = fillPercent >= 95 ? '#D48E8A' : fillPercent >= 75 ? '#D4AA5A' : fillPercent >= 50 ? '#7EA8C9' : '#81C995';
+              const fillColor = fillPercent >= 95 ? '#EF4444' : fillPercent >= 75 ? '#D97706' : fillPercent >= 50 ? '#3B82F6' : '#10B981';
               const isUrgent = dbx.status === 'full' || dbx.alerts.includes('collection_overdue');
               return (
-                <div key={dbx.id} className="rounded-2xl border overflow-hidden transition-all hover:shadow-lg" style={{ backgroundColor: theme.bg.card, borderColor: isUrgent ? '#D48E8A' : theme.border.primary, borderWidth: isUrgent ? 2 : 1 }}>
+                <div key={dbx.id} className="rounded-2xl border overflow-hidden transition-all hover:shadow-lg" style={{ backgroundColor: theme.bg.card, borderColor: isUrgent ? '#EF4444' : theme.border.primary, borderWidth: isUrgent ? 2 : 1 }}>
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: fillPercent >= 85 ? 'rgba(212,142,138,0.1)' : 'rgba(181,160,209,0.1)' }}>
-                          <Inbox size={24} style={{ color: fillPercent >= 85 ? '#D48E8A' : '#B5A0D1' }} />
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: fillPercent >= 85 ? 'rgba(239,68,68,0.1)' : 'rgba(139,92,246,0.1)' }}>
+                          <Inbox size={24} style={{ color: fillPercent >= 85 ? '#EF4444' : '#8B5CF6' }} />
                         </div>
                         <div>
                           <p className="font-semibold" style={{ color: theme.text.primary }}>{dbx.name}</p>
@@ -148,22 +148,22 @@ export const DropboxesPage = ({
                         <p className="text-xs" style={{ color: theme.text.muted }}>Last Collection</p>
                         <p className="font-medium" style={{ color: theme.text.primary }}>{dbx.lastCollection?.split(' ')[1] || '—'}</p>
                       </div>
-                      <div className="p-2 rounded-lg" style={{ backgroundColor: isUrgent ? 'rgba(212,142,138,0.1)' : theme.bg.tertiary }}>
-                        <p className="text-xs" style={{ color: isUrgent ? '#D48E8A' : theme.text.muted }}>Next Collection</p>
-                        <p className="font-medium" style={{ color: isUrgent ? '#D48E8A' : theme.text.primary }}>{dbx.nextCollection?.split(' ')[1] || 'N/A'}</p>
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: isUrgent ? 'rgba(239,68,68,0.1)' : theme.bg.tertiary }}>
+                        <p className="text-xs" style={{ color: isUrgent ? '#EF4444' : theme.text.muted }}>Next Collection</p>
+                        <p className="font-medium" style={{ color: isUrgent ? '#EF4444' : theme.text.primary }}>{dbx.nextCollection?.split(' ')[1] || 'N/A'}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between text-xs" style={{ color: theme.text.muted }}>
                       <span>Avg. {dbx.avgDailyVolume}/day</span>
                       <span>Total out: {dbx.packagesOut}</span>
-                      <span className="px-2 py-0.5 rounded-full" style={{ backgroundColor: dbx.type === 'premium' ? 'rgba(181,160,209,0.1)' : theme.bg.tertiary, color: dbx.type === 'premium' ? '#B5A0D1' : theme.text.muted }}>{dbx.type}</span>
+                      <span className="px-2 py-0.5 rounded-full" style={{ backgroundColor: dbx.type === 'premium' ? 'rgba(139,92,246,0.1)' : theme.bg.tertiary, color: dbx.type === 'premium' ? '#8B5CF6' : theme.text.muted }}>{dbx.type}</span>
                     </div>
                   </div>
 
                   {/* Actions Footer */}
                   <div className="flex border-t" style={{ borderColor: theme.border.primary }}>
-                    <button onClick={() => addToast({ type: 'info', message: `Scheduling collection for ${dbx.name}` })} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5" style={{ color: '#B5A0D1' }}>
+                    <button onClick={() => addToast({ type: 'info', message: `Scheduling collection for ${dbx.name}` })} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5" style={{ color: '#8B5CF6' }}>
                       <Truck size={14} />Collect
                     </button>
                     <div className="w-px" style={{ backgroundColor: theme.border.primary }} />
@@ -199,7 +199,7 @@ export const DropboxesPage = ({
 
           {/* Priority Collections First */}
           {collectionsData.filter(c => c.status === 'overdue').length > 0 && (
-            <div className="p-4 rounded-2xl" style={{ backgroundColor: 'rgba(212,142,138,0.05)', border: '1px solid rgba(212,142,138,0.2)' }}>
+            <div className="p-4 rounded-2xl" style={{ backgroundColor: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)' }}>
               <p className="text-sm font-semibold text-red-500 mb-3 flex items-center gap-2"><AlertTriangle size={16} /> Overdue Collections</p>
               <div className="space-y-2">
                 {collectionsData.filter(c => c.status === 'overdue').map(c => (
@@ -212,8 +212,8 @@ export const DropboxesPage = ({
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => addToast({ type: 'info', message: `Calling ${c.agent}...` })} className="px-3 py-1.5 rounded-lg text-xs" style={{ backgroundColor: 'rgba(126,168,201,0.1)', color: '#7EA8C9' }}><Phone size={12} className="inline mr-1" />Call Agent</button>
-                      <button onClick={() => addToast({ type: 'success', message: `Reassigning ${c.dropboxName} collection` })} className="px-3 py-1.5 rounded-lg text-xs" style={{ backgroundColor: 'rgba(212,142,138,0.1)', color: '#D48E8A' }}><RefreshCw size={12} className="inline mr-1" />Reassign</button>
+                      <button onClick={() => addToast({ type: 'info', message: `Calling ${c.agent}...` })} className="px-3 py-1.5 rounded-lg text-xs" style={{ backgroundColor: 'rgba(59,130,246,0.1)', color: '#3B82F6' }}><Phone size={12} className="inline mr-1" />Call Agent</button>
+                      <button onClick={() => addToast({ type: 'success', message: `Reassigning ${c.dropboxName} collection` })} className="px-3 py-1.5 rounded-lg text-xs" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#EF4444' }}><RefreshCw size={12} className="inline mr-1" />Reassign</button>
                     </div>
                   </div>
                 ))}
@@ -255,12 +255,12 @@ export const DropboxesPage = ({
               </thead>
               <tbody>
                 {filteredCollections.map(col => (
-                  <tr key={col.id} style={{ borderBottom: `1px solid ${theme.border.primary}`, backgroundColor: col.status === 'overdue' ? 'rgba(212,142,138,0.03)' : 'transparent' }}>
+                  <tr key={col.id} style={{ borderBottom: `1px solid ${theme.border.primary}`, backgroundColor: col.status === 'overdue' ? 'rgba(239,68,68,0.03)' : 'transparent' }}>
                     <td className="p-4"><span className="font-mono text-sm" style={{ color: theme.text.primary }}>{col.id}</span><br/><span className="text-xs" style={{ color: theme.text.muted }}>{col.scheduled}</span></td>
                     <td className="p-4"><span className="text-sm" style={{ color: theme.text.primary }}>{col.dropboxName}</span><br/><span className="text-xs font-mono" style={{ color: theme.text.muted }}>{col.dropbox}</span></td>
                     <td className="p-4 hidden md:table-cell">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs" style={{ backgroundColor: 'rgba(181,160,209,0.1)' }}>{col.agent.charAt(0)}</div>
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs" style={{ backgroundColor: 'rgba(139,92,246,0.1)' }}>{col.agent.charAt(0)}</div>
                         <span className="text-sm" style={{ color: theme.text.primary }}>{col.agent}</span>
                       </div>
                     </td>
@@ -268,7 +268,7 @@ export const DropboxesPage = ({
                     <td className="p-4"><span className="font-bold" style={{ color: theme.text.primary }}>{col.packages}</span></td>
                     <td className="p-4 hidden md:table-cell"><StatusBadge status={col.priority} /></td>
                     <td className="p-4"><StatusBadge status={col.status === 'overdue' ? 'expired' : col.status} /></td>
-                    <td className="p-4 hidden md:table-cell"><span className="text-sm" style={{ color: col.status === 'overdue' ? '#D48E8A' : theme.text.muted }}>{col.eta}</span></td>
+                    <td className="p-4 hidden md:table-cell"><span className="text-sm" style={{ color: col.status === 'overdue' ? '#EF4444' : theme.text.muted }}>{col.eta}</span></td>
                     <td className="p-4 text-right">
                       {col.status === 'scheduled' && <button onClick={() => addToast({ type: 'success', message: `Collection ${col.id} started` })} className="p-2 rounded-lg hover:bg-white/5 text-emerald-500"><CheckCircle size={16} /></button>}
                       {col.status !== 'completed' && <button onClick={() => addToast({ type: 'info', message: `Reassigning ${col.id}` })} className="p-2 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }}><RefreshCw size={16} /></button>}
@@ -302,7 +302,7 @@ export const DropboxesPage = ({
                 <div className="p-5">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style={{ backgroundColor: 'rgba(181,160,209,0.1)' }}>{agent.photo}</div>
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style={{ backgroundColor: 'rgba(139,92,246,0.1)' }}>{agent.photo}</div>
                       <div>
                         <p className="font-semibold text-lg" style={{ color: theme.text.primary }}>{agent.name}</p>
                         <p className="text-sm" style={{ color: theme.text.muted }}>{agent.phone} • {agent.zone}</p>
@@ -313,7 +313,7 @@ export const DropboxesPage = ({
                   </div>
 
                   <div className="grid grid-cols-4 gap-3 mb-4">
-                    {[['Today', agent.collectionsToday, '#B5A0D1'], ['Collected', agent.totalCollected, '#7EA8C9'], ['Rating', `★ ${agent.rating}`, '#D4AA5A'], ['Avg Time', agent.avgCollectionTime, '#81C995']].map(([l, v, c]) => (
+                    {[['Today', agent.collectionsToday, '#8B5CF6'], ['Collected', agent.totalCollected, '#3B82F6'], ['Rating', `★ ${agent.rating}`, '#D97706'], ['Avg Time', agent.avgCollectionTime, '#10B981']].map(([l, v, c]) => (
                       <div key={l} className="p-2 rounded-lg text-center" style={{ backgroundColor: theme.bg.tertiary }}>
                         <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
                         <p className="font-bold" style={{ color: c }}>{v}</p>
@@ -328,11 +328,11 @@ export const DropboxesPage = ({
                         const dbx = dropboxesData.find(d => d.id === dbxId);
                         if (!dbx) return null;
                         const fp = Math.round((dbx.currentFill / dbx.capacity) * 100);
-                        const fc = fp >= 95 ? '#D48E8A' : fp >= 75 ? '#D4AA5A' : '#81C995';
+                        const fc = fp >= 95 ? '#EF4444' : fp >= 75 ? '#D97706' : '#10B981';
                         return (
                           <div key={dbxId} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: theme.bg.tertiary }}>
                             <div className="flex items-center gap-3">
-                              <Inbox size={16} style={{ color: '#B5A0D1' }} />
+                              <Inbox size={16} style={{ color: '#8B5CF6' }} />
                               <div>
                                 <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{dbx.name}</p>
                                 <p className="text-xs" style={{ color: theme.text.muted }}>{dbxId} • {dbx.location}</p>
@@ -354,9 +354,9 @@ export const DropboxesPage = ({
                   </div>
                 </div>
                 <div className="flex border-t" style={{ borderColor: theme.border.primary }}>
-                  <button onClick={() => addToast({ type: 'info', message: `Calling ${agent.name}...` })} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5" style={{ color: '#7EA8C9' }}><Phone size={14} />Call</button>
+                  <button onClick={() => addToast({ type: 'info', message: `Calling ${agent.name}...` })} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5" style={{ color: '#3B82F6' }}><Phone size={14} />Call</button>
                   <div className="w-px" style={{ backgroundColor: theme.border.primary }} />
-                  <button onClick={() => addToast({ type: 'info', message: `Messaging ${agent.name}...` })} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5" style={{ color: '#81C995' }}><MessageSquare size={14} />Message</button>
+                  <button onClick={() => addToast({ type: 'info', message: `Messaging ${agent.name}...` })} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5" style={{ color: '#10B981' }}><MessageSquare size={14} />Message</button>
                   <div className="w-px" style={{ backgroundColor: theme.border.primary }} />
                   <button onClick={() => addToast({ type: 'info', message: `Editing ${agent.name} assignments` })} className="flex-1 flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5" style={{ color: theme.text.secondary }}><Edit size={14} />Edit</button>
                 </div>
@@ -377,7 +377,7 @@ export const DropboxesPage = ({
                     <p className="text-sm" style={{ color: theme.text.muted }}>{agents.length} agent{agents.length !== 1 ? 's' : ''} • {dbxCount} dropbox{dbxCount !== 1 ? 'es' : ''}</p>
                     <div className="flex gap-1 mt-2">
                       {agents.map(a => (
-                        <div key={a.id} className="w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ backgroundColor: a.status === 'active' ? 'rgba(129,201,149,0.2)' : a.status === 'on_delivery' ? 'rgba(126,168,201,0.2)' : 'rgba(120,113,108,0.2)' }}>{a.photo}</div>
+                        <div key={a.id} className="w-6 h-6 rounded-full flex items-center justify-center text-xs" style={{ backgroundColor: a.status === 'active' ? 'rgba(16,185,129,0.2)' : a.status === 'on_delivery' ? 'rgba(59,130,246,0.2)' : 'rgba(120,113,108,0.2)' }}>{a.photo}</div>
                       ))}
                     </div>
                   </div>
@@ -396,12 +396,12 @@ export const DropboxesPage = ({
             <h3 className="font-semibold mb-4" style={{ color: theme.text.primary }}>Dropbox → Locker Pipeline</h3>
             <div className="flex items-center justify-between gap-2 flex-wrap">
               {[
-                { label: 'In Dropbox', count: dropboxFlowData.filter(f => f.stage === 'awaiting_collection').length, color: '#D4AA5A', icon: Inbox },
-                { label: 'Overdue', count: dropboxFlowData.filter(f => f.stage === 'collection_overdue').length, color: '#D48E8A', icon: AlertTriangle },
-                { label: 'Collected', count: dropboxFlowData.filter(f => f.stage === 'collected').length, color: '#7EA8C9', icon: CheckCircle },
+                { label: 'In Dropbox', count: dropboxFlowData.filter(f => f.stage === 'awaiting_collection').length, color: '#D97706', icon: Inbox },
+                { label: 'Overdue', count: dropboxFlowData.filter(f => f.stage === 'collection_overdue').length, color: '#EF4444', icon: AlertTriangle },
+                { label: 'Collected', count: dropboxFlowData.filter(f => f.stage === 'collected').length, color: '#3B82F6', icon: CheckCircle },
                 { label: 'In Transit', count: dropboxFlowData.filter(f => f.stage === 'in_transit').length, color: '#6366f1', icon: Truck },
-                { label: 'At Terminal', count: dropboxFlowData.filter(f => f.stage === 'at_terminal').length, color: '#B5A0D1', icon: Building2 },
-                { label: 'In Locker', count: dropboxFlowData.filter(f => f.stage === 'delivered_to_locker').length, color: '#81C995', icon: Grid3X3 },
+                { label: 'At Terminal', count: dropboxFlowData.filter(f => f.stage === 'at_terminal').length, color: '#8B5CF6', icon: Building2 },
+                { label: 'In Locker', count: dropboxFlowData.filter(f => f.stage === 'delivered_to_locker').length, color: '#10B981', icon: Grid3X3 },
               ].map((stage, idx, arr) => (
                 <React.Fragment key={stage.label}>
                   <div className="flex flex-col items-center p-3 rounded-xl min-w-[90px]" style={{ backgroundColor: `${stage.color}10` }}>
@@ -442,7 +442,7 @@ export const DropboxesPage = ({
                     const steps = ['Dropbox', 'Collected', 'Transit', 'Terminal', 'Locker'];
                     const currentStep = stageInfo?.step ?? 0;
                     return (
-                      <tr key={flow.id} style={{ borderBottom: `1px solid ${theme.border.primary}`, backgroundColor: flow.stage === 'collection_overdue' ? 'rgba(212,142,138,0.03)' : 'transparent' }}>
+                      <tr key={flow.id} style={{ borderBottom: `1px solid ${theme.border.primary}`, backgroundColor: flow.stage === 'collection_overdue' ? 'rgba(239,68,68,0.03)' : 'transparent' }}>
                         <td className="p-4">
                           <span className="font-mono font-medium text-sm" style={{ color: theme.text.primary }}>{flow.waybill}</span>
                           <br/><span className="text-xs" style={{ color: theme.text.muted }}>{flow.depositTime}</span>
@@ -475,7 +475,7 @@ export const DropboxesPage = ({
                           <span className="text-xs" style={{ color: theme.text.muted }}>{flow.targetTerminal}</span>
                         </td>
                         <td className="p-4 hidden lg:table-cell">
-                          <span className="text-sm" style={{ color: flow.stage === 'collection_overdue' ? '#D48E8A' : theme.text.muted }}>{flow.eta}</span>
+                          <span className="text-sm" style={{ color: flow.stage === 'collection_overdue' ? '#EF4444' : theme.text.muted }}>{flow.eta}</span>
                         </td>
                       </tr>
                     );
@@ -490,7 +490,7 @@ export const DropboxesPage = ({
             <div className="p-5 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
               <h3 className="font-semibold mb-3" style={{ color: theme.text.primary }}>Avg. Flow Time</h3>
               <div className="space-y-3">
-                {[['Dropbox → Collection', '2.4 hrs', '#D4AA5A'], ['Collection → Terminal', '1.2 hrs', '#6366f1'], ['Terminal → Locker', '0.5 hrs', '#81C995'], ['Total End-to-End', '4.1 hrs', '#B5A0D1']].map(([l, v, c]) => (
+                {[['Dropbox → Collection', '2.4 hrs', '#D97706'], ['Collection → Terminal', '1.2 hrs', '#6366f1'], ['Terminal → Locker', '0.5 hrs', '#10B981'], ['Total End-to-End', '4.1 hrs', '#8B5CF6']].map(([l, v, c]) => (
                   <div key={l} className="flex items-center justify-between">
                     <span className="text-sm" style={{ color: theme.text.muted }}>{l}</span>
                     <span className="font-bold" style={{ color: c }}>{v}</span>
@@ -503,11 +503,11 @@ export const DropboxesPage = ({
               <div className="space-y-3">
                 {dropboxesData.filter(d => d.status !== 'maintenance').sort((a, b) => b.avgDailyVolume - a.avgDailyVolume).slice(0, 4).map((d, i) => (
                   <div key={d.id} className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: i === 0 ? '#D4AA5A' : i === 1 ? '#a3a3a3' : i === 2 ? '#cd7c32' : theme.border.secondary, color: '#1C1917' }}>{i + 1}</span>
+                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: i === 0 ? '#D97706' : i === 1 ? '#a3a3a3' : i === 2 ? '#cd7c32' : theme.border.secondary, color: '#1C1917' }}>{i + 1}</span>
                     <div className="flex-1">
                       <p className="text-sm" style={{ color: theme.text.primary }}>{d.name}</p>
                     </div>
-                    <span className="text-sm font-bold" style={{ color: '#B5A0D1' }}>{d.avgDailyVolume}/day</span>
+                    <span className="text-sm font-bold" style={{ color: '#8B5CF6' }}>{d.avgDailyVolume}/day</span>
                   </div>
                 ))}
               </div>
@@ -517,7 +517,7 @@ export const DropboxesPage = ({
               <div className="space-y-3">
                 {dropboxFlowData.filter(f => f.stage === 'collection_overdue').length > 0 ? (
                   dropboxFlowData.filter(f => f.stage === 'collection_overdue').map(f => (
-                    <div key={f.id} className="flex items-center gap-2 p-2 rounded-lg" style={{ backgroundColor: 'rgba(212,142,138,0.05)' }}>
+                    <div key={f.id} className="flex items-center gap-2 p-2 rounded-lg" style={{ backgroundColor: 'rgba(239,68,68,0.05)' }}>
                       <AlertTriangle size={14} className="text-red-500 shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-red-500">{f.dropboxName}</p>

@@ -192,12 +192,12 @@ const buildWorkflowData = (theme) => ({
 // ============ NODE COLOR HELPERS ============
 const getNodeColors = (type, theme) => {
   const map = {
-    start:        { bg: 'rgba(129,201,149,0.12)', border: 'rgba(129,201,149,0.4)', text: theme.text.primary, icon: '#81C995' },
-    end:          { bg: 'rgba(129,201,149,0.12)', border: 'rgba(129,201,149,0.4)', text: theme.text.primary, icon: '#81C995' },
-    process:      { bg: 'rgba(126,168,201,0.12)', border: 'rgba(126,168,201,0.4)', text: theme.text.primary, icon: '#7EA8C9' },
-    action:       { bg: 'rgba(181,160,209,0.12)', border: 'rgba(181,160,209,0.4)', text: theme.text.primary, icon: '#B5A0D1' },
-    decision:     { bg: 'rgba(212,170,90,0.12)',  border: 'rgba(212,170,90,0.4)',  text: theme.text.primary, icon: '#D4AA5A' },
-    notification: { bg: 'rgba(212,142,138,0.12)', border: 'rgba(212,142,138,0.4)', text: theme.text.primary, icon: '#D48E8A' },
+    start:        { bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', text: theme.text.primary, icon: '#10B981' },
+    end:          { bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', text: theme.text.primary, icon: '#10B981' },
+    process:      { bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.4)', text: theme.text.primary, icon: '#3B82F6' },
+    action:       { bg: 'rgba(139,92,246,0.12)', border: 'rgba(139,92,246,0.4)', text: theme.text.primary, icon: '#8B5CF6' },
+    decision:     { bg: 'rgba(217,119,6,0.12)',  border: 'rgba(217,119,6,0.4)',  text: theme.text.primary, icon: '#D97706' },
+    notification: { bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.4)', text: theme.text.primary, icon: '#EF4444' },
     api:          { bg: theme.accent.light,        border: theme.accent.border,      text: theme.text.primary, icon: theme.accent.primary },
   };
   return map[type] || map.process;

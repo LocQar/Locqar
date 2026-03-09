@@ -299,8 +299,8 @@ export const DashboardPage = ({
             <div className="flex gap-2">
               {[
                 { label: "Accra", color: theme.accent.primary },
-                { label: "Achimota", color: "#7EA8C9" },
-                { label: "Kotoka", color: "#81C995" },
+                { label: "Achimota", color: "#3B82F6" },
+                { label: "Kotoka", color: "#10B981" },
               ].map((l) => (
                 <span
                   key={l.label}
@@ -368,14 +368,14 @@ export const DashboardPage = ({
                 <Area
                   type="monotone"
                   dataKey="achimota"
-                  stroke="#7EA8C9"
+                  stroke="#3B82F6"
                   fill="transparent"
                   strokeWidth={2}
                 />
                 <Area
                   type="monotone"
                   dataKey="kotoka"
-                  stroke="#81C995"
+                  stroke="#10B981"
                   fill="transparent"
                   strokeWidth={2}
                 />
@@ -415,10 +415,10 @@ export const DashboardPage = ({
                         className="w-3 h-3 rounded-full"
                         style={{
                           backgroundColor: [
-                            "#81C995",
-                            "#7EA8C9",
-                            "#D4AA5A",
-                            "#D48E8A",
+                            "#10B981",
+                            "#3B82F6",
+                            "#D97706",
+                            "#EF4444",
                             "#78716C",
                           ][i],
                         }}

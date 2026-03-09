@@ -57,15 +57,15 @@ function TerminalDrawer({ terminal, onSave, onClose, theme }) {
       {As === 'select' ? (
         <select value={form[field]} onChange={e => set(field, e.target.value)}
           className="w-full px-3 py-2 rounded-xl border text-sm"
-          style={{ backgroundColor: theme.bg.input, borderColor: errors[field] ? '#D48E8A' : theme.border.primary, color: theme.text.primary }}>
+          style={{ backgroundColor: theme.bg.input, borderColor: errors[field] ? '#EF4444' : theme.border.primary, color: theme.text.primary }}>
           {children}
         </select>
       ) : (
         <input type={type} value={form[field]} onChange={e => set(field, e.target.value)} placeholder={placeholder}
           className="w-full px-3 py-2 rounded-xl border text-sm"
-          style={{ backgroundColor: theme.bg.input, borderColor: errors[field] ? '#D48E8A' : theme.border.primary, color: theme.text.primary }} />
+          style={{ backgroundColor: theme.bg.input, borderColor: errors[field] ? '#EF4444' : theme.border.primary, color: theme.text.primary }} />
       )}
-      {errors[field] && <p className="text-xs mt-1" style={{ color: '#D48E8A' }}>{errors[field]}</p>}
+      {errors[field] && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors[field]}</p>}
     </div>
   );
 
@@ -137,20 +137,20 @@ function DeleteDialog({ terminal, onConfirm, onClose, theme }) {
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative p-6 rounded-2xl border w-full max-w-sm mx-4"
         style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }} onClick={e => e.stopPropagation()}>
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#D48E8A15' }}>
-          <Trash2 size={22} style={{ color: '#D48E8A' }} />
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#EF444415' }}>
+          <Trash2 size={22} style={{ color: '#EF4444' }} />
         </div>
         <h3 className="text-base font-semibold text-center mb-1" style={{ color: theme.text.primary }}>Delete Terminal</h3>
         <p className="text-sm text-center mb-1" style={{ color: theme.text.muted }}>Are you sure you want to delete</p>
         <p className="text-sm font-semibold text-center mb-4" style={{ color: theme.text.primary }}>{terminal.name}?</p>
-        <p className="text-xs text-center mb-5 px-2" style={{ color: '#D48E8A' }}>
+        <p className="text-xs text-center mb-5 px-2" style={{ color: '#EF4444' }}>
           This will remove the terminal record. Locker and package data linked to this terminal will remain.
         </p>
         <div className="flex gap-3">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border text-sm font-medium"
             style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
           <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-sm font-medium"
-            style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Delete</button>
+            style={{ backgroundColor: '#EF4444', color: '#fff' }}>Delete</button>
         </div>
       </div>
     </div>
@@ -254,10 +254,10 @@ export const TerminalsPage = ({
 
   const getDoorColor = (door) => {
     if (!door.enabled) return theme.text.muted;
-    if (door.status === 'maintenance') return '#D48E8A';
-    if (door.opened) return '#D4AA5A';
-    if (door.occupied) return '#7EA8C9';
-    return '#81C995';
+    if (door.status === 'maintenance') return '#EF4444';
+    if (door.opened) return '#D97706';
+    if (door.occupied) return '#3B82F6';
+    return '#10B981';
   };
 
   const getDoorLabel = (door) => {
@@ -288,12 +288,12 @@ export const TerminalsPage = ({
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {[
           ['Total Lockers', terminals.reduce((s, t) => s + t.totalLockers, 0), Grid3X3, null],
-          ['Available', terminals.reduce((s, t) => s + t.available, 0), Unlock, '#81C995'],
-          ['Occupied', terminals.reduce((s, t) => s + t.occupied, 0), Package, '#7EA8C9'],
-          ['Maintenance', terminals.reduce((s, t) => s + t.maintenance, 0), Wrench, '#D48E8A'],
+          ['Available', terminals.reduce((s, t) => s + t.available, 0), Unlock, '#10B981'],
+          ['Occupied', terminals.reduce((s, t) => s + t.occupied, 0), Package, '#3B82F6'],
+          ['Maintenance', terminals.reduce((s, t) => s + t.maintenance, 0), Wrench, '#EF4444'],
           ['Utilization', terminals.reduce((s, t) => s + t.totalLockers, 0) > 0
             ? `${Math.round(terminals.reduce((s, t) => s + t.occupied, 0) / terminals.reduce((s, t) => s + t.totalLockers, 0) * 100)}%`
-            : '0%', TrendingUp, '#B5A0D1'],
+            : '0%', TrendingUp, '#8B5CF6'],
         ].map(([l, v, I, c]) => (
           <div key={l} className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
             <div className="flex items-center gap-2 mb-1">
@@ -372,7 +372,7 @@ export const TerminalsPage = ({
                           </button>
                           <button onClick={e => handleDeleteClick(e, t)}
                             className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                            style={{ backgroundColor: '#D48E8A15', color: '#D48E8A' }} title="Delete terminal">
+                            style={{ backgroundColor: '#EF444415', color: '#EF4444' }} title="Delete terminal">
                             <Trash2 size={13} />
                           </button>
                         </div>
@@ -380,23 +380,23 @@ export const TerminalsPage = ({
                     </div>
                     <div className="flex items-center gap-1">
                       {t.connect === 1
-                        ? <><Wifi size={12} style={{ color: '#81C995' }} /><span className="text-xs" style={{ color: '#81C995' }}>Connected</span></>
-                        : <><WifiOff size={12} style={{ color: '#D48E8A' }} /><span className="text-xs" style={{ color: '#D48E8A' }}>Disconnected</span></>}
+                        ? <><Wifi size={12} style={{ color: '#10B981' }} /><span className="text-xs" style={{ color: '#10B981' }}>Connected</span></>
+                        : <><WifiOff size={12} style={{ color: '#EF4444' }} /><span className="text-xs" style={{ color: '#EF4444' }}>Disconnected</span></>}
                     </div>
                   </div>
                 </div>
                 <div className="mb-3">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs" style={{ color: theme.text.muted }}>Utilization</span>
-                    <span className="text-xs font-medium" style={{ color: utilPct > 80 ? '#D48E8A' : utilPct > 60 ? '#D4AA5A' : '#81C995' }}>{utilPct}%</span>
+                    <span className="text-xs font-medium" style={{ color: utilPct > 80 ? '#EF4444' : utilPct > 60 ? '#D97706' : '#10B981' }}>{utilPct}%</span>
                   </div>
                   <div className="w-full h-2 rounded-full" style={{ backgroundColor: theme.border.primary }}>
                     <div className="h-full rounded-full transition-all"
-                      style={{ width: `${utilPct}%`, backgroundColor: utilPct > 80 ? '#D48E8A' : utilPct > 60 ? '#D4AA5A' : '#81C995' }} />
+                      style={{ width: `${utilPct}%`, backgroundColor: utilPct > 80 ? '#EF4444' : utilPct > 60 ? '#D97706' : '#10B981' }} />
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-2 text-center">
-                  {[['Total', t.totalLockers, null], ['Open', t.available, '#81C995'], ['In Use', t.occupied, '#7EA8C9'], ['Maint.', t.maintenance, '#D48E8A']].map(([l, v, c]) => (
+                  {[['Total', t.totalLockers, null], ['Open', t.available, '#10B981'], ['In Use', t.occupied, '#3B82F6'], ['Maint.', t.maintenance, '#EF4444']].map(([l, v, c]) => (
                     <div key={l} className="p-2 rounded-lg" style={{ backgroundColor: c ? `${c}10` : theme.bg.tertiary }}>
                       <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
                       <p className="text-lg font-bold" style={{ color: c || theme.text.primary }}>{v}</p>
@@ -464,8 +464,8 @@ export const TerminalsPage = ({
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-mono" style={{ color: theme.text.muted }}>SN: {t.sn}</span>
                         {t.connect === 1
-                          ? <span className="flex items-center gap-1"><Wifi size={10} style={{ color: '#81C995' }} /><span className="text-xs" style={{ color: '#81C995' }}>Online</span></span>
-                          : <span className="flex items-center gap-1"><WifiOff size={10} style={{ color: '#D48E8A' }} /><span className="text-xs" style={{ color: '#D48E8A' }}>Offline</span></span>}
+                          ? <span className="flex items-center gap-1"><Wifi size={10} style={{ color: '#10B981' }} /><span className="text-xs" style={{ color: '#10B981' }}>Online</span></span>
+                          : <span className="flex items-center gap-1"><WifiOff size={10} style={{ color: '#EF4444' }} /><span className="text-xs" style={{ color: '#EF4444' }}>Offline</span></span>}
                       </div>
                     </div>
                   </div>
@@ -485,15 +485,15 @@ export const TerminalsPage = ({
                   <p className="text-sm font-semibold text-center" style={{ color: theme.text.primary }}>{t.totalLockers}</p>
 
                   {/* Available */}
-                  <p className="text-sm font-semibold text-center" style={{ color: '#81C995' }}>{t.available}</p>
+                  <p className="text-sm font-semibold text-center" style={{ color: '#10B981' }}>{t.available}</p>
 
                   {/* Utilization bar */}
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 rounded-full" style={{ backgroundColor: theme.border.primary }}>
-                      <div className="h-full rounded-full" style={{ width: `${utilPct}%`, backgroundColor: utilPct > 80 ? '#D48E8A' : utilPct > 60 ? '#D4AA5A' : '#81C995' }} />
+                      <div className="h-full rounded-full" style={{ width: `${utilPct}%`, backgroundColor: utilPct > 80 ? '#EF4444' : utilPct > 60 ? '#D97706' : '#10B981' }} />
                     </div>
                     <span className="text-xs font-mono w-8 text-right flex-shrink-0"
-                      style={{ color: utilPct > 80 ? '#D48E8A' : utilPct > 60 ? '#D4AA5A' : '#81C995' }}>
+                      style={{ color: utilPct > 80 ? '#EF4444' : utilPct > 60 ? '#D97706' : '#10B981' }}>
                       {utilPct}%
                     </span>
                   </div>
@@ -509,7 +509,7 @@ export const TerminalsPage = ({
                         </button>
                         <button onClick={e => handleDeleteClick(e, t)}
                           className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ backgroundColor: '#D48E8A15', color: '#D48E8A' }} title="Delete">
+                          style={{ backgroundColor: '#EF444415', color: '#EF4444' }} title="Delete">
                           <Trash2 size={13} />
                         </button>
                       </>
@@ -581,8 +581,8 @@ export const TerminalsPage = ({
                 <div className="flex items-center gap-2">
                   <StatusBadge status={selectedTerminal.status} />
                   {selectedTerminal.connect === 1
-                    ? <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#81C99515', color: '#81C995' }}><Wifi size={12} />Connected</span>
-                    : <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#D48E8A15', color: '#D48E8A' }}><WifiOff size={12} />Disconnected</span>}
+                    ? <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#10B98115', color: '#10B981' }}><Wifi size={12} />Connected</span>
+                    : <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#EF444415', color: '#EF4444' }}><WifiOff size={12} />Disconnected</span>}
                 </div>
               </div>
               <div className="space-y-2 text-sm">
@@ -612,7 +612,7 @@ export const TerminalsPage = ({
                 </button>
               </div>
               <div className="flex flex-wrap gap-3 mb-3">
-                {[['Available', '#81C995'], ['Occupied', '#7EA8C9'], ['Open', '#D4AA5A'], ['Maintenance', '#D48E8A'], ['Disabled', theme.text.muted]].map(([l, c]) => (
+                {[['Available', '#10B981'], ['Occupied', '#3B82F6'], ['Open', '#D97706'], ['Maintenance', '#EF4444'], ['Disabled', theme.text.muted]].map(([l, c]) => (
                   <div key={l} className="flex items-center gap-1.5">
                     <div className="w-3 h-3 rounded" style={{ backgroundColor: c }} />
                     <span className="text-xs" style={{ color: theme.text.muted }}>{l}</span>
@@ -648,7 +648,7 @@ export const TerminalsPage = ({
                   {selectedDoor.package && <p className="text-xs mb-3" style={{ color: theme.text.muted }}>Package: <span className="font-mono" style={{ color: theme.accent.primary }}>{selectedDoor.package}</span></p>}
                   <button onClick={() => handleRemoteOpen(selectedDoor)}
                     className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
-                    style={{ backgroundColor: '#D4AA5A20', color: '#D4AA5A' }}>
+                    style={{ backgroundColor: '#D9770620', color: '#D97706' }}>
                     <DoorOpen size={16} />Remote Open Door
                   </button>
                 </div>
@@ -659,7 +659,7 @@ export const TerminalsPage = ({
             <div className="p-4 rounded-xl border mb-4" style={{ borderColor: theme.border.primary, backgroundColor: theme.bg.card }}>
               <h3 className="text-sm font-semibold mb-3" style={{ color: theme.text.primary }}>Capacity Overview</h3>
               <div className="grid grid-cols-4 gap-3 text-center mb-4">
-                {[['Total', selectedTerminal.totalLockers, null], ['Available', selectedTerminal.available, '#81C995'], ['Occupied', selectedTerminal.occupied, '#7EA8C9'], ['Maint.', selectedTerminal.maintenance, '#D48E8A']].map(([l, v, c]) => (
+                {[['Total', selectedTerminal.totalLockers, null], ['Available', selectedTerminal.available, '#10B981'], ['Occupied', selectedTerminal.occupied, '#3B82F6'], ['Maint.', selectedTerminal.maintenance, '#EF4444']].map(([l, v, c]) => (
                   <div key={l} className="p-3 rounded-xl" style={{ backgroundColor: c ? `${c}10` : theme.bg.tertiary }}>
                     <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
                     <p className="text-xl font-bold" style={{ color: c || theme.text.primary }}>{v}</p>
@@ -668,7 +668,7 @@ export const TerminalsPage = ({
               </div>
               <h4 className="text-xs font-semibold uppercase mb-2" style={{ color: theme.text.muted }}>Size Distribution (estimated)</h4>
               <div className="space-y-2">
-                {[{ label: 'Small', pct: 30, color: '#81C995' }, { label: 'Medium', pct: 35, color: '#7EA8C9' }, { label: 'Large', pct: 25, color: '#B5A0D1' }, { label: 'XLarge', pct: 10, color: '#D4AA5A' }].map(s => {
+                {[{ label: 'Small', pct: 30, color: '#10B981' }, { label: 'Medium', pct: 35, color: '#3B82F6' }, { label: 'Large', pct: 25, color: '#8B5CF6' }, { label: 'XLarge', pct: 10, color: '#D97706' }].map(s => {
                   const count = Math.floor(selectedTerminal.totalLockers * s.pct / 100);
                   return (
                     <div key={s.label} className="flex items-center gap-3">
@@ -687,14 +687,14 @@ export const TerminalsPage = ({
             {terminalDetails.errors.length > 0 && (
               <div className="p-4 rounded-xl border mb-4" style={{ borderColor: theme.border.primary, backgroundColor: theme.bg.card }}>
                 <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle size={16} style={{ color: '#D48E8A' }} />
+                  <AlertTriangle size={16} style={{ color: '#EF4444' }} />
                   <h3 className="text-sm font-semibold" style={{ color: theme.text.primary }}>Error Log ({terminalDetails.errors.length})</h3>
                 </div>
                 <div className="space-y-2">
                   {terminalDetails.errors.map(err => (
                     <div key={err.id} className="p-3 rounded-lg" style={{ backgroundColor: theme.bg.tertiary }}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-mono font-bold" style={{ color: '#D48E8A' }}>{err.errorCode}</span>
+                        <span className="text-xs font-mono font-bold" style={{ color: '#EF4444' }}>{err.errorCode}</span>
                         <span className="text-xs" style={{ color: theme.text.muted }}>{err.createTime}</span>
                       </div>
                       <p className="text-sm" style={{ color: theme.text.primary }}>{err.describe}</p>
@@ -762,7 +762,7 @@ export const TerminalsPage = ({
             </p>
             <div className="flex items-center justify-center gap-3 p-4 rounded-xl mb-4" style={{ backgroundColor: theme.bg.tertiary }}>
               <span className="text-4xl font-mono font-bold tracking-[0.3em]" style={{ color: theme.accent.primary }}>{generatedPin}</span>
-              <button onClick={handleCopyPin} className="p-2 rounded-lg transition-colors" style={{ color: copiedPin ? '#81C995' : theme.text.muted }}>
+              <button onClick={handleCopyPin} className="p-2 rounded-lg transition-colors" style={{ color: copiedPin ? '#10B981' : theme.text.muted }}>
                 {copiedPin ? <Check size={20} /> : <Copy size={20} />}
               </button>
             </div>

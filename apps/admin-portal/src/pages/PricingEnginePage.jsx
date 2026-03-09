@@ -13,16 +13,16 @@ const INITIAL_RATE_CARD = [
 
 const INITIAL_SLA_TIERS = [
   { id: 'SLA-STD', name: 'Standard', description: 'Next-day delivery to locker', hours: 24, multiplier: 1.0, color: '#78716C', icon: '🕐' },
-  { id: 'SLA-EXP', name: 'Express', description: 'Same-day delivery (before 6PM)', hours: 8, multiplier: 1.5, color: '#D4AA5A', icon: '⚡' },
-  { id: 'SLA-RUSH', name: 'Rush', description: 'Within 4 hours', hours: 4, multiplier: 2.2, color: '#D48E8A', icon: '🔥' },
-  { id: 'SLA-ECO', name: 'Economy', description: '2-3 business days', hours: 72, multiplier: 0.75, color: '#81C995', icon: '🌿' },
+  { id: 'SLA-EXP', name: 'Express', description: 'Same-day delivery (before 6PM)', hours: 8, multiplier: 1.5, color: '#D97706', icon: '⚡' },
+  { id: 'SLA-RUSH', name: 'Rush', description: 'Within 4 hours', hours: 4, multiplier: 2.2, color: '#EF4444', icon: '🔥' },
+  { id: 'SLA-ECO', name: 'Economy', description: '2-3 business days', hours: 72, multiplier: 0.75, color: '#10B981', icon: '🌿' },
 ];
 
 const INITIAL_DELIVERY_METHODS = [
-  { id: 'DM-WL', method: 'warehouse_to_locker', label: 'Warehouse → Locker', baseMarkup: 0, description: 'Standard flow. Package from partner warehouse to locker terminal.', icon: Warehouse, color: '#7EA8C9' },
-  { id: 'DM-DL', method: 'dropbox_to_locker', label: 'Dropbox → Locker', baseMarkup: 3, description: 'Customer drops off at dropbox, collected and routed to locker.', icon: Inbox, color: '#B5A0D1' },
-  { id: 'DM-LH', method: 'locker_to_home', label: 'Locker → Home', baseMarkup: 8, description: 'Last-mile home delivery from locker terminal. Includes driver dispatch.', icon: Home, color: '#81C995' },
-  { id: 'DM-WH', method: 'warehouse_to_home', label: 'Warehouse → Home (Direct)', baseMarkup: 12, description: 'Direct home delivery bypassing locker network. Premium service.', icon: Truck, color: '#D4AA5A' },
+  { id: 'DM-WL', method: 'warehouse_to_locker', label: 'Warehouse → Locker', baseMarkup: 0, description: 'Standard flow. Package from partner warehouse to locker terminal.', icon: Warehouse, color: '#3B82F6' },
+  { id: 'DM-DL', method: 'dropbox_to_locker', label: 'Dropbox → Locker', baseMarkup: 3, description: 'Customer drops off at dropbox, collected and routed to locker.', icon: Inbox, color: '#8B5CF6' },
+  { id: 'DM-LH', method: 'locker_to_home', label: 'Locker → Home', baseMarkup: 8, description: 'Last-mile home delivery from locker terminal. Includes driver dispatch.', icon: Home, color: '#10B981' },
+  { id: 'DM-WH', method: 'warehouse_to_home', label: 'Warehouse → Home (Direct)', baseMarkup: 12, description: 'Direct home delivery bypassing locker network. Premium service.', icon: Truck, color: '#D97706' },
 ];
 
 const INITIAL_SURCHARGES = [
@@ -58,7 +58,7 @@ const INITIAL_PARTNERS = [
 ];
 
 const TIER_META = {
-  gold: { label: 'Gold', color: '#D4AA5A', bg: 'rgba(212,170,90,0.18)' },
+  gold: { label: 'Gold', color: '#D97706', bg: 'rgba(217,119,6,0.18)' },
   silver: { label: 'Silver', color: '#a3a3a3', bg: 'rgba(163,163,163,0.18)' },
   bronze: { label: 'Bronze', color: '#cd7c32', bg: 'rgba(205,124,50,0.18)' },
 };
@@ -148,7 +148,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
           <F label="Description"><input type="text" value={editSC.description} onChange={e => setEditSC({ ...editSC, description: e.target.value })} className={IC} style={is()} /></F>
           <div className="flex items-center justify-between py-1">
             <span className="text-sm" style={{ color: theme.text.secondary }}>Active</span>
-            <button onClick={() => setEditSC({ ...editSC, active: !editSC.active })} style={{ color: editSC.active ? '#81C995' : theme.icon.muted }}>
+            <button onClick={() => setEditSC({ ...editSC, active: !editSC.active })} style={{ color: editSC.active ? '#10B981' : theme.icon.muted }}>
               {editSC.active ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
             </button>
           </div>
@@ -216,7 +216,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-sm font-medium" style={{ color: theme.text.primary }}>Custom Rate Card</p>
-                  <button onClick={() => setEditPartner({ ...editPartner, customRates: editPartner.customRates ? null : { Small: 10, Medium: 15, Large: 21, XLarge: 32 } })} style={{ color: editPartner.customRates ? '#81C995' : theme.icon.muted }}>
+                  <button onClick={() => setEditPartner({ ...editPartner, customRates: editPartner.customRates ? null : { Small: 10, Medium: 15, Large: 21, XLarge: 32 } })} style={{ color: editPartner.customRates ? '#10B981' : theme.icon.muted }}>
                     {editPartner.customRates ? <ToggleRight size={26} /> : <ToggleLeft size={26} />}
                   </button>
                 </div>
@@ -234,7 +234,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
 
               <div className="flex items-center justify-between py-1 border-t" style={{ borderColor: theme.border.primary }}>
                 <span className="text-sm" style={{ color: theme.text.secondary }}>Contract Rate</span>
-                <button onClick={() => setEditPartner({ ...editPartner, contractRate: !editPartner.contractRate })} style={{ color: editPartner.contractRate ? '#81C995' : theme.icon.muted }}>
+                <button onClick={() => setEditPartner({ ...editPartner, contractRate: !editPartner.contractRate })} style={{ color: editPartner.contractRate ? '#10B981' : theme.icon.muted }}>
                   {editPartner.contractRate ? <ToggleRight size={26} /> : <ToggleLeft size={26} />}
                 </button>
               </div>
@@ -300,8 +300,8 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
                     <td className="p-3 text-sm" style={{ color: theme.text.secondary }}>{r.dimensions}</td>
                     <td className="p-3 text-sm" style={{ color: theme.text.secondary }}>{r.maxWeight} kg</td>
                     <td className="p-3 font-medium text-sm" style={{ color: theme.accent.primary }}>GH₵ {r.basePrice.toFixed(2)}</td>
-                    <td className="p-3 text-sm hidden md:table-cell" style={{ color: '#D4AA5A' }}>GH₵ {(r.basePrice * 1.5).toFixed(2)}</td>
-                    <td className="p-3 text-sm hidden md:table-cell" style={{ color: '#D48E8A' }}>GH₵ {(r.basePrice * 2.2).toFixed(2)}</td>
+                    <td className="p-3 text-sm hidden md:table-cell" style={{ color: '#D97706' }}>GH₵ {(r.basePrice * 1.5).toFixed(2)}</td>
+                    <td className="p-3 text-sm hidden md:table-cell" style={{ color: '#EF4444' }}>GH₵ {(r.basePrice * 2.2).toFixed(2)}</td>
                     <td className="p-3">
                       <button onClick={() => setEditRate({ ...r })} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.icon.muted }}><Edit2 size={14} /></button>
                     </td>
@@ -327,7 +327,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="text-2xl font-bold" style={{ color: dm.baseMarkup > 0 ? dm.color : '#81C995' }}>+{dm.baseMarkup}%</p>
+                  <p className="text-2xl font-bold" style={{ color: dm.baseMarkup > 0 ? dm.color : '#10B981' }}>+{dm.baseMarkup}%</p>
                   <p className="text-xs" style={{ color: theme.text.muted }}>markup on base</p>
                 </div>
                 <button onClick={() => setEditDM({ ...dm })} className="p-2 rounded-xl hover:bg-white/5" style={{ color: theme.icon.muted }}><Edit2 size={16} /></button>
@@ -381,7 +381,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
           <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: theme.border.primary }}>
             <h3 className="font-semibold" style={{ color: theme.text.primary }}>Surcharges & Fees</h3>
             <div className="flex gap-3 text-xs" style={{ color: theme.text.muted }}>
-              <span style={{ color: '#81C995' }}>{surcharges.filter(s => s.active).length} active</span>
+              <span style={{ color: '#10B981' }}>{surcharges.filter(s => s.active).length} active</span>
               <span>· {surcharges.filter(s => !s.active).length} inactive</span>
             </div>
           </div>
@@ -411,7 +411,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
                     <button
                       onClick={() => { setSurcharges(p => p.map(s => s.id === sc.id ? { ...s, active: !s.active } : s)); toast(`${sc.name} ${sc.active ? 'deactivated' : 'activated'}`); }}
                       title={sc.active ? 'Click to deactivate' : 'Click to activate'}
-                      style={{ color: sc.active ? '#81C995' : theme.icon.muted }}
+                      style={{ color: sc.active ? '#10B981' : theme.icon.muted }}
                     >
                       {sc.active ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}
                     </button>
@@ -437,7 +437,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
                 </button>
                 <p className="font-semibold" style={{ color: theme.text.primary }}>{vt.label}</p>
                 <p className="text-xs mb-2" style={{ color: theme.text.muted }}>{vt.min}–{vt.max === Infinity ? '∞' : vt.max} pkgs/mo</p>
-                <p className="text-3xl font-bold" style={{ color: i === 0 ? theme.text.muted : '#81C995' }}>{vt.discount}%</p>
+                <p className="text-3xl font-bold" style={{ color: i === 0 ? theme.text.muted : '#10B981' }}>{vt.discount}%</p>
                 <p className="text-xs" style={{ color: theme.text.muted }}>discount</p>
               </div>
             ))}
@@ -473,7 +473,7 @@ export const PricingEnginePage = ({ activeSubMenu, setShowExport, addToast }) =>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
                     <p className="text-xs" style={{ color: theme.text.muted }}>Volume Discount</p>
-                    <p className="text-xl font-bold" style={{ color: '#81C995' }}>{pp.volumeDiscount}%</p>
+                    <p className="text-xl font-bold" style={{ color: '#10B981' }}>{pp.volumeDiscount}%</p>
                   </div>
                   <button onClick={() => setEditPartner({ ...pp, customRates: pp.customRates ? { ...pp.customRates } : null })} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>
                     <Edit2 size={12} />Edit Override

@@ -238,7 +238,7 @@ export const PackagesPage = ({
                   {[['all', 'Any'], ['0', '0d'], ['1-2', '1–2d'], ['3-5', '3–5d'], ['5+', '5+d']].map(([k, l]) => (
                     <button key={k} onClick={() => setLF('daysInLocker', k)}
                       className="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all"
-                      style={{ backgroundColor: localFilters.daysInLocker === k ? '#D4AA5A' : 'transparent', color: localFilters.daysInLocker === k ? '#fff' : theme.text.secondary, borderColor: localFilters.daysInLocker === k ? '#D4AA5A' : theme.border.primary }}>
+                      style={{ backgroundColor: localFilters.daysInLocker === k ? '#D97706' : 'transparent', color: localFilters.daysInLocker === k ? '#fff' : theme.text.secondary, borderColor: localFilters.daysInLocker === k ? '#D97706' : theme.border.primary }}>
                       {l}
                     </button>
                   ))}
@@ -247,7 +247,7 @@ export const PackagesPage = ({
 
               {/* Clear */}
               {activeFilterCount > 0 && (
-                <button onClick={clearFilters} className="w-full py-2 rounded-xl text-sm border" style={{ borderColor: '#D48E8A40', color: '#D48E8A' }}>
+                <button onClick={clearFilters} className="w-full py-2 rounded-xl text-sm border" style={{ borderColor: '#EF444440', color: '#EF4444' }}>
                   Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
                 </button>
               )}
@@ -263,7 +263,7 @@ export const PackagesPage = ({
           {localFilters.cod !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: theme.accent.light, borderColor: theme.accent.border, color: theme.accent.primary }}>{localFilters.cod === 'cod' ? 'COD Only' : 'Non-COD'}<button onClick={() => setLF('cod', 'all')}><X size={11} /></button></span>}
           {localFilters.destination !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: theme.accent.light, borderColor: theme.accent.border, color: theme.accent.primary }}>{localFilters.destination}<button onClick={() => setLF('destination', 'all')}><X size={11} /></button></span>}
           {(localFilters.minValue !== '' || localFilters.maxValue !== '') && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: theme.accent.light, borderColor: theme.accent.border, color: theme.accent.primary }}>GH₵ {localFilters.minValue || '0'} – {localFilters.maxValue || '∞'}<button onClick={() => { setLF('minValue', ''); setLF('maxValue', ''); }}><X size={11} /></button></span>}
-          {localFilters.daysInLocker !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: '#D4AA5A15', borderColor: '#D4AA5A40', color: '#D4AA5A' }}>Locker: {localFilters.daysInLocker}d<button onClick={() => setLF('daysInLocker', 'all')}><X size={11} /></button></span>}
+          {localFilters.daysInLocker !== 'all' && <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: '#D9770615', borderColor: '#D9770640', color: '#D97706' }}>Locker: {localFilters.daysInLocker}d<button onClick={() => setLF('daysInLocker', 'all')}><X size={11} /></button></span>}
         </div>
       )}
 
@@ -488,7 +488,7 @@ export const PackagesPage = ({
             </p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={() => { onDeletePackage(deleteConfirm); setDeleteConfirm(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Delete</button>
+              <button onClick={() => { onDeletePackage(deleteConfirm); setDeleteConfirm(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Delete</button>
             </div>
           </div>
         </div>

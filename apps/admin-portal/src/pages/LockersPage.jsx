@@ -22,7 +22,7 @@ const LockerDrawer = ({ locker, onClose, onSave, theme }) => {
     return Object.keys(e).length === 0;
   };
 
-  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#D48E8A' : theme.border.primary, color: theme.text.primary });
+  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#EF4444' : theme.border.primary, color: theme.text.primary });
   const lbl = "text-xs font-semibold uppercase block mb-1.5";
 
   return (
@@ -41,7 +41,7 @@ const LockerDrawer = ({ locker, onClose, onSave, theme }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={lbl} style={{ color: theme.text.muted }}>Terminal *</label>
-              <select value={form.terminal} onChange={e => update('terminal', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.terminal ? '#D48E8A' : theme.border.primary, color: theme.text.primary }}>
+              <select value={form.terminal} onChange={e => update('terminal', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.terminal ? '#EF4444' : theme.border.primary, color: theme.text.primary }}>
                 <option value="">Select terminal</option>
                 {terminalsData.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
               </select>
@@ -66,7 +66,7 @@ const LockerDrawer = ({ locker, onClose, onSave, theme }) => {
           <div>
             <label className={lbl} style={{ color: theme.text.muted }}>Status</label>
             <div className="grid grid-cols-2 gap-2">
-              {[['available', '#81C995'], ['occupied', '#7EA8C9'], ['reserved', '#D4AA5A'], ['maintenance', '#D48E8A']].map(([s, c]) => (
+              {[['available', '#10B981'], ['occupied', '#3B82F6'], ['reserved', '#D97706'], ['maintenance', '#EF4444']].map(([s, c]) => (
                 <button key={s} onClick={() => update('status', s)} className="py-2.5 rounded-xl text-sm capitalize" style={{ backgroundColor: form.status === s ? `${c}15` : theme.bg.tertiary, color: form.status === s ? c : theme.text.muted, border: `1px solid ${form.status === s ? `${c}40` : theme.border.primary}` }}>{s}</button>
               ))}
             </div>
@@ -86,7 +86,7 @@ const LockerDrawer = ({ locker, onClose, onSave, theme }) => {
           <div>
             <label className={lbl} style={{ color: theme.text.muted }}>Enabled</label>
             <div className="flex gap-2">
-              {[[1, 'Enabled', '#81C995'], [0, 'Disabled', '#A8A29E']].map(([v, l, c]) => (
+              {[[1, 'Enabled', '#10B981'], [0, 'Disabled', '#64748B']].map(([v, l, c]) => (
                 <button key={v} onClick={() => update('enabled', v)} className="flex-1 py-2.5 rounded-xl text-sm" style={{ backgroundColor: form.enabled === v ? `${c}15` : theme.bg.tertiary, color: form.enabled === v ? c : theme.text.muted, border: `1px solid ${form.enabled === v ? `${c}40` : theme.border.primary}` }}>{l}</button>
               ))}
             </div>
@@ -193,7 +193,7 @@ export const LockersPage = ({
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[['Total', lockers.length, Grid3X3, theme.accent.primary], ['Available', lockers.filter(l => l.status === 'available').length, Unlock, '#81C995'], ['Occupied', lockers.filter(l => l.status === 'occupied').length, Package, '#7EA8C9'], ['Maintenance', lockers.filter(l => l.status === 'maintenance').length, AlertTriangle, '#D48E8A']].map(([l, v, I, c]) => (
+        {[['Total', lockers.length, Grid3X3, theme.accent.primary], ['Available', lockers.filter(l => l.status === 'available').length, Unlock, '#10B981'], ['Occupied', lockers.filter(l => l.status === 'occupied').length, Package, '#3B82F6'], ['Maintenance', lockers.filter(l => l.status === 'maintenance').length, AlertTriangle, '#EF4444']].map(([l, v, I, c]) => (
           <div key={l} className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold uppercase" style={{ color: theme.text.muted }}>{l}</p>
@@ -254,8 +254,8 @@ export const LockersPage = ({
           {viewMode === 'grid' && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
               {filteredLockers.map(l => {
-                const STATUS_COLORS = { available: '#81C995', occupied: '#7EA8C9', reserved: '#D4AA5A', maintenance: '#D48E8A' };
-                const sc = STATUS_COLORS[l.status] || '#A8A29E';
+                const STATUS_COLORS = { available: '#10B981', occupied: '#3B82F6', reserved: '#D97706', maintenance: '#EF4444' };
+                const sc = STATUS_COLORS[l.status] || '#64748B';
                 return (
                   <div key={l.id} onClick={() => setViewLocker(l)} className="p-3 rounded-xl border cursor-pointer group transition-all hover:scale-[1.02]" style={{ backgroundColor: `${sc}10`, borderColor: `${sc}40` }}>
                     <div className="flex items-start justify-between mb-2">
@@ -266,7 +266,7 @@ export const LockersPage = ({
                     <p className="text-xs mt-0.5" style={{ color: theme.text.secondary }}>{l.sizeLabel}</p>
                     <div className="mt-2 flex items-center justify-between">
                       <span className="text-xs capitalize px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: `${sc}20`, color: sc }}>{l.status}</span>
-                      {l.opened === 1 && <DoorOpen size={11} style={{ color: '#D4AA5A' }} />}
+                      {l.opened === 1 && <DoorOpen size={11} style={{ color: '#D97706' }} />}
                     </div>
                     <div className="flex items-center justify-end gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
                       <button onClick={() => handleOpenLocker(l)} className="p-1 rounded hover:bg-white/10" style={{ color: theme.text.muted }} title="Remote Open"><DoorOpen size={11} /></button>
@@ -295,7 +295,7 @@ export const LockersPage = ({
                 const reserved = tLockers.filter(l => l.status === 'reserved').length;
                 const fillPct = tLockers.length > 0 ? Math.round((occupied / tLockers.length) * 100) : 0;
                 const isExpanded = expandedTerminals[terminal.id] !== false; // expanded by default
-                const STATUS_COLORS = { available: '#81C995', occupied: '#7EA8C9', reserved: '#D4AA5A', maintenance: '#D48E8A' };
+                const STATUS_COLORS = { available: '#10B981', occupied: '#3B82F6', reserved: '#D97706', maintenance: '#EF4444' };
                 return (
                   <div key={terminal.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
                     {/* Terminal header */}
@@ -313,19 +313,19 @@ export const LockersPage = ({
                         </div>
                         <div className="flex items-center gap-1.5 ml-2">
                           {terminal.status === 'online'
-                            ? <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#81C99520', color: '#81C995' }}><Wifi size={10} /> Online</span>
-                            : <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#D48E8A20', color: '#D48E8A' }}><WifiOff size={10} /> Offline</span>}
+                            ? <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#10B98120', color: '#10B981' }}><Wifi size={10} /> Online</span>
+                            : <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#EF444420', color: '#EF4444' }}><WifiOff size={10} /> Offline</span>}
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="hidden md:flex items-center gap-3 text-xs">
-                          {[['Available', available, '#81C995'], ['Occupied', occupied, '#7EA8C9'], ['Reserved', reserved, '#D4AA5A'], ['Maint.', maintenance, '#D48E8A']].map(([l, v, c]) => (
+                          {[['Available', available, '#10B981'], ['Occupied', occupied, '#3B82F6'], ['Reserved', reserved, '#D97706'], ['Maint.', maintenance, '#EF4444']].map(([l, v, c]) => (
                             <span key={l} style={{ color: c }}><span className="font-bold">{v}</span> <span style={{ color: theme.text.muted }}>{l}</span></span>
                           ))}
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="w-24 h-2 rounded-full overflow-hidden" style={{ backgroundColor: theme.bg.tertiary }}>
-                            <div className="h-full rounded-full transition-all" style={{ width: `${fillPct}%`, backgroundColor: fillPct > 80 ? '#D48E8A' : fillPct > 60 ? '#D4AA5A' : '#81C995' }} />
+                            <div className="h-full rounded-full transition-all" style={{ width: `${fillPct}%`, backgroundColor: fillPct > 80 ? '#EF4444' : fillPct > 60 ? '#D97706' : '#10B981' }} />
                           </div>
                           <span className="text-xs font-mono" style={{ color: theme.text.muted }}>{fillPct}%</span>
                         </div>
@@ -338,7 +338,7 @@ export const LockersPage = ({
                       <div className="border-t p-4" style={{ borderColor: theme.border.primary }}>
                         {/* Legend */}
                         <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: theme.text.muted }}>
-                          {[['Available', '#81C995'], ['Occupied', '#7EA8C9'], ['Reserved', '#D4AA5A'], ['Maintenance', '#D48E8A']].map(([l, c]) => (
+                          {[['Available', '#10B981'], ['Occupied', '#3B82F6'], ['Reserved', '#D97706'], ['Maintenance', '#EF4444']].map(([l, c]) => (
                             <span key={l} className="flex items-center gap-1.5">
                               <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: `${c}40`, border: `1.5px solid ${c}` }} />
                               {l}
@@ -349,7 +349,7 @@ export const LockersPage = ({
                         {/* Grid */}
                         <div className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))' }}>
                           {tLockers.sort((a, b) => a.doorNo - b.doorNo).map(locker => {
-                            const sc = STATUS_COLORS[locker.status] || '#A8A29E';
+                            const sc = STATUS_COLORS[locker.status] || '#64748B';
                             return (
                               <button
                                 key={locker.id}
@@ -364,7 +364,7 @@ export const LockersPage = ({
                                   <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full" style={{ backgroundColor: theme.accent.primary }} title={locker.package} />
                                 )}
                                 {locker.opened === 1 && (
-                                  <DoorOpen size={8} className="absolute bottom-1 right-1" style={{ color: '#D4AA5A' }} />
+                                  <DoorOpen size={8} className="absolute bottom-1 right-1" style={{ color: '#D97706' }} />
                                 )}
                               </button>
                             );
@@ -386,7 +386,7 @@ export const LockersPage = ({
                           <button
                             onClick={() => { tLockers.filter(l => l.status === 'available').forEach(l => handleOpenLocker(l)); }}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border"
-                            style={{ borderColor: '#D4AA5A40', color: '#D4AA5A' }}
+                            style={{ borderColor: '#D9770640', color: '#D97706' }}
                             title="Bulk open all available doors"
                           >
                             <DoorOpen size={12} /> Open All Available
@@ -427,7 +427,7 @@ export const LockersPage = ({
                       <td className="p-3 hidden md:table-cell"><span className="text-sm" style={{ color: theme.text.secondary }}>{l.sizeLabel}</span></td>
                       <td className="p-3"><StatusBadge status={l.status} /></td>
                       <td className="p-3 hidden lg:table-cell">
-                        {l.opened ? <span className="text-xs flex items-center gap-1" style={{ color: '#D4AA5A' }}><DoorOpen size={13} /> Open</span> : <span className="text-xs flex items-center gap-1" style={{ color: '#81C995' }}><DoorClosed size={13} /> Closed</span>}
+                        {l.opened ? <span className="text-xs flex items-center gap-1" style={{ color: '#D97706' }}><DoorOpen size={13} /> Open</span> : <span className="text-xs flex items-center gap-1" style={{ color: '#10B981' }}><DoorClosed size={13} /> Closed</span>}
                       </td>
                       <td className="p-3 hidden lg:table-cell">{l.package ? <span className="text-xs font-mono" style={{ color: theme.accent.primary }}>{l.package}</span> : <span style={{ color: theme.text.muted }}>—</span>}</td>
                       <td className="p-3 hidden md:table-cell">{l.temp ? <div className="flex items-center gap-1"><Thermometer size={13} style={{ color: theme.icon.muted }} /><span className="text-sm" style={{ color: theme.text.secondary }}>{l.temp}°C</span></div> : '—'}</td>
@@ -440,7 +440,7 @@ export const LockersPage = ({
                       <td className="p-3 text-right" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={() => handleOpenLocker(l)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.text.muted }} title="Remote Open"><DoorOpen size={14} /></button>
-                          <button onClick={() => handleMaintenanceToggle(l)} className={`p-1.5 rounded-lg hover:bg-white/5`} style={{ color: l.status === 'maintenance' ? '#81C995' : '#D4AA5A' }} title={l.status === 'maintenance' ? 'Clear Maintenance' : 'Flag Maintenance'}><Wrench size={14} /></button>
+                          <button onClick={() => handleMaintenanceToggle(l)} className={`p-1.5 rounded-lg hover:bg-white/5`} style={{ color: l.status === 'maintenance' ? '#10B981' : '#D97706' }} title={l.status === 'maintenance' ? 'Clear Maintenance' : 'Flag Maintenance'}><Wrench size={14} /></button>
                           {hasPermission(currentUser?.role, 'lockers.manage') && (
                             <>
                               <button onClick={() => setDrawer(l)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.accent.primary }} title="Edit"><Edit size={14} /></button>
@@ -467,7 +467,7 @@ export const LockersPage = ({
               <h3 className="font-semibold" style={{ color: theme.text.primary }}>Lockers Requiring Attention</h3>
               <p className="text-sm mt-0.5" style={{ color: theme.text.muted }}>In maintenance or low battery</p>
             </div>
-            <span className="text-sm font-medium px-3 py-1 rounded-full" style={{ backgroundColor: '#D48E8A15', color: '#D48E8A' }}>
+            <span className="text-sm font-medium px-3 py-1 rounded-full" style={{ backgroundColor: '#EF444415', color: '#EF4444' }}>
               {lockers.filter(l => l.status === 'maintenance' || l.battery < 20).length} issues
             </span>
           </div>
@@ -495,11 +495,11 @@ export const LockersPage = ({
                     </div>
                   </td>
                   <td className="p-3 hidden md:table-cell">
-                    {l.status === 'maintenance' && <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#D48E8A15', color: '#D48E8A' }}>Maintenance</span>}
-                    {l.battery < 20 && l.status !== 'maintenance' && <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#D4AA5A15', color: '#D4AA5A' }}>Low Battery</span>}
+                    {l.status === 'maintenance' && <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#EF444415', color: '#EF4444' }}>Maintenance</span>}
+                    {l.battery < 20 && l.status !== 'maintenance' && <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#D9770615', color: '#D97706' }}>Low Battery</span>}
                   </td>
                   <td className="p-3 text-right">
-                    <button onClick={() => handleMaintenanceToggle(l)} className="px-3 py-1.5 rounded-lg text-xs border" style={{ borderColor: '#81C99540', color: '#81C995' }}>
+                    <button onClick={() => handleMaintenanceToggle(l)} className="px-3 py-1.5 rounded-lg text-xs border" style={{ borderColor: '#10B98140', color: '#10B981' }}>
                       {l.status === 'maintenance' ? 'Clear' : 'Resolved'}
                     </button>
                   </td>
@@ -578,7 +578,7 @@ export const LockersPage = ({
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               <StatusBadge status={viewLocker.status} />
               <div className="grid grid-cols-3 gap-3">
-                {[['Door #', `#${viewLocker.doorNo}`, theme.accent.primary], ['Size', viewLocker.sizeLabel, theme.text.primary], ['Enabled', viewLocker.enabled ? 'Yes' : 'No', viewLocker.enabled ? '#81C995' : '#A8A29E']].map(([l, v, c]) => (
+                {[['Door #', `#${viewLocker.doorNo}`, theme.accent.primary], ['Size', viewLocker.sizeLabel, theme.text.primary], ['Enabled', viewLocker.enabled ? 'Yes' : 'No', viewLocker.enabled ? '#10B981' : '#64748B']].map(([l, v, c]) => (
                   <div key={l} className="p-3 rounded-xl border text-center" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }}>
                     <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
                     <p className="text-sm font-bold mt-0.5" style={{ color: c }}>{v}</p>
@@ -598,7 +598,7 @@ export const LockersPage = ({
               <button onClick={() => handleOpenLocker(viewLocker)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>
                 <DoorOpen size={14} className="inline mr-1.5" />Remote Open
               </button>
-              <button onClick={() => handleMaintenanceToggle(viewLocker)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: '#D4AA5A40', color: '#D4AA5A' }}>
+              <button onClick={() => handleMaintenanceToggle(viewLocker)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: '#D9770640', color: '#D97706' }}>
                 <Wrench size={14} className="inline mr-1.5" />{viewLocker.status === 'maintenance' ? 'Clear' : 'Maintenance'}
               </button>
             </div>
@@ -618,7 +618,7 @@ export const LockersPage = ({
             <p className="text-sm" style={{ color: theme.text.muted }}>Remove locker <span className="font-mono font-semibold" style={{ color: theme.text.primary }}>{deleteConfirm.id}</span> permanently?</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Remove</button>
+              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Remove</button>
             </div>
           </div>
         </div>

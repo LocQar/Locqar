@@ -33,7 +33,7 @@ const CourierDrawer = ({ courier, onClose, onSave, theme }) => {
   const labelCls = "text-xs font-semibold uppercase block mb-1.5";
   const inputStyle = (field) => ({
     backgroundColor: 'transparent',
-    borderColor: errors[field] ? '#D48E8A' : theme.border.primary,
+    borderColor: errors[field] ? '#EF4444' : theme.border.primary,
     color: theme.text.primary,
   });
 
@@ -74,7 +74,7 @@ const CourierDrawer = ({ courier, onClose, onSave, theme }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelCls} style={{ color: theme.text.muted }}>Assigned Terminal *</label>
-              <select value={form.terminal} onChange={e => update('terminal', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.terminal ? '#D48E8A' : theme.border.primary, color: theme.text.primary }}>
+              <select value={form.terminal} onChange={e => update('terminal', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.terminal ? '#EF4444' : theme.border.primary, color: theme.text.primary }}>
                 <option value="">Select terminal</option>
                 {terminalsData.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
               </select>
@@ -104,7 +104,7 @@ const CourierDrawer = ({ courier, onClose, onSave, theme }) => {
           <div>
             <label className={labelCls} style={{ color: theme.text.muted }}>Status</label>
             <div className="flex gap-2">
-              {[[1, 'Active', '#81C995'], [0, 'Disabled', '#A8A29E']].map(([v, l, c]) => (
+              {[[1, 'Active', '#10B981'], [0, 'Disabled', '#64748B']].map(([v, l, c]) => (
                 <button key={v} onClick={() => update('status', v)} className="flex-1 py-2.5 rounded-xl text-sm" style={{ backgroundColor: form.status === v ? `${c}15` : theme.bg.tertiary, color: form.status === v ? c : theme.text.secondary, border: form.status === v ? `1px solid ${c}40` : `1px solid ${theme.border.primary}` }}>{l}</button>
               ))}
             </div>
@@ -258,9 +258,9 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           ['Total', totalCouriers, Users2, theme.accent.primary],
-          ['Active', activeCouriers, UserCheck, '#81C995'],
-          ['Disabled', disabledCouriers, UserX, '#A8A29E'],
-          ['Avg Rating', avgRating, Star, '#D4AA5A'],
+          ['Active', activeCouriers, UserCheck, '#10B981'],
+          ['Disabled', disabledCouriers, UserX, '#64748B'],
+          ['Avg Rating', avgRating, Star, '#D97706'],
         ].map(([label, value, Icon, color]) => (
           <div key={label} className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
             <div className="flex items-center justify-between mb-2">
@@ -416,7 +416,7 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
                       ) : <span className="text-sm" style={{ color: theme.text.muted }}>—</span>}
                     </td>
                     <td className="p-4" onClick={e => e.stopPropagation()}>
-                      <button onClick={() => handleToggleStatus(courier.id)} className="inline-flex items-center gap-1.5 text-xs" style={{ color: courier.status === 1 ? '#81C995' : '#A8A29E' }}>
+                      <button onClick={() => handleToggleStatus(courier.id)} className="inline-flex items-center gap-1.5 text-xs" style={{ color: courier.status === 1 ? '#10B981' : '#64748B' }}>
                         {courier.status === 1 ? <ToggleRight size={22} /> : <ToggleLeft size={22} />}
                         <span>{statusInfo?.label}</span>
                       </button>
@@ -480,8 +480,8 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
               <div className="grid grid-cols-3 gap-3">
                 {[
                   ['Deliveries', viewCourier.totalDeliveries ?? 0, theme.accent.primary],
-                  ['Rating', viewCourier.rating ? `${viewCourier.rating} ★` : '—', '#D4AA5A'],
-                  ['Active Pkgs', packages.filter(p => p.courier?.id === viewCourier.id).length, '#81C995'],
+                  ['Rating', viewCourier.rating ? `${viewCourier.rating} ★` : '—', '#D97706'],
+                  ['Active Pkgs', packages.filter(p => p.courier?.id === viewCourier.id).length, '#10B981'],
                 ].map(([l, v, c]) => (
                   <div key={l} className="p-3 rounded-xl border text-center" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }}>
                     <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
@@ -516,10 +516,10 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
             </div>
 
             <div className="p-4 border-t flex gap-3" style={{ borderColor: theme.border.primary }}>
-              <button onClick={() => { handleToggleStatus(viewCourier.id); setViewCourier(prev => ({ ...prev, status: prev.status === 1 ? 0 : 1 })); }} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: viewCourier.status === 1 ? '#A8A29E' : '#81C995' }}>
+              <button onClick={() => { handleToggleStatus(viewCourier.id); setViewCourier(prev => ({ ...prev, status: prev.status === 1 ? 0 : 1 })); }} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: viewCourier.status === 1 ? '#64748B' : '#10B981' }}>
                 {viewCourier.status === 1 ? 'Disable Courier' : 'Enable Courier'}
               </button>
-              <button onClick={() => { setDeleteConfirm(viewCourier); setViewCourier(null); }} className="py-2.5 px-4 rounded-xl border text-sm text-red-400" style={{ borderColor: '#D48E8A40' }}>
+              <button onClick={() => { setDeleteConfirm(viewCourier); setViewCourier(null); }} className="py-2.5 px-4 rounded-xl border text-sm text-red-400" style={{ borderColor: '#EF444440' }}>
                 <Trash2 size={15} />
               </button>
             </div>
@@ -538,7 +538,7 @@ export const CouriersPage = ({ addToast, packages = [] }) => {
             </p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Remove</button>
+              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Remove</button>
             </div>
           </div>
         </div>

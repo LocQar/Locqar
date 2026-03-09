@@ -3,9 +3,9 @@ import { AlertTriangle, Info, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const variantConfig = {
-  danger: { color: '#D48E8A', icon: AlertTriangle },
-  warning: { color: '#D4AA5A', icon: AlertTriangle },
-  info: { color: '#7EA8C9', icon: Info },
+  danger: { color: '#EF4444', icon: AlertTriangle },
+  warning: { color: '#D97706', icon: AlertTriangle },
+  info: { color: '#3B82F6', icon: Info },
 };
 
 export const ConfirmDialog = ({

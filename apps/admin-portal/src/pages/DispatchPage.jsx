@@ -80,11 +80,11 @@ const CreateRouteDrawer = ({ onClose, onSave, drivers, theme }) => {
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           <div>
             <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Zone / Route Name *</label>
-            <input value={form.zone} onChange={e => upd('zone', e.target.value)} placeholder="e.g. Accra Central" className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ ...is, borderColor: err.zone ? '#D48E8A' : theme.border.primary }} />
+            <input value={form.zone} onChange={e => upd('zone', e.target.value)} placeholder="e.g. Accra Central" className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ ...is, borderColor: err.zone ? '#EF4444' : theme.border.primary }} />
           </div>
           <div>
             <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Assign Driver *</label>
-            <select value={form.driverId} onChange={e => upd('driverId', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ ...is, borderColor: err.driverId ? '#D48E8A' : theme.border.primary }}>
+            <select value={form.driverId} onChange={e => upd('driverId', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ ...is, borderColor: err.driverId ? '#EF4444' : theme.border.primary }}>
               <option value="">Select driver...</option>
               {drivers.filter(d => d.status !== 'offline').map(d => (
                 <option key={d.id} value={d.id}>{d.name} — {d.zone} ({d.status})</option>
@@ -105,7 +105,7 @@ const CreateRouteDrawer = ({ onClose, onSave, drivers, theme }) => {
           <div>
             <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Stops *</label>
             <div className="flex gap-2">
-              <select value={stopTerminal} onChange={e => setStopTerminal(e.target.value)} className="flex-1 px-3 py-2 rounded-xl border text-sm" style={{ ...is, borderColor: err.stops ? '#D48E8A' : theme.border.primary }}>
+              <select value={stopTerminal} onChange={e => setStopTerminal(e.target.value)} className="flex-1 px-3 py-2 rounded-xl border text-sm" style={{ ...is, borderColor: err.stops ? '#EF4444' : theme.border.primary }}>
                 <option value="">Select terminal...</option>
                 {terminalsData.filter(t => !stops.find(s => s.terminal === t.name)).map(t => (
                   <option key={t.id} value={t.name}>{t.name}</option>
@@ -147,7 +147,7 @@ const DriverDrawer = ({ driver, onClose, onSave, theme }) => {
   const [form, setForm] = useState(driver || { name: '', phone: '', vehicle: '', zone: '', status: 'active', deliveriesToday: 0, rating: 5.0 });
   const [err, setErr] = useState({});
   const upd = (f, v) => { setForm(p => ({ ...p, [f]: v })); setErr(p => ({ ...p, [f]: undefined })); };
-  const is = (f) => ({ backgroundColor: 'transparent', borderColor: err[f] ? '#D48E8A' : theme.border.primary, color: theme.text.primary });
+  const is = (f) => ({ backgroundColor: 'transparent', borderColor: err[f] ? '#EF4444' : theme.border.primary, color: theme.text.primary });
 
   const handleSave = () => {
     const e = {};
@@ -181,7 +181,7 @@ const DriverDrawer = ({ driver, onClose, onSave, theme }) => {
             <label className="text-xs uppercase font-semibold block mb-1.5" style={{ color: theme.text.muted }}>Status</label>
             <div className="flex gap-2">
               {['active', 'on_delivery', 'offline'].map(s => (
-                <button key={s} onClick={() => upd('status', s)} className="flex-1 py-2 rounded-xl border text-xs capitalize" style={{ backgroundColor: form.status === s ? (s === 'active' ? '#81C99520' : s === 'on_delivery' ? '#D4AA5A20' : '#78716C20') : theme.bg.tertiary, color: form.status === s ? (s === 'active' ? '#81C995' : s === 'on_delivery' ? '#D4AA5A' : '#78716C') : theme.text.muted, borderColor: form.status === s ? 'transparent' : theme.border.primary }}>{s.replace('_', ' ')}</button>
+                <button key={s} onClick={() => upd('status', s)} className="flex-1 py-2 rounded-xl border text-xs capitalize" style={{ backgroundColor: form.status === s ? (s === 'active' ? '#10B98120' : s === 'on_delivery' ? '#D9770620' : '#78716C20') : theme.bg.tertiary, color: form.status === s ? (s === 'active' ? '#10B981' : s === 'on_delivery' ? '#D97706' : '#78716C') : theme.text.muted, borderColor: form.status === s ? 'transparent' : theme.border.primary }}>{s.replace('_', ' ')}</button>
               ))}
             </div>
           </div>
@@ -401,7 +401,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
   const delivered = packages.filter(p => p.status.startsWith('delivered')).length;
   const activeDrivers = drivers.filter(d => d.status !== 'offline').length;
 
-  const STOP_COLORS = { completed: '#81C995', in_progress: '#D4AA5A', pending: theme.border.primary };
+  const STOP_COLORS = { completed: '#10B981', in_progress: '#D97706', pending: theme.border.primary };
   const TIMELINE_ICONS = { route: Route, truck: Truck, user: Users, mappin: MapPin };
 
   return (
@@ -420,7 +420,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
             <p className="text-sm mb-5" style={{ color: theme.text.muted }}>This action cannot be undone.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteRoute(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={() => handleDeleteRoute(deleteRoute)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#1C1917' }}>Delete</button>
+              <button onClick={() => handleDeleteRoute(deleteRoute)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#1C1917' }}>Delete</button>
             </div>
           </div>
         </div>
@@ -435,7 +435,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
             <p className="text-sm mb-5" style={{ color: theme.text.muted }}>This will remove the driver from the system.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteDriver(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={() => handleDeleteDriver(deleteDriver)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#1C1917' }}>Remove</button>
+              <button onClick={() => handleDeleteDriver(deleteDriver)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#1C1917' }}>Remove</button>
             </div>
           </div>
         </div>
@@ -478,12 +478,12 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
           {/* Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
             {[
-              { label: 'Ready', value: ready, color: '#D4AA5A' },
-              { label: 'Assigned', value: assignedCount, color: '#7EA8C9' },
-              { label: 'In Transit', value: inTransit, color: '#B5A0D1' },
-              { label: 'Delivered', value: delivered, color: '#81C995' },
+              { label: 'Ready', value: ready, color: '#D97706' },
+              { label: 'Assigned', value: assignedCount, color: '#3B82F6' },
+              { label: 'In Transit', value: inTransit, color: '#8B5CF6' },
+              { label: 'Delivered', value: delivered, color: '#10B981' },
               { label: 'Active Drivers', value: activeDrivers, color: theme.accent.primary },
-              { label: 'Total Value', value: `GH₵ ${packages.reduce((s, p) => s + (p.value || 0), 0).toLocaleString()}`, color: '#D4AA5A' },
+              { label: 'Total Value', value: `GH₵ ${packages.reduce((s, p) => s + (p.value || 0), 0).toLocaleString()}`, color: '#D97706' },
             ].map(m => (
               <div key={m.label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
                 <p className="text-xs mb-1" style={{ color: theme.text.muted }}>{m.label}</p>
@@ -546,13 +546,13 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                     <td className="p-3">
                       <div className="flex items-center gap-1 justify-end">
                         {hasPermission(currentUser?.role, 'packages.dispatch') && ['pending', 'at_warehouse', 'at_dropbox'].includes(pkg.status) && (
-                          <button onClick={() => handleDispatch(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Assign to Courier" style={{ color: '#7EA8C9' }}><Truck size={14} /></button>
+                          <button onClick={() => handleDispatch(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Assign to Courier" style={{ color: '#3B82F6' }}><Truck size={14} /></button>
                         )}
                         {hasPermission(currentUser?.role, 'packages.dispatch') && pkg.status === 'assigned' && (
-                          <button onClick={() => handlePackageRecall(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Recall from Courier" style={{ color: '#D48E8A' }}><RefreshCw size={14} /></button>
+                          <button onClick={() => handlePackageRecall(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Recall from Courier" style={{ color: '#EF4444' }}><RefreshCw size={14} /></button>
                         )}
                         {hasPermission(currentUser?.role, 'packages.update') && !['delivered_to_locker', 'delivered_to_home', 'picked_up'].includes(pkg.status) && (
-                          <button onClick={() => handleMarkDelivered(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Mark Delivered" style={{ color: '#81C995' }}><CheckCircle2 size={14} /></button>
+                          <button onClick={() => handleMarkDelivered(pkg)} className="p-1.5 rounded-lg hover:bg-white/5" title="Mark Delivered" style={{ color: '#10B981' }}><CheckCircle2 size={14} /></button>
                         )}
                       </div>
                     </td>
@@ -595,9 +595,9 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {[
                   { label: 'Active Routes', value: `${routes.filter(r => r.status === 'active').length} / ${routes.length}`, color: theme.accent.primary },
-                  { label: 'Total Stops', value: routes.reduce((s, r) => s + r.stops.length, 0), color: '#7EA8C9' },
-                  { label: 'Packages Out', value: routes.reduce((s, r) => s + r.stops.reduce((ss, st) => ss + st.packages.length, 0), 0), color: '#D4AA5A' },
-                  { label: 'Avg Completion', value: (() => { const t = routes.reduce((s, r) => { const pkg = r.stops.reduce((ss, st) => ss + st.packages.length, 0); const del = r.stops.reduce((ss, st) => ss + st.delivered, 0); return { pkg: s.pkg + pkg, del: s.del + del }; }, { pkg: 0, del: 0 }); return t.pkg ? `${Math.round(t.del / t.pkg * 100)}%` : '—'; })(), color: '#81C995' },
+                  { label: 'Total Stops', value: routes.reduce((s, r) => s + r.stops.length, 0), color: '#3B82F6' },
+                  { label: 'Packages Out', value: routes.reduce((s, r) => s + r.stops.reduce((ss, st) => ss + st.packages.length, 0), 0), color: '#D97706' },
+                  { label: 'Avg Completion', value: (() => { const t = routes.reduce((s, r) => { const pkg = r.stops.reduce((ss, st) => ss + st.packages.length, 0); const del = r.stops.reduce((ss, st) => ss + st.delivered, 0); return { pkg: s.pkg + pkg, del: s.del + del }; }, { pkg: 0, del: 0 }); return t.pkg ? `${Math.round(t.del / t.pkg * 100)}%` : '—'; })(), color: '#10B981' },
                 ].map(m => (
                   <div key={m.label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
                     <p className="text-xs mb-1" style={{ color: theme.text.muted }}>{m.label}</p>
@@ -612,7 +612,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                   const totalPkg = route.stops.reduce((s, st) => s + st.packages.length, 0);
                   const delPkg = route.stops.reduce((s, st) => s + st.delivered, 0);
                   const pct = totalPkg ? Math.round(delPkg / totalPkg * 100) : 0;
-                  const statusColor = route.status === 'active' ? '#81C995' : route.status === 'completed' ? '#7EA8C9' : '#D4AA5A';
+                  const statusColor = route.status === 'active' ? '#10B981' : route.status === 'completed' ? '#3B82F6' : '#D97706';
                   return (
                     <div key={route.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
                       <div className="p-4 border-b" style={{ borderColor: theme.border.primary }}>
@@ -626,10 +626,10 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                         <div className="mt-3">
                           <div className="flex justify-between text-xs mb-1" style={{ color: theme.text.muted }}>
                             <span>Delivery progress</span>
-                            <span style={{ color: pct === 100 ? '#81C995' : theme.text.secondary }}>{pct}%</span>
+                            <span style={{ color: pct === 100 ? '#10B981' : theme.text.secondary }}>{pct}%</span>
                           </div>
                           <div className="h-1.5 rounded-full" style={{ backgroundColor: theme.bg.tertiary }}>
-                            <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#81C995' : '#D4AA5A' }} />
+                            <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#10B981' : '#D97706' }} />
                           </div>
                         </div>
                       </div>
@@ -658,9 +658,9 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                             <button onClick={() => handleStartRoute(route.id)} className="px-3 py-2 rounded-xl text-xs font-medium" style={{ backgroundColor: '#10B98118', color: '#10B981', border: '1px solid #10B98130' }} title="Start Route">▶</button>
                           )}
                           {route.status === 'active' && (
-                            <button onClick={() => handleCompleteRoute(route.id)} className="px-3 py-2 rounded-xl text-xs font-medium" style={{ backgroundColor: '#7EA8C918', color: '#7EA8C9', border: '1px solid #7EA8C930' }} title="Complete Route">✓</button>
+                            <button onClick={() => handleCompleteRoute(route.id)} className="px-3 py-2 rounded-xl text-xs font-medium" style={{ backgroundColor: '#3B82F618', color: '#3B82F6', border: '1px solid #3B82F630' }} title="Complete Route">✓</button>
                           )}
-                          <button onClick={() => setDeleteRoute(route)} className="p-2 rounded-xl border" style={{ borderColor: theme.border.primary, color: '#D48E8A' }}><Trash2 size={13} /></button>
+                          <button onClick={() => setDeleteRoute(route)} className="p-2 rounded-xl border" style={{ borderColor: theme.border.primary, color: '#EF4444' }}><Trash2 size={13} /></button>
                         </div>
                       </div>
                     </div>
@@ -681,14 +681,14 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
                       <h2 className="font-bold text-lg" style={{ color: theme.text.primary }}>{selectedRoute.zone}</h2>
-                      <span className="text-xs px-2 py-0.5 rounded-full capitalize" style={{ backgroundColor: selectedRoute.status === 'active' ? '#81C99520' : selectedRoute.status === 'completed' ? '#7EA8C920' : '#D4AA5A20', color: selectedRoute.status === 'active' ? '#81C995' : selectedRoute.status === 'completed' ? '#7EA8C9' : '#D4AA5A' }}>{selectedRoute.status}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full capitalize" style={{ backgroundColor: selectedRoute.status === 'active' ? '#10B98120' : selectedRoute.status === 'completed' ? '#3B82F620' : '#D9770620', color: selectedRoute.status === 'active' ? '#10B981' : selectedRoute.status === 'completed' ? '#3B82F6' : '#D97706' }}>{selectedRoute.status}</span>
                       {selectedRoute.status === 'pending' && (
                         <button onClick={() => handleStartRoute(selectedRoute.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: '#10B98118', color: '#10B981', border: '1px solid #10B98130' }}>
                           <Truck size={11} /> Start Route
                         </button>
                       )}
                       {selectedRoute.status === 'active' && (
-                        <button onClick={() => handleCompleteRoute(selectedRoute.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: '#7EA8C918', color: '#7EA8C9', border: '1px solid #7EA8C930' }}>
+                        <button onClick={() => handleCompleteRoute(selectedRoute.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: '#3B82F618', color: '#3B82F6', border: '1px solid #3B82F630' }}>
                           <CheckCircle2 size={11} /> Complete Route
                         </button>
                       )}
@@ -750,9 +750,9 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                               <span className="text-xs px-2 py-0.5 rounded-full capitalize" style={{ backgroundColor: `${stopColor}20`, color: stopColor }}>{stop.status.replace('_', ' ')}</span>
                               <div className="flex gap-1">
                                 {stop.status !== 'completed' && (
-                                  <button onClick={() => handleMarkStopComplete(selectedRoute.id, stop.id)} className="p-1.5 rounded-lg hover:bg-white/5" title="Mark Complete" style={{ color: '#81C995' }}><CheckCircle2 size={14} /></button>
+                                  <button onClick={() => handleMarkStopComplete(selectedRoute.id, stop.id)} className="p-1.5 rounded-lg hover:bg-white/5" title="Mark Complete" style={{ color: '#10B981' }}><CheckCircle2 size={14} /></button>
                                 )}
-                                <button onClick={() => handleRemoveStop(selectedRoute.id, stop.id)} className="p-1.5 rounded-lg hover:bg-white/5" title="Remove Stop" style={{ color: '#D48E8A' }}><Trash2 size={14} /></button>
+                                <button onClick={() => handleRemoveStop(selectedRoute.id, stop.id)} className="p-1.5 rounded-lg hover:bg-white/5" title="Remove Stop" style={{ color: '#EF4444' }}><Trash2 size={14} /></button>
                                 <button onClick={() => setExpandedStops(p => isExpanded ? p.filter(x => x !== stop.id) : [...p, stop.id])} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: theme.icon.muted }}>
                                   {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                                 </button>
@@ -761,7 +761,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                           </div>
                           <div className="flex gap-4 mt-2 text-xs" style={{ color: theme.text.muted }}>
                             <span>{stop.packages.length} packages assigned</span>
-                            <span style={{ color: '#81C995' }}>{stop.delivered} delivered</span>
+                            <span style={{ color: '#10B981' }}>{stop.delivered} delivered</span>
                           </div>
                         </div>
                         {isExpanded && stop.packages.length > 0 && (
@@ -808,7 +808,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                 return (
                   <div>
                     <div className="grid grid-cols-3 gap-3 mb-5">
-                      {[['Total', routePkgs.length, theme.text.primary], ['Delivered', del, '#81C995'], ['Pending', routePkgs.length - del, '#D4AA5A']].map(([l, v, c]) => (
+                      {[['Total', routePkgs.length, theme.text.primary], ['Delivered', del, '#10B981'], ['Pending', routePkgs.length - del, '#D97706']].map(([l, v, c]) => (
                         <div key={l} className="p-3 rounded-xl border text-center" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
                           <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
                           <p className="text-xl font-bold" style={{ color: c }}>{v}</p>
@@ -870,8 +870,8 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             {[
               { label: 'Total Drivers', value: drivers.length, color: theme.accent.primary },
-              { label: 'Active', value: drivers.filter(d => d.status === 'active').length, color: '#81C995' },
-              { label: 'On Delivery', value: drivers.filter(d => d.status === 'on_delivery').length, color: '#D4AA5A' },
+              { label: 'Active', value: drivers.filter(d => d.status === 'active').length, color: '#10B981' },
+              { label: 'On Delivery', value: drivers.filter(d => d.status === 'on_delivery').length, color: '#D97706' },
               { label: 'Offline', value: drivers.filter(d => d.status === 'offline').length, color: '#78716C' },
             ].map(m => (
               <div key={m.label} className="p-4 rounded-2xl border" style={{ backgroundColor: theme.bg.card, borderColor: theme.border.primary }}>
@@ -899,7 +899,7 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
               </thead>
               <tbody>
                 {filteredDrivers.map(driver => {
-                  const statusColor = driver.status === 'active' ? '#81C995' : driver.status === 'on_delivery' ? '#D4AA5A' : '#78716C';
+                  const statusColor = driver.status === 'active' ? '#10B981' : driver.status === 'on_delivery' ? '#D97706' : '#78716C';
                   const cap = Math.round(driver.deliveriesToday / 20 * 100);
                   return (
                     <tr key={driver.id} className="hover:bg-white/3" style={{ borderBottom: `1px solid ${theme.border.primary}` }}>
@@ -923,21 +923,21 @@ export const DispatchPage = ({ currentUser, activeSubMenu, loading, setShowExpor
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <div className="w-16 h-1.5 rounded-full" style={{ backgroundColor: theme.bg.tertiary }}>
-                            <div className="h-full rounded-full" style={{ width: `${Math.min(cap, 100)}%`, backgroundColor: cap > 80 ? '#D48E8A' : cap > 50 ? '#D4AA5A' : '#81C995' }} />
+                            <div className="h-full rounded-full" style={{ width: `${Math.min(cap, 100)}%`, backgroundColor: cap > 80 ? '#EF4444' : cap > 50 ? '#D97706' : '#10B981' }} />
                           </div>
                           <span className="text-xs" style={{ color: theme.text.secondary }}>{driver.deliveriesToday}/20</span>
                         </div>
                       </td>
                       <td className="p-3 hidden md:table-cell">
-                        <span className="text-xs flex items-center gap-1" style={{ color: '#D4AA5A' }}><Star size={10} fill="#D4AA5A" />{driver.rating}</span>
+                        <span className="text-xs flex items-center gap-1" style={{ color: '#D97706' }}><Star size={10} fill="#D97706" />{driver.rating}</span>
                       </td>
                       <td className="p-3">
                         <div className="flex items-center gap-1 justify-end">
                           <button onClick={() => setDriverDrawer(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Edit" style={{ color: theme.icon.muted }}><Edit size={13} /></button>
                           {driver.status === 'on_delivery' && hasPermission(currentUser?.role, 'packages.dispatch') && (
-                            <button onClick={() => handleRecall(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Recall" style={{ color: '#D4AA5A' }}><RefreshCw size={13} /></button>
+                            <button onClick={() => handleRecall(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Recall" style={{ color: '#D97706' }}><RefreshCw size={13} /></button>
                           )}
-                          <button onClick={() => setDeleteDriver(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Delete" style={{ color: '#D48E8A' }}><Trash2 size={13} /></button>
+                          <button onClick={() => setDeleteDriver(driver)} className="p-1.5 rounded-lg hover:bg-white/5" title="Delete" style={{ color: '#EF4444' }}><Trash2 size={13} /></button>
                         </div>
                       </td>
                     </tr>

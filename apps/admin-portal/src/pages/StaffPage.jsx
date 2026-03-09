@@ -25,7 +25,7 @@ const StaffDrawer = ({ staff, onClose, onSave, theme }) => {
     return Object.keys(e).length === 0;
   };
 
-  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#D48E8A' : theme.border.primary, color: theme.text.primary });
+  const inputStyle = (f) => ({ backgroundColor: 'transparent', borderColor: errors[f] ? '#EF4444' : theme.border.primary, color: theme.text.primary });
   const lbl = "text-xs font-semibold uppercase block mb-1.5";
 
   return (
@@ -70,7 +70,7 @@ const StaffDrawer = ({ staff, onClose, onSave, theme }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={lbl} style={{ color: theme.text.muted }}>Role *</label>
-              <select value={form.role} onChange={e => update('role', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.role ? '#D48E8A' : theme.border.primary, color: theme.text.primary }}>
+              <select value={form.role} onChange={e => update('role', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm" style={{ backgroundColor: theme.bg.tertiary, borderColor: errors.role ? '#EF4444' : theme.border.primary, color: theme.text.primary }}>
                 {Object.entries(ROLES).map(([k, v]) => <option key={k} value={k.toUpperCase()}>{v.name}</option>)}
               </select>
             </div>
@@ -99,7 +99,7 @@ const StaffDrawer = ({ staff, onClose, onSave, theme }) => {
           <div>
             <label className={lbl} style={{ color: theme.text.muted }}>Status</label>
             <div className="flex gap-2">
-              {[['active', 'Active', '#81C995'], ['inactive', 'Inactive', '#A8A29E']].map(([v, l, c]) => (
+              {[['active', 'Active', '#10B981'], ['inactive', 'Inactive', '#64748B']].map(([v, l, c]) => (
                 <button key={v} onClick={() => update('status', v)} className="flex-1 py-2.5 rounded-xl text-sm" style={{ backgroundColor: form.status === v ? `${c}15` : theme.bg.tertiary, color: form.status === v ? c : theme.text.secondary, border: `1px solid ${form.status === v ? `${c}40` : theme.border.primary}` }}>{l}</button>
               ))}
             </div>
@@ -259,7 +259,7 @@ export const StaffPage = ({
                     <RoleBadge role={s.role} />
                     <div className="flex items-center gap-1.5">
                       <div className="w-12 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: theme.border.primary }}>
-                        <div className="h-full rounded-full" style={{ width: `${s.performance}%`, backgroundColor: s.performance > 90 ? '#81C995' : s.performance > 75 ? '#D4AA5A' : '#D48E8A' }} />
+                        <div className="h-full rounded-full" style={{ width: `${s.performance}%`, backgroundColor: s.performance > 90 ? '#10B981' : s.performance > 75 ? '#D97706' : '#EF4444' }} />
                       </div>
                       <span className="text-xs" style={{ color: theme.text.muted }}>{s.performance}%</span>
                     </div>
@@ -318,7 +318,7 @@ export const StaffPage = ({
                       <td className="p-4 hidden lg:table-cell">
                         <div className="flex items-center gap-2">
                           <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: theme.border.primary }}>
-                            <div className="h-full rounded-full" style={{ width: `${s.performance}%`, backgroundColor: s.performance > 90 ? '#81C995' : s.performance > 75 ? '#D4AA5A' : '#D48E8A' }} />
+                            <div className="h-full rounded-full" style={{ width: `${s.performance}%`, backgroundColor: s.performance > 90 ? '#10B981' : s.performance > 75 ? '#D97706' : '#EF4444' }} />
                           </div>
                           <span className="text-xs" style={{ color: theme.text.muted }}>{s.performance}%</span>
                         </div>
@@ -418,9 +418,9 @@ export const StaffPage = ({
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: theme.border.primary }}>
-                        <div className="h-full rounded-full" style={{ width: `${s.performance}%`, backgroundColor: s.performance > 90 ? '#81C995' : s.performance > 75 ? '#D4AA5A' : '#D48E8A' }} />
+                        <div className="h-full rounded-full" style={{ width: `${s.performance}%`, backgroundColor: s.performance > 90 ? '#10B981' : s.performance > 75 ? '#D97706' : '#EF4444' }} />
                       </div>
-                      <span className="text-sm font-semibold" style={{ color: s.performance > 90 ? '#81C995' : s.performance > 75 ? '#D4AA5A' : '#D48E8A' }}>{s.performance}%</span>
+                      <span className="text-sm font-semibold" style={{ color: s.performance > 90 ? '#10B981' : s.performance > 75 ? '#D97706' : '#EF4444' }}>{s.performance}%</span>
                     </div>
                   </td>
                   <td className="p-4 hidden lg:table-cell"><span className="text-sm" style={{ color: theme.text.muted }}>{s.avgResponseTime}</span></td>
@@ -457,7 +457,7 @@ export const StaffPage = ({
               </div>
               {/* Stats */}
               <div className="grid grid-cols-3 gap-3">
-                {[['Packages', viewStaff.packagesHandled?.toLocaleString(), theme.accent.primary], ['Tasks', viewStaff.tasksCompleted, '#81C995'], ['Tickets', viewStaff.ticketsResolved, '#B5A0D1']].map(([l, v, c]) => (
+                {[['Packages', viewStaff.packagesHandled?.toLocaleString(), theme.accent.primary], ['Tasks', viewStaff.tasksCompleted, '#10B981'], ['Tickets', viewStaff.ticketsResolved, '#8B5CF6']].map(([l, v, c]) => (
                   <div key={l} className="p-3 rounded-xl border text-center" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }}>
                     <p className="text-xs" style={{ color: theme.text.muted }}>{l}</p>
                     <p className="text-lg font-bold mt-0.5" style={{ color: c }}>{v}</p>
@@ -477,17 +477,17 @@ export const StaffPage = ({
               <div className="p-4 rounded-xl border" style={{ backgroundColor: theme.bg.tertiary, borderColor: theme.border.primary }}>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold" style={{ color: theme.text.muted }}>Performance</p>
-                  <p className="text-sm font-bold" style={{ color: viewStaff.performance > 90 ? '#81C995' : viewStaff.performance > 75 ? '#D4AA5A' : '#D48E8A' }}>{viewStaff.performance}%</p>
+                  <p className="text-sm font-bold" style={{ color: viewStaff.performance > 90 ? '#10B981' : viewStaff.performance > 75 ? '#D97706' : '#EF4444' }}>{viewStaff.performance}%</p>
                 </div>
                 <div className="w-full h-2 rounded-full" style={{ backgroundColor: theme.border.primary }}>
-                  <div className="h-full rounded-full" style={{ width: `${viewStaff.performance}%`, backgroundColor: viewStaff.performance > 90 ? '#81C995' : viewStaff.performance > 75 ? '#D4AA5A' : '#D48E8A' }} />
+                  <div className="h-full rounded-full" style={{ width: `${viewStaff.performance}%`, backgroundColor: viewStaff.performance > 90 ? '#10B981' : viewStaff.performance > 75 ? '#D97706' : '#EF4444' }} />
                 </div>
               </div>
             </div>
             <div className="p-4 border-t flex gap-3" style={{ borderColor: theme.border.primary }}>
-              <button onClick={() => { handleResetPassword(viewStaff); }} className="flex-1 py-2.5 rounded-xl border text-xs" style={{ borderColor: theme.border.primary, color: '#D4AA5A' }}><Key size={14} className="inline mr-1" />Reset Password</button>
+              <button onClick={() => { handleResetPassword(viewStaff); }} className="flex-1 py-2.5 rounded-xl border text-xs" style={{ borderColor: theme.border.primary, color: '#D97706' }}><Key size={14} className="inline mr-1" />Reset Password</button>
               {hasPermission(currentUser?.role, 'staff.manage') && (
-                <button onClick={() => { setDeleteConfirm(viewStaff); setViewStaff(null); }} className="py-2.5 px-4 rounded-xl border text-sm text-red-400" style={{ borderColor: '#D48E8A40' }}><Trash2 size={15} /></button>
+                <button onClick={() => { setDeleteConfirm(viewStaff); setViewStaff(null); }} className="py-2.5 px-4 rounded-xl border text-sm text-red-400" style={{ borderColor: '#EF444440' }}><Trash2 size={15} /></button>
               )}
             </div>
           </div>
@@ -503,7 +503,7 @@ export const StaffPage = ({
             <p className="text-sm" style={{ color: theme.text.muted }}>Permanently remove <span className="font-semibold" style={{ color: theme.text.primary }}>{deleteConfirm.name}</span>? This cannot be undone.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border text-sm" style={{ borderColor: theme.border.primary, color: theme.text.secondary }}>Cancel</button>
-              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#D48E8A', color: '#fff' }}>Remove</button>
+              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Remove</button>
             </div>
           </div>
         </div>

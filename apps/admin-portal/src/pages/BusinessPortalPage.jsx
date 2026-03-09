@@ -70,9 +70,9 @@ export const BusinessPortalPage = ({
                   </div>
                   <div className="grid grid-cols-4 gap-6 text-center">
                     <div><p className="text-xs" style={{ color: theme.text.muted }}>Monthly Vol.</p><p className="text-lg font-bold" style={{ color: theme.text.primary }}>{p.monthlyVolume}</p></div>
-                    <div><p className="text-xs" style={{ color: theme.text.muted }}>Revenue</p><p className="text-lg font-bold" style={{ color: '#81C995' }}>GH₵ {(p.revenue / 1000).toFixed(1)}K</p></div>
-                    <div><p className="text-xs" style={{ color: theme.text.muted }}>Delivery</p><p className="text-lg font-bold" style={{ color: p.deliveryRate > 95 ? '#81C995' : p.deliveryRate > 90 ? '#D4AA5A' : '#D48E8A' }}>{p.deliveryRate}%</p></div>
-                    <div><p className="text-xs" style={{ color: theme.text.muted }}>API Calls</p><p className="text-lg font-bold" style={{ color: '#7EA8C9' }}>{(p.apiCalls / 1000).toFixed(1)}K</p></div>
+                    <div><p className="text-xs" style={{ color: theme.text.muted }}>Revenue</p><p className="text-lg font-bold" style={{ color: '#10B981' }}>GH₵ {(p.revenue / 1000).toFixed(1)}K</p></div>
+                    <div><p className="text-xs" style={{ color: theme.text.muted }}>Delivery</p><p className="text-lg font-bold" style={{ color: p.deliveryRate > 95 ? '#10B981' : p.deliveryRate > 90 ? '#D97706' : '#EF4444' }}>{p.deliveryRate}%</p></div>
+                    <div><p className="text-xs" style={{ color: theme.text.muted }}>API Calls</p><p className="text-lg font-bold" style={{ color: '#3B82F6' }}>{(p.apiCalls / 1000).toFixed(1)}K</p></div>
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => addToast({ type: 'info', message: `Viewing ${p.name} portal` })} className="px-3 py-2 rounded-xl text-sm" style={{ backgroundColor: theme.accent.light, color: theme.accent.primary, border: `1px solid ${theme.accent.border}` }}><Eye size={14} className="inline mr-1" />View Portal</button>
@@ -126,7 +126,7 @@ export const BusinessPortalPage = ({
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <div className="w-20 h-2 rounded-full" style={{ backgroundColor: theme.border.primary }}>
-                          <div className="h-full rounded-full" style={{ width: `${(b.delivered / b.packages) * 100}%`, backgroundColor: b.delivered === b.packages ? '#81C995' : '#7EA8C9' }} />
+                          <div className="h-full rounded-full" style={{ width: `${(b.delivered / b.packages) * 100}%`, backgroundColor: b.delivered === b.packages ? '#10B981' : '#3B82F6' }} />
                         </div>
                         <span className="text-xs font-mono" style={{ color: theme.text.secondary }}>{b.delivered}/{b.packages}</span>
                       </div>
@@ -182,7 +182,7 @@ export const BusinessPortalPage = ({
                     <td className="p-4"><span className="font-mono font-medium" style={{ color: theme.text.primary }}>{inv.id}</span></td>
                     <td className="p-4"><span style={{ color: theme.text.primary }}>{inv.partner}</span></td>
                     <td className="p-4 hidden md:table-cell"><span className="text-sm" style={{ color: theme.text.muted }}>{inv.period}</span></td>
-                    <td className="p-4 hidden md:table-cell"><span className="text-sm" style={{ color: inv.status === 'overdue' ? '#D48E8A' : theme.text.muted }}>{inv.due}</span></td>
+                    <td className="p-4 hidden md:table-cell"><span className="text-sm" style={{ color: inv.status === 'overdue' ? '#EF4444' : theme.text.muted }}>{inv.due}</span></td>
                     <td className="p-4"><span className="font-medium" style={{ color: theme.text.primary }}>GH₵ {inv.amount.toLocaleString()}</span></td>
                     <td className="p-4"><StatusBadge status={inv.status} /></td>
                     <td className="p-4 text-right">
@@ -216,9 +216,9 @@ export const BusinessPortalPage = ({
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[{ label: 'REST API', desc: 'Package CRUD, tracking, locker management', version: 'v2.1', color: '#7EA8C9' },
-                { label: 'Webhooks', desc: 'Real-time status updates, delivery events', version: '12 events', color: '#81C995' },
-                { label: 'Bulk Upload', desc: 'CSV/JSON batch import, up to 500 packages', version: 'v1.3', color: '#B5A0D1' }
+              {[{ label: 'REST API', desc: 'Package CRUD, tracking, locker management', version: 'v2.1', color: '#3B82F6' },
+                { label: 'Webhooks', desc: 'Real-time status updates, delivery events', version: '12 events', color: '#10B981' },
+                { label: 'Bulk Upload', desc: 'CSV/JSON batch import, up to 500 packages', version: 'v1.3', color: '#8B5CF6' }
               ].map(api => (
                 <div key={api.label} className="p-4 rounded-xl border" style={{ borderColor: theme.border.primary }}>
                   <div className="flex items-center gap-2 mb-2">
@@ -257,12 +257,12 @@ export const BusinessPortalPage = ({
                       </div>
                     </td>
                     <td className="p-4 hidden md:table-cell">
-                      <span className="px-2 py-1 rounded-full text-xs" style={{ backgroundColor: k.env === 'production' ? 'rgba(129,201,149,0.1)' : 'rgba(212,170,90,0.1)', color: k.env === 'production' ? '#81C995' : '#D4AA5A' }}>{k.env}</span>
+                      <span className="px-2 py-1 rounded-full text-xs" style={{ backgroundColor: k.env === 'production' ? 'rgba(16,185,129,0.1)' : 'rgba(217,119,6,0.1)', color: k.env === 'production' ? '#10B981' : '#D97706' }}>{k.env}</span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <div className="w-16 h-1.5 rounded-full" style={{ backgroundColor: theme.border.primary }}>
-                          <div className="h-full rounded-full" style={{ width: `${(k.callsToday / k.rateLimit) * 100}%`, backgroundColor: k.callsToday / k.rateLimit > 0.8 ? '#D48E8A' : k.callsToday / k.rateLimit > 0.5 ? '#D4AA5A' : '#81C995' }} />
+                          <div className="h-full rounded-full" style={{ width: `${(k.callsToday / k.rateLimit) * 100}%`, backgroundColor: k.callsToday / k.rateLimit > 0.8 ? '#EF4444' : k.callsToday / k.rateLimit > 0.5 ? '#D97706' : '#10B981' }} />
                         </div>
                         <span className="text-xs font-mono" style={{ color: theme.text.secondary }}>{k.callsToday}/{k.rateLimit}</span>
                       </div>
@@ -315,7 +315,7 @@ export const BusinessPortalPage = ({
               <div className="space-y-4">
                 {partnersData.filter(p => p.status === 'active').sort((a, b) => b.monthlyVolume - a.monthlyVolume).map((p, i) => (
                   <div key={p.id} className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: i === 0 ? '#D4AA5A' : i === 1 ? '#a3a3a3' : i === 2 ? '#cd7c32' : theme.border.secondary, color: '#1C1917' }}>{i + 1}</span>
+                    <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: i === 0 ? '#D97706' : i === 1 ? '#a3a3a3' : i === 2 ? '#cd7c32' : theme.border.secondary, color: '#1C1917' }}>{i + 1}</span>
                     <div className="flex-1">
                       <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{p.name}</p>
                       <div className="w-full h-1.5 rounded-full mt-1" style={{ backgroundColor: theme.border.primary }}>
@@ -343,9 +343,9 @@ export const BusinessPortalPage = ({
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-24 h-2 rounded-full" style={{ backgroundColor: theme.border.primary }}>
-                        <div className="h-full rounded-full" style={{ width: `${p.deliveryRate}%`, backgroundColor: p.deliveryRate > 95 ? '#81C995' : p.deliveryRate > 90 ? '#D4AA5A' : '#D48E8A' }} />
+                        <div className="h-full rounded-full" style={{ width: `${p.deliveryRate}%`, backgroundColor: p.deliveryRate > 95 ? '#10B981' : p.deliveryRate > 90 ? '#D97706' : '#EF4444' }} />
                       </div>
-                      <span className="text-sm font-bold w-14 text-right" style={{ color: p.deliveryRate > 95 ? '#81C995' : p.deliveryRate > 90 ? '#D4AA5A' : '#D48E8A' }}>{p.deliveryRate}%</span>
+                      <span className="text-sm font-bold w-14 text-right" style={{ color: p.deliveryRate > 95 ? '#10B981' : p.deliveryRate > 90 ? '#D97706' : '#EF4444' }}>{p.deliveryRate}%</span>
                     </div>
                   </div>
                 ))}
@@ -361,7 +361,7 @@ export const BusinessPortalPage = ({
                       <p className="text-sm font-medium" style={{ color: theme.text.primary }}>{p.name}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold" style={{ color: '#81C995' }}>GH₵ {(p.revenue / 1000).toFixed(1)}K</p>
+                      <p className="font-bold" style={{ color: '#10B981' }}>GH₵ {(p.revenue / 1000).toFixed(1)}K</p>
                       <p className="text-xs" style={{ color: theme.text.muted }}>{((p.revenue / partnersData.reduce((s, x) => s + x.revenue, 0)) * 100).toFixed(1)}% share</p>
                     </div>
                   </div>
