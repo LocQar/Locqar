@@ -130,9 +130,9 @@ export const DashboardPage = ({
             onClick={() => setShowTerminalGrid(s => !s)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             style={{
-              backgroundColor: showTerminalGrid ? theme.accent.primary : 'transparent',
-              color: showTerminalGrid ? theme.accent.contrast : theme.text.secondary,
-              border: `1px solid ${showTerminalGrid ? theme.accent.primary : theme.border.primary}`,
+              backgroundColor: showTerminalGrid ? theme.status.error : 'transparent',
+              color: showTerminalGrid ? '#fff' : theme.text.secondary,
+              border: `1px solid ${showTerminalGrid ? theme.status.error : theme.border.primary}`,
             }}
           >
             <Grid3X3 size={16} /> Terminals
