@@ -397,7 +397,7 @@ export const PartnerPortalPage = ({
                     </div>
                   </div>
                   <div className="border-t p-3" style={{ borderColor: theme.border.primary }}>
-                    <button onClick={() => addToast({ type: 'info', message: `Reserving locker at ${t.name}` })} className="w-full py-2 rounded-xl text-sm" style={{ backgroundColor: t.available > 0 ? `${theme.status.error}14` : 'transparent', color: t.available > 0 ? theme.status.error : theme.text.muted, border: `1px solid ${`${theme.status.error}30` : theme.border.primary}` }} disabled={t.available === 0}>{t.available > 0 ? 'Reserve Locker' : 'No Lockers Available'}</button>
+                    <button onClick={() => addToast({ type: 'info', message: `Reserving locker at ${t.name}` })} className="w-full py-2 rounded-xl text-sm" style={{ backgroundColor: t.available > 0 ? `${theme.status.error}14` : 'transparent', color: t.available > 0 ? theme.status.error : theme.text.muted, border: `1px solid ${t.available > 0 ? `${theme.status.error}30` : theme.border.primary}` }} disabled={t.available === 0}>{t.available > 0 ? 'Reserve Locker' : 'No Lockers Available'}</button>
                   </div>
                 </div>
               );
